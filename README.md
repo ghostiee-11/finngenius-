@@ -2,14 +2,14 @@
 
 FinGenius is an AI-powered financial platform designed to simplify personal finance for users across all age groups. It combines education, automation, and smart insights to help users make informed financial decisions — from learning the basics to investing with confidence.
 
-Project Overview
 
-Problem Statement
+
+Problem we are facing 
 - Lack of structured financial education.
 - Misinformation and impulsive investment habits.
 - Fragmented financial services across multiple platforms.
 - Complex and confusing loan and insurance processes.
-- No foundational financial literacy for younger users.
+- No foundational financial literacy for younger users and as well every age group user.
 
 -> Our Solution
 FinGenius brings together intelligent financial tools, education modules, and real-time alerts in one unified platform. It is built to serve students, young professionals, and experienced investors with personalized, AI-driven support.
