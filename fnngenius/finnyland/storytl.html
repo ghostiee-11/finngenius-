@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Story Builder for Kids!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Styles -->
+    <style>
+        /* Basic Reset & Font */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Neue', 'Chalkboard SE', sans-serif;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #fef3c7, #d1fae5, #bfdbfe); /* yellow-100, emerald-100, blue-200 */
+            padding: 1rem; color: #374151; overflow: hidden;
+        }
+        .container {
+            background-color: white; border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 2rem 2.5rem; text-align: center; max-width: 500px; width: 95%;
+            opacity: 0; transform: translateY(15px); animation: fade-in 0.6s ease-out forwards;
+        }
+        .view { width: 100%; }
+        @keyframes fade-in { to { opacity: 1; transform: translateY(0); } }
+
+        /* Step Display */
+        #step-display h2 { font-size: 1.75rem; font-weight: 700; color: #4b5563; margin-bottom: 2rem; line-height: 1.4; }
+        .options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .options button {
+            background-color: #f0fdf4; border: 2px solid #4ade80; font-size: 3.5rem; padding: 1rem;
+            border-radius: 1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.15s ease-in-out, background-color 0.15s, box-shadow 0.15s;
+            transform: scale(0.5); opacity: 0; animation: button-pop-in 0.3s ease-out forwards;
+        }
+        .options button:nth-child(1) { animation-delay: 0.1s; }
+        .options button:nth-child(2) { animation-delay: 0.2s; }
+        .options button:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes button-pop-in { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        .options button:hover { background-color: #bbf7d0; transform: scale(1.1); box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1); }
+        .options button:active { transform: scale(0.95); }
+
+        /* Loading */
+        #loading { padding: 3rem 1rem; display: none; }
+        .spinner {
+            width: 3.5rem; height: 3.5rem; border: 5px solid #ccfbf1; border-top-color: #2dd4bf;
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem;
+        }
+        #loading p { font-size: 1.25rem; color: #6b7280; font-weight: bold; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Story Display */
+        #story-display { display: none; }
+        #story-display h1.story-title { font-size: 2.25rem; font-weight: 700; color: #15803d; margin-bottom: 1rem; position: relative; }
+        #story-text {
+            background-color: #f0fdfa; border-radius: 0.75rem; padding: 1.5rem; margin: 2rem 0;
+            font-size: 1.2rem; line-height: 1.7; color: #1f2937; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            min-height: 150px; /* Increased min-height slightly more for spacing */
+             text-align: left; white-space: pre-wrap; /* Allows \n\n to create paragraph breaks */
+        }
+        .final-buttons { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; margin-top: 1.5rem; }
+        @media (min-width: 640px) {
+            .final-buttons { flex-direction: row; justify-content: center; gap: 1rem; }
+            #step-display h2 { font-size: 2rem; } .options button { font-size: 4rem; }
+            #story-display h1.story-title { font-size: 2.5rem; } #story-text { font-size: 1.25rem; }
+        }
+        .final-buttons button {
+            font-family: inherit; font-weight: bold; color: white; padding: 0.8rem 1.8rem; border: none;
+            border-radius: 9999px; cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.15s ease-in-out, background-color 0.15s, box-shadow 0.15s;
+            font-size: 1.1rem; width: 80%; max-width: 250px;
+        }
+        .final-buttons button:hover { transform: scale(1.05); box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); }
+        .final-buttons button:active { transform: scale(0.98); }
+        #play-again-button { background-color: #34d399; } #play-again-button:hover { background-color: #10b981; }
+        #share-button { background-color: #fbbf24; } #share-button:hover { background-color: #f59e0b; }
+
+        /* Sparkle */
+        .sparkle { position: absolute; font-size: 1.5rem; color: #fcd34d; animation: sparkle-anim 2s infinite ease-in-out; pointer-events: none; text-shadow: 0 0 5px white; }
+        @keyframes sparkle-anim { 0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); } 50% { opacity: 0.5; transform: scale(1.6) rotate(15deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- HTML Structure -->
+    <div class="container" id="app-container">
+        <div id="step-display" class="view">
+            <h2 id="question">Let's start our story!</h2>
+            <div class="options" id="options-container"></div>
+        </div>
+        <div id="loading" class="view">
+            <div class="spinner"></div>
+            <p>Thinking about money...</p>
+        </div>
+        <div id="story-display" class="view">
+             <h1 class="story-title">
+                <span class="sparkle" style="top: -15px; left: 10%;">💰</span>
+                 🎉 Your Money Story! 🎉
+                <span class="sparkle" style="top: -5px; right: 15%;">🪙</span>
+            </h1>
+            <div id="story-text"></div> <!-- Story and Moral will appear here -->
+            <div class="final-buttons">
+                <button id="play-again-button">Play Again!</button>
+                <button id="share-button">Share Story</button>
+                 <span class="sparkle" style="bottom: -25px; left: 45%;">🏦</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Data (Finance Theme: Spending Wisely) ---
+        const storySteps = [
+            { id: 'hero', question: 'Who has one coin to spend?', options: [ { emoji: '🐻', value: 'Barnaby the Bear' }, { emoji: '🐧', value: 'Penny the Penguin' }, { emoji: '🧑‍🚀', value: 'Alex the Astronaut Kid' } ] },
+            { id: 'location', question: 'Where do they go?', options: [ { emoji: '🏪', value: 'the little corner store' }, { emoji: '🎈', value: 'the fun park stand' }, { emoji: '🧁', value: 'the sweet smelling bakery' } ] },
+            { id: 'itemSeen', question: 'What tasty treat do they see?', options: [ { emoji: '🍬', value: 'a swirly lollipop' }, { emoji: '🍪', value: 'a crunchy cookie' }, { emoji: '🥨', value: 'a salty pretzel' } ] },
+            { id: 'decision', question: 'What do they decide to do?', options: [ { emoji: '🛒', value: 'buy the treat right away' }, { emoji: '🤔', value: 'think if they are *really* hungry' }, { emoji: '💰', value: 'save the coin for another day' } ] }
+        ];
+
+        // --- State ---
+        let currentStep = 0;
+        let choices = {};
+
+        // --- DOM Elements ---
+        const stepDisplay = document.getElementById('step-display');
+        const questionEl = document.getElementById('question');
+        const optionsContainer = document.getElementById('options-container');
+        const loadingDisplay = document.getElementById('loading');
+        const storyDisplay = document.getElementById('story-display');
+        const storyTextEl = document.getElementById('story-text');
+        const playAgainButton = document.getElementById('play-again-button');
+        const shareButton = document.getElementById('share-button');
+
+        // --- Functions ---
+        function showView(viewToShow) {
+            document.querySelectorAll('.view').forEach(view => view.style.display = 'none');
+            viewToShow.style.display = 'block';
+        }
+
+        function displayCurrentStep() {
+            if (currentStep >= storySteps.length) return;
+            const stepData = storySteps[currentStep];
+            questionEl.textContent = stepData.question;
+            optionsContainer.innerHTML = '';
+            stepData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option.emoji;
+                button.setAttribute('aria-label', option.value);
+                button.onclick = () => handleOptionSelect(stepData.id, option.value);
+                optionsContainer.appendChild(button);
+            });
+            showView(stepDisplay);
+        }
+
+        function handleOptionSelect(choiceKey, choiceValue) {
+            choices[choiceKey] = choiceValue;
+            currentStep++;
+            if (currentStep < storySteps.length) {
+                displayCurrentStep();
+            } else {
+                generateAndShowStory();
+            }
+        }
+
+        // ---> UPDATED: Simulates AI generating story AND moral <---
+        function generateStoryTemplate(userChoices) {
+            const requiredKeys = ['hero', 'location', 'itemSeen', 'decision'];
+            const missingKey = requiredKeys.find(key => !userChoices[key]);
+             if (missingKey) {
+                 console.error("Missing choice for:", missingKey);
+                 return { storyBody: `Oops! We missed picking the ${missingKey}.`, storyMoral: "Let's start again!" };
+            }
+
+            // --- Generate Story Body ---
+            const storyBodyTemplates = [
+                `With one shiny coin, ${userChoices.hero} went to ${userChoices.location}. They saw a yummy ${userChoices.itemSeen}! What did they do? ${userChoices.hero} decided to ${userChoices.decision}.`,
+                `${userChoices.hero} visited ${userChoices.location}. A tasty ${userChoices.itemSeen} caught their eye! But ${userChoices.hero} thought hard and chose to ${userChoices.decision}.`,
+                `At ${userChoices.location}, ${userChoices.hero} spotted a ${userChoices.itemSeen}. It looked delicious! After a moment, ${userChoices.hero} made a choice: ${userChoices.decision}.`
+            ];
+            const selectedStoryBody = storyBodyTemplates[Math.floor(Math.random() * storyBodyTemplates.length)];
+
+            // --- Simulate AI Moral Generation ---
+            let possibleMorals = [];
+            const decisionText = userChoices.decision.toLowerCase();
+
+            if (decisionText.includes('buy')) {
+                possibleMorals = [
+                    "Sometimes enjoying a small treat is okay!", "It's fun to spend money sometimes, but saving is good too.",
+                    "Yum! Enjoy the treat you chose!", "Spending wisely means choosing things you really like."
+                ];
+            } else if (decisionText.includes('think') || decisionText.includes('hungry')) {
+                possibleMorals = [
+                    "Thinking before you spend is super smart!", "It's good to pause and make a careful choice.",
+                    "Well done for thinking about your decision!", "Sometimes the best choice is to wait."
+                ];
+            } else if (decisionText.includes('save') || decisionText.includes('another day')) {
+                possibleMorals = [
+                    "Saving your money helps you buy bigger things later!", "It feels good to watch your savings grow!",
+                    "Saving money is a great habit to learn!", "Good job saving for the future!"
+                ];
+            } else {
+                possibleMorals = ["Making choices helps us learn!"]; // Fallback
+            }
+
+            const selectedMoral = possibleMorals[Math.floor(Math.random() * possibleMorals.length)];
+
+            return { storyBody: selectedStoryBody, storyMoral: selectedMoral }; // Return object
+        }
+
+
+        function generateAndShowStory() {
+            showView(loadingDisplay);
+            console.log("Generating story with choices:", choices);
+            setTimeout(() => {
+                const storyContent = generateStoryTemplate(choices); // Get {storyBody, storyMoral}
+                const displayText = `${storyContent.storyBody}\n\n✨ Moral: ${storyContent.storyMoral} ✨`; // Format display
+                const narrationText = `${storyContent.storyBody} The moral of the story is: ${storyContent.storyMoral}`; // Format narration
+                storyTextEl.textContent = displayText;
+                showView(storyDisplay);
+                speakStory(narrationText); // Narrate combined text
+            }, 1800);
+        }
+
+        function speakStory(text) {
+            // This function remains the same as the previous version with voice selection
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                let selectedVoice = null;
+                const voices = window.speechSynthesis.getVoices();
+
+                if (voices.length === 0 && !voiceListLoaded) {
+                    console.warn("Voices not loaded yet, attempting to speak with default.");
+                } else {
+                     const preferredVoiceNames = ['Google US English', 'Microsoft Zira Desktop - English (United States)', 'Samantha', 'Google UK English Female', 'Microsoft Hazel Desktop - English (Great Britain)'];
+                     selectedVoice = voices.find(voice => preferredVoiceNames.includes(voice.name) && voice.lang.startsWith('en-'));
+                     if (!selectedVoice) { selectedVoice = voices.find(voice => voice.lang.startsWith('en-') && voice.name.toLowerCase().includes('female') && voice.default); }
+                     if (!selectedVoice) { selectedVoice = voices.find(voice => voice.lang.startsWith('en-') && voice.name.toLowerCase().includes('female')); }
+                     if (!selectedVoice) { selectedVoice = voices.find(voice => voice.lang.startsWith('en-') && voice.default); }
+                     if (!selectedVoice) { selectedVoice = voices.find(voice => voice.lang.startsWith('en-')); }
+                }
+                if (selectedVoice) { utterance.voice = selectedVoice; console.log("Using voice:", selectedVoice.name); }
+                else { console.log("Could not find a preferred English voice, using browser default."); }
+                utterance.pitch = 1.0; utterance.rate = 1.0; utterance.volume = 1;
+                setTimeout(() => { window.speechSynthesis.speak(utterance); }, 150);
+            } else {
+                console.warn("Text-to-speech not supported in this browser.");
+                storyTextEl.textContent += "\n\n(My reading voice isn't working in this browser!)";
+            }
+        }
+
+        let voiceListLoaded = false;
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) { console.log("Voices loaded:", voices.length); voiceListLoaded = true; }
+        }
+
+        function handlePlayAgain() {
+            if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
+            currentStep = 0; choices = {}; displayCurrentStep();
+        }
+
+        function handleShare() {
+            alert("Ask a grown-up to help you share your amazing money story!");
+        }
+
+        // --- Event Listeners & Initial Load ---
+        playAgainButton.addEventListener('click', handlePlayAgain);
+        shareButton.addEventListener('click', handleShare);
+        document.addEventListener('DOMContentLoaded', () => {
+            if ('speechSynthesis' in window) {
+                loadVoices();
+                if (window.speechSynthesis.onvoiceschanged !== undefined) { window.speechSynthesis.onvoiceschanged = loadVoices; }
+            }
+            displayCurrentStep();
+        });
+    </script>
+
+</body>
+</html>

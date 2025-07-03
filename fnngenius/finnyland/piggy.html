@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Awesome Piggy Bank!</title> <!-- Changed Title slightly -->
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Internal CSS Styles -->
+    <style>
+        /* --- Basic Reset & Defaults --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #a0f0e0 0%, #d0f5e0 33%, #ffe0c0 66%, #ffc0b8 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
+            padding: 20px; color: #3a3a3a; overflow-x: hidden;
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- Main Application Container --- */
+        .app-container {
+            background-color: rgba(255, 255, 255, 0.94);
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            text-align: center; max-width: 600px; /* Slightly wider for more badges */
+            width: 95%; margin: 20px auto;
+        }
+        h1 {
+            font-size: clamp(2.3rem, 8vw, 3.4rem); color: #f87068;
+            margin-bottom: 15px; font-weight: 900; text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+        }
+
+        /* --- Goal Setting --- */
+        .goal-setting-area {
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            margin-bottom: 25px; flex-wrap: wrap; padding: 12px;
+            background-color: rgba(255, 211, 182, 0.4); border-radius: 20px;
+        }
+        .goal-setting-area label {
+            font-weight: 700; color: #555; font-size: clamp(1rem, 2.8vw, 1.1rem); margin-right: 5px;
+        }
+        .goal-setting-area input[type="number"] {
+            width: 110px; padding: 10px 14px; border: 2px solid #ffc8a8;
+            border-radius: 20px; font-size: clamp(1.1rem, 3.2vw, 1.25rem); font-weight: 700;
+            text-align: center; color: #e86441; appearance: textfield; -moz-appearance: textfield;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .goal-setting-area input[type="number"]::placeholder { color: #f7a78f; opacity: 0.8; }
+        .goal-setting-area input[type="number"]:focus {
+            outline: none; border-color: #ffaaa5; box-shadow: 0 0 10px rgba(255, 170, 165, 0.7);
+        }
+        .goal-setting-area button {
+            padding: 10px 20px; border: none; background-color: #ffaaa5; color: white;
+            font-weight: 700; border-radius: 20px; cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-size: clamp(1rem, 2.8vw, 1.1rem);
+        }
+        .goal-setting-area button:hover { background-color: #ff8a80; }
+        .goal-setting-area button:active { transform: scale(0.96); }
+
+        /* --- Piggy Bank --- */
+        .piggy-bank-area {
+            position: relative; margin-bottom: 25px; padding: 25px; min-height: 190px;
+            display: flex; justify-content: center; align-items: center;
+            border: none; transition: transform 0.2s ease;
+        }
+        #piggy-bank-img {
+            width: clamp(150px, 40vw, 200px); height: auto; display: block; margin: 0 auto;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            filter: drop-shadow(6px 6px 8px rgba(0,0,0,0.15));
+            pointer-events: none; overflow: visible;
+        }
+        .savings-display {
+            position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.98); padding: 12px 30px;
+            border-radius: 60px; font-size: clamp(2.2rem, 7vw, 3rem);
+            font-weight: 900; color: #7b2cbf; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            white-space: nowrap; z-index: 10; transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .savings-display.error-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; color: red; }
+        @keyframes shake { 10%, 90% { transform: translate(-51%, -50%) rotate(-1deg); } 20%, 80% { transform: translate(-49%, -50%) rotate(1deg); } 30%, 50%, 70% { transform: translate(-52%, -50%) rotate(-2deg); } 40%, 60% { transform: translate(-48%, -50%) rotate(2deg); } 100% { transform: translate(-50%, -50%) rotate(0); } }
+
+        /* --- Coin Animation --- */
+        #coin-animation-spot { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 50px; height: 50px; pointer-events: none; z-index: 5; }
+        .coin-fall {
+            position: absolute; width: 50px; height: 50px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFEC8B' stroke='%23EAAE3B' stroke-width='5'/%3E%3Ctext x='50' y='65' font-family='Arial, sans-serif' font-size='45' font-weight='bold' text-anchor='middle' fill='%23EAAE3B'%3E₹%3C/text%3E%3C/svg%3E");
+            background-size: contain; background-repeat: no-repeat;
+            animation: coinDrop 0.65s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards;
+        }
+        @keyframes coinDrop { 0% { transform: translateY(-90px) rotate(0deg) scale(1.2); opacity: 1; } 50% { transform: translateY(20px) rotate(180deg) scale(0.8); opacity: 1;} 100% { transform: translateY(70px) rotate(360deg) scale(0.4); opacity: 0; } }
+
+        /* --- Piggy Jiggle Animation --- */
+        #piggy-bank-img.jiggle { animation: jiggle 0.5s ease-in-out; }
+        @keyframes jiggle { 0%, 100% { transform: rotate(-2deg) scale(1); } 50% { transform: rotate(2deg) scale(1.03); } }
+
+        /* --- Progress Bar --- */
+        .progress-container { width: 90%; max-width: 420px; margin: 30px auto; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: clamp(0.9rem, 2.5vw, 1rem); color: #4a4a4a; margin-bottom: 8px; font-weight: 700; padding: 0 5px; }
+        .progress-bar-outer { width: 100%; height: 30px; background-color: #e0e0e0; border-radius: 50px; overflow: hidden; box-shadow: inset 0 3px 6px rgba(0,0,0,0.12); }
+        .progress-bar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, #fde047, #f5a623); border-radius: 50px; transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #fff; font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.35); }
+
+        /* --- Interaction Area (Add/Withdraw) --- */
+        .interaction-area { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; margin-top: 35px; align-items: stretch; }
+        .coin-source-area, .withdraw-area { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background-color: rgba(135, 220, 198, 0.6); padding: 25px; border-radius: 25px; min-height: 200px; }
+        .withdraw-area { background-color: rgba(255, 180, 175, 0.6); }
+        .area-label { font-weight: 900; color: #444; font-size: clamp(1.1rem, 4vw, 1.3rem); margin-bottom: 10px; }
+        .interaction-input-group { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .interaction-input-label { font-size: 1rem; color: #555; font-weight: 700; }
+        .interaction-input { width: 100px; padding: 10px 15px; border: 3px solid #a8e6cf; border-radius: 15px; font-size: clamp(1rem, 3.5vw, 1.15rem); font-weight: 700; text-align: center; color: #008a4b; appearance: textfield; -moz-appearance: textfield; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .withdraw-area .interaction-input { border-color: #ffc0b8; color: #d9534f; }
+        .interaction-input::placeholder { color: #93d9b9; opacity: 0.8; }
+        .withdraw-area .interaction-input::placeholder { color: #f7a78f; opacity: 0.8; }
+        .interaction-input:focus { outline: none; border-color: #6fbf8e; box-shadow: 0 0 10px rgba(111, 191, 142, 0.7); }
+        .withdraw-area .interaction-input:focus { border-color: #ff6f69; box-shadow: 0 0 10px rgba(255, 111, 105, 0.7); }
+
+        /* --- Action Buttons (+ / -) --- */
+        .action-button { width: clamp(60px, 15vw, 75px); height: clamp(60px, 15vw, 75px); border-radius: 50%; border: none; font-size: clamp(2.8rem, 9vw, 3.5rem); font-weight: 900; line-height: 1; color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease; padding-bottom: 8px; margin-top: 10px; }
+        .action-button:active { transform: scale(0.95); box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); }
+        .plus-button { background-color: #60d394; } .plus-button:hover { background-color: #4cc185; }
+        .minus-button { background-color: #f87068; } .minus-button:hover { background-color: #f65a50; }
+        .minus-button:disabled { background-color: #bdbdbd; cursor: not-allowed; box-shadow: none; opacity: 0.6; }
+
+        /* --- Badges --- */
+        .badge-area { margin-top: 40px; padding-top: 25px; border-top: 2px solid rgba(0, 0, 0, 0.08); }
+        .badge-area h3 { color: #4a4a4a; margin-bottom: 20px; font-size: 1.5rem; font-weight: 900; }
+        .badge-holder { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; } /* Adjusted gap for more badges */
+        .badge { width: clamp(50px, 11vw, 60px); height: auto; transition: opacity 0.6s ease, filter 0.6s ease, transform 0.4s ease; overflow: visible; } /* Slightly smaller badges to fit more */
+        .badge.not-earned { opacity: 0.3; filter: grayscale(100%); transform: scale(0.9); }
+        .badge.earned { opacity: 1; filter: grayscale(0%); transform: scale(1.1) rotate(-5deg); animation: badgePop 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; }
+        @keyframes badgePop { 0% { transform: scale(0.7) rotate(0deg); opacity: 0.5; } 70% { transform: scale(1.2) rotate(-8deg); opacity: 1;} 100% { transform: scale(1.1) rotate(-5deg); opacity: 1;} }
+
+        /* --- Confetti --- */
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; display: none; }
+        /* --- Hidden Audio Controls --- */
+        audio { display: none; }
+        /* --- Input Validation Feedback --- */
+        .input-error { border-color: red !important; box-shadow: 0 0 8px rgba(255, 0, 0, 0.6) !important; animation: inputErrorShake 0.3s linear; }
+        @keyframes inputErrorShake { 25% { transform: translateX(4px); } 50% { transform: translateX(-4px); } 75% { transform: translateX(4px); } 100% { transform: translateX(0); } }
+
+    </style>
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <h1>My Awesome Piggy Bank!</h1>
+
+        <!-- Goal Setting Section -->
+        <div class="goal-setting-area">
+             <label for="goal-input">My Savings Goal: ₹</label>
+             <input type="number" id="goal-input" min="1" step="50" placeholder="1000"> <!-- Higher default goal -->
+             <button id="set-goal-button" title="Set your savings goal">Set Goal!</button>
+        </div>
+
+        <!-- Piggy Bank Display Area -->
+        <div id="piggy-bank-area" class="piggy-bank-area">
+            <!-- EMBEDDED PIGGY BANK SVG -->
+            <svg id="piggy-bank-img" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" role="img"> <title>Cute Piggy Bank</title> <defs> <filter id="piggy-shadow" x="-20%" y="-20%" width="140%" height="140%"> <feDropShadow dx="6" dy="6" stdDeviation="4" flood-color="#000000" flood-opacity="0.2"/> </filter> </defs> <g style="filter: url(#piggy-shadow);"> <path d="M160 110 C 190 110, 200 80, 180 60 C 170 40, 140 30, 110 35 C 80 40, 60 60, 50 90 C 40 120, 40 150, 70 160 C 100 170, 130 170, 160 160 C 190 150, 190 130, 160 110 Z" fill="#FFC0CB" stroke="#E75480" stroke-width="4"/> <ellipse cx="175" cy="80" rx="20" ry="15" fill="#FFA0A0" stroke="#E75480" stroke-width="3"/> <ellipse cx="172" cy="80" rx="4" ry="6" fill="#E75480"/> <ellipse cx="180" cy="80" rx="4" ry="6" fill="#E75480"/> <path d="M120 35 Q 130 15, 145 30 Q 140 45, 120 35 Z" fill="#FFA0A0" stroke="#E75480" stroke-width="3"/> <circle cx="135" cy="60" r="5" fill="#222"/> <path d="M48 130 Q 30 120, 35 100 Q 40 80, 55 90" fill="none" stroke="#E75480" stroke-width="4" stroke-linecap="round"/> <rect x="70" y="155" width="20" height="20" rx="5" fill="#FFA0A0" stroke="#E75480" stroke-width="3"/> <rect x="110" y="155" width="20" height="20" rx="5" fill="#FFA0A0" stroke="#E75480" stroke-width="3"/> <rect x="90" y="45" width="30" height="6" rx="3" fill="#444"/> </g> </svg>
+            <div id="savings-display" class="savings-display">₹0</div>
+            <div id="coin-animation-spot"></div>
+        </div>
+
+        <!-- Progress Bar Section -->
+        <div class="progress-container">
+            <div class="progress-labels">
+                <span>My Savings!</span>
+                <span id="goal-text">Goal: ₹1000</span>
+            </div>
+            <div class="progress-bar-outer">
+                <div id="progress-bar-inner" class="progress-bar-inner"></div>
+            </div>
+        </div>
+
+        <!-- Interaction Area (Add/Withdraw Controls) -->
+        <div class="interaction-area">
+            <!-- Add Coins Area -->
+            <div class="coin-source-area">
+                <span class="area-label">Add Money</span>
+                <div class="interaction-input-group">
+                    <label for="add-amount-input" class="interaction-input-label">How much? ₹</label>
+                    <input type="number" id="add-amount-input" class="interaction-input" min="1" placeholder="10" step="1"> <!-- Default back to 10 -->
+                </div>
+                <button id="add-coin-button" class="action-button plus-button" title="Add Money">+</button>
+            </div>
+
+            <!-- Withdraw Area -->
+            <div class="withdraw-area">
+                 <span class="area-label">Take Out</span>
+                 <div class="interaction-input-group">
+                     <label for="withdraw-amount-input" class="interaction-input-label">How much? ₹</label>
+                     <input type="number" id="withdraw-amount-input" class="interaction-input" min="1" placeholder="10" step="1">
+                 </div>
+                 <button id="withdraw-button" class="action-button minus-button" title="Take Out Money">-</button>
+            </div>
+        </div>
+
+        <!-- Badges Section -->
+        <div class="badge-area">
+            <h3>My Awesome Badges!</h3>
+            <div class="badge-holder">
+                <!-- Badge 100 -->
+                <svg id="badge-100" class="badge not-earned" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <title>Badge for ₹100</title>
+                    <circle cx="50" cy="50" r="48" fill="#C0C0C0" stroke="#A9A9A9" stroke-width="4"/>
+                    <polygon points="50,10 61.8,38.2 90.2,38.2 68.1,57 79,85.4 50,66.8 21,85.4 31.9,57 9.8,38.2 38.2,38.2" fill="#FFDF00"/>
+                    <text x="50" y="62" font-family="'Nunito', sans-serif" font-size="26" font-weight="900" text-anchor="middle" fill="#444">100</text>
+                </svg>
+                 <!-- Badge 500 -->
+                 <svg id="badge-500" class="badge not-earned" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                     <title>Badge for ₹500</title>
+                    <circle cx="50" cy="50" r="48" fill="#FFD700" stroke="#B8860B" stroke-width="4"/>
+                    <path d="M20 70 L 30 60 L 30 95 L 15 80 Z" fill="#FF4500" stroke="#CD5C5C" stroke-width="1.5"/>
+                    <path d="M80 70 L 70 60 L 70 95 L 85 80 Z" fill="#FF4500" stroke="#CD5C5C" stroke-width="1.5"/>
+                    <text x="50" y="62" font-family="'Nunito', sans-serif" font-size="26" font-weight="900" text-anchor="middle" fill="#A0522D">500</text>
+                </svg>
+                <!-- NEW Badge 800 -->
+                <svg id="badge-800" class="badge not-earned" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                   <title>Badge for ₹800</title>
+                   <rect x="10" y="10" width="80" height="80" rx="15" fill="#87CEEB" stroke="#4682B4" stroke-width="4"/> <!-- Sky Blue Square -->
+                   <text x="50" y="62" font-family="'Nunito', sans-serif" font-size="26" font-weight="900" text-anchor="middle" fill="#00008B">800</text>
+                </svg>
+                 <!-- NEW Badge 1000 -->
+                 <svg id="badge-1000" class="badge not-earned" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                     <title>Badge for ₹1000</title>
+                     <polygon points="50,5 15,80 85,80" fill="#FF6347" stroke="#CD5C5C" stroke-width="4"/> <!-- Tomato Triangle -->
+                     <text x="50" y="65" font-family="'Nunito', sans-serif" font-size="24" font-weight="900" text-anchor="middle" fill="#8B0000">1000</text>
+                 </svg>
+                 <!-- NEW Badge 1500 -->
+                 <svg id="badge-1500" class="badge not-earned" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                     <title>Badge for ₹1500</title>
+                     <path d="M50 5 L95 35 L95 75 L50 95 L5 75 L5 35 Z" fill="#BA55D3" stroke="#8A2BE2" stroke-width="4"/> <!-- Medium Orchid Hexagon -->
+                     <text x="50" y="62" font-family="'Nunito', sans-serif" font-size="24" font-weight="900" text-anchor="middle" fill="#4B0082">1500</text>
+                 </svg>
+                 <!-- NEW Badge 2000 -->
+                 <svg id="badge-2000" class="badge not-earned" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                     <title>Badge for ₹2000</title>
+                      <defs> <radialGradient id="grad2000" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"> <stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1" /> <stop offset="100%" style="stop-color:rgb(255,165,0);stop-opacity:1" /> </radialGradient> </defs>
+                     <circle cx="50" cy="50" r="48" fill="url(#grad2000)" stroke="#B8860B" stroke-width="4"/> <!-- Gradient Gold -->
+                     <text x="50" y="62" font-family="'Nunito', sans-serif" font-size="24" font-weight="900" text-anchor="middle" fill="#8B4513">2000</text>
+                </svg>
+            </div>
+        </div>
+    </div> <!-- End App Container -->
+
+    <!-- Confetti Canvas (Initially Hidden) -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Audio Elements (Hidden) -->
+    <audio id="coin-sound" src="coin-drop.mp3" preload="auto"></audio>
+    <audio id="milestone-sound" src="milestone.mp3" preload="auto"></audio>
+    <audio id="encouragement-sound" preload="auto"></audio>
+    <audio id="error-sound" src="error.mp3" preload="auto"></audio>
+
+    <!-- External Libraries FIRST (Confetti) -->
+    <script src="confetti.js"></script>
+
+    <!-- Internal JavaScript Logic -->
+    <script>
+        'use strict';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Get DOM Elements ---
+            const savingsDisplay = document.getElementById('savings-display');
+            const piggyBankImg = document.getElementById('piggy-bank-img');
+            const addCoinButton = document.getElementById('add-coin-button');
+            const withdrawButton = document.getElementById('withdraw-button');
+            const progressBarInner = document.getElementById('progress-bar-inner');
+            const goalText = document.getElementById('goal-text');
+            const coinSound = document.getElementById('coin-sound');
+            const milestoneSound = document.getElementById('milestone-sound');
+            const encouragementSound = document.getElementById('encouragement-sound');
+            const errorSound = document.getElementById('error-sound');
+            const confettiCanvas = document.getElementById('confetti-canvas');
+            const coinAnimationSpot = document.getElementById('coin-animation-spot');
+            const goalInput = document.getElementById('goal-input');
+            const setGoalButton = document.getElementById('set-goal-button');
+            const addAmountInput = document.getElementById('add-amount-input');
+            const withdrawAmountInput = document.getElementById('withdraw-amount-input');
+
+            // --- Configuration ---
+            const DEFAULT_GOAL = 1000; // Adjusted default goal
+            const DEFAULT_ADD_AMOUNT = 10;
+            const DEFAULT_WITHDRAW_AMOUNT = 10;
+            const STORAGE_KEY = 'kidPiggyBankData_v2'; // Updated key
+            // --- Milestones Configuration (NEW BADGES) ---
+            const MILESTONES = [
+                { amount: 100,  id: 'badge-100',  element: document.getElementById('badge-100') },
+                { amount: 500,  id: 'badge-500',  element: document.getElementById('badge-500') },
+                { amount: 800,  id: 'badge-800',  element: document.getElementById('badge-800') },
+                { amount: 1000, id: 'badge-1000', element: document.getElementById('badge-1000') },
+                { amount: 1500, id: 'badge-1500', element: document.getElementById('badge-1500') },
+                { amount: 2000, id: 'badge-2000', element: document.getElementById('badge-2000') },
+            ];
+            const ENCOURAGEMENT_SOUNDS = [
+                'encourage-1.mp3', 'encourage-2.mp3', 'encourage-3.mp3',
+                'encourage-4.mp3', 'encourage-5.mp3'
+            ];
+            let lastEncouragementIndex = -1;
+
+            // --- State Variables ---
+            let currentSavings = 0;
+            let savingsGoal = DEFAULT_GOAL;
+            let earnedBadges = [];
+
+            // --- Initialization ---
+            loadData();
+            updateUI();
+
+            // --- Helper: Sound Playback ---
+            function playSound(audioElement) {
+                if (audioElement && typeof audioElement.play === 'function') {
+                    audioElement.currentTime = 0;
+                    audioElement.play().catch(error => {
+                         if (error.name !== 'AbortError') { console.error(`Audio playback failed for ${audioElement.id}:`, error); }
+                    });
+                }
+            }
+
+            // --- Helper: Play Random Encouragement ---
+            function playEncouragementSound() {
+                if (ENCOURAGEMENT_SOUNDS.length === 0 || !encouragementSound) return;
+                let randomIndex;
+                if (ENCOURAGEMENT_SOUNDS.length > 1) {
+                    do { randomIndex = Math.floor(Math.random() * ENCOURAGEMENT_SOUNDS.length); } while (randomIndex === lastEncouragementIndex);
+                } else { randomIndex = 0; }
+                lastEncouragementIndex = randomIndex;
+                const soundSrc = ENCOURAGEMENT_SOUNDS[randomIndex];
+                if (encouragementSound.src !== soundSrc || encouragementSound.paused) {
+                    encouragementSound.src = soundSrc;
+                    playSound(encouragementSound);
+                }
+            }
+
+            // --- Helper: Input Validation ---
+            function validateAmountInput(inputElement, defaultValue) {
+                clearInputFeedback(inputElement);
+                const valueStr = inputElement.value.trim();
+                if (valueStr === '') { inputElement.placeholder = defaultValue; return null; }
+                const value = parseInt(valueStr, 10);
+                if (isNaN(value) || value <= 0) {
+                    console.warn("Invalid amount:", valueStr); playSound(errorSound);
+                    inputElement.classList.add('input-error'); inputElement.focus(); inputElement.select();
+                    return null;
+                }
+                return value;
+            }
+
+            // --- Helper: Clear Input Error Style ---
+            function clearInputFeedback(inputElement) { if (inputElement) inputElement.classList.remove('input-error'); }
+
+            // --- Helper: Show Savings Display Error ---
+            function showSavingsError() {
+                 if (!savingsDisplay) return;
+                 savingsDisplay.classList.add('error-shake');
+                 setTimeout(() => { savingsDisplay.classList.remove('error-shake'); }, 400);
+            }
+
+            // --- Core Logic: Set Goal ---
+            function setGoal() {
+                if (!goalInput) return;
+                clearInputFeedback(goalInput);
+                const newGoalStr = goalInput.value.trim();
+                if (newGoalStr === '') { savingsGoal = DEFAULT_GOAL; console.log("Goal reset to default:", savingsGoal); }
+                else {
+                    const newGoal = parseInt(newGoalStr, 10);
+                    if (isNaN(newGoal) || newGoal <= 0) {
+                        console.warn("Invalid goal:", newGoalStr); playSound(errorSound);
+                        goalInput.classList.add('input-error'); goalInput.focus(); goalInput.select();
+                        goalInput.value = savingsGoal; return;
+                    }
+                    savingsGoal = newGoal; console.log("New goal:", savingsGoal);
+                }
+                updateUI(); saveData();
+            }
+
+            // --- Core Logic: Add Amount ---
+            function addAmount(amountToAdd) {
+                if (amountToAdd === null || amountToAdd <= 0) return;
+                currentSavings += amountToAdd;
+                triggerCoinAnimation(); triggerJiggle(); playSound(coinSound); playEncouragementSound();
+                checkMilestones(); updateUI(); saveData();
+            }
+
+            // --- Core Logic: Withdraw Amount ---
+            function withdrawAmount(amountToWithdraw) {
+                 if (amountToWithdraw === null || amountToWithdraw <= 0) return false;
+                 if (currentSavings >= amountToWithdraw) {
+                    currentSavings -= amountToWithdraw; triggerJiggle(); updateUI(); saveData();
+                    return true;
+                } else {
+                    console.log("Insufficient funds:", amountToWithdraw); playSound(errorSound); showSavingsError();
+                    if(withdrawAmountInput) { withdrawAmountInput.classList.add('input-error'); withdrawAmountInput.focus(); }
+                    return false;
+                }
+            }
+
+            // --- Core Logic: Check Milestones ---
+            function checkMilestones() {
+                let newMilestoneReached = false;
+                MILESTONES.forEach(milestone => {
+                    // Check element exists and milestone not already earned
+                    if (milestone.element && currentSavings >= milestone.amount && !earnedBadges.includes(milestone.id)) {
+                        earnedBadges.push(milestone.id); newMilestoneReached = true;
+                        playSound(milestoneSound); triggerConfetti();
+                        console.log(`Milestone: ${milestone.element.querySelector('title')?.textContent || `Badge ${milestone.id}`}!`);
+                    }
+                });
+                if (newMilestoneReached) saveData();
+            }
+
+            // --- Core Logic: Update User Interface ---
+            function updateUI() {
+                if (savingsDisplay) savingsDisplay.textContent = `₹${currentSavings}`;
+                if (goalText) goalText.textContent = `Goal: ₹${savingsGoal}`;
+                if (goalInput) goalInput.value = savingsGoal;
+                if (progressBarInner) {
+                    const progressPercentage = savingsGoal > 0 ? Math.min((currentSavings / savingsGoal) * 100, 100) : 0;
+                    progressBarInner.style.width = `${progressPercentage}%`;
+                    progressBarInner.textContent = progressPercentage > 10 ? `${Math.floor(progressPercentage)}%` : '';
+                }
+                // Update badges
+                MILESTONES.forEach(milestone => {
+                    if (milestone.element) {
+                       const isEarned = earnedBadges.includes(milestone.id);
+                       milestone.element.classList.toggle('earned', isEarned);
+                       milestone.element.classList.toggle('not-earned', !isEarned);
+                       const titleElement = milestone.element.querySelector('title');
+                       if (titleElement) { titleElement.textContent = isEarned ? `Woohoo! ₹${milestone.amount}!` : `Get to ₹${milestone.amount}!`; }
+                       milestone.element.setAttribute('aria-label', isEarned ? `Achieved ₹${milestone.amount}!` : `Badge for ₹${milestone.amount}, not yet earned.`);
+                    } else { console.warn(`Badge element ${milestone.id} not found in HTML.`); }
+                });
+                if (withdrawButton) withdrawButton.disabled = currentSavings <= 0;
+            }
+
+            // --- Animations & Effects ---
+            function triggerJiggle() { if (piggyBankImg && !piggyBankImg.classList.contains('jiggle')) { piggyBankImg.classList.add('jiggle'); setTimeout(() => { piggyBankImg.classList.remove('jiggle'); }, 500); } }
+            function triggerCoinAnimation() { if (!coinAnimationSpot) return; const coinFall = document.createElement('div'); coinFall.classList.add('coin-fall'); coinAnimationSpot.appendChild(coinFall); setTimeout(() => { if (coinFall.parentNode) coinFall.remove(); }, 650); }
+            let confettiInstance = null;
+            function triggerConfetti() { if (typeof confetti === 'undefined') { console.error("Confetti lib missing!"); return; } if (!confettiCanvas) { console.error("Confetti canvas missing!"); return; } confettiCanvas.style.display = 'block'; if (!confettiInstance) { try { confettiInstance = confetti.create(confettiCanvas, { resize: true, useWorker: true }); } catch (err) { console.error("Confetti init fail:", err); confettiCanvas.style.display = 'none'; return; } } if (confettiInstance) { confettiInstance({ particleCount: 250, spread: 140, origin: { y: 0.6 }, zIndex: 1000, colors: ['#FFD700', '#FF69B4', '#87CEFA', '#ADFF2F', '#FF6347', '#FFFFFF', '#BA55D3'] }); } setTimeout(() => { confettiCanvas.style.display = 'none'; }, 5500); }
+
+            // --- Event Listeners Setup ---
+            if (setGoalButton && goalInput) { setGoalButton.addEventListener('click', setGoal); goalInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); setGoal(); } }); goalInput.addEventListener('input', () => clearInputFeedback(goalInput)); goalInput.addEventListener('blur', () => { if (!goalInput.classList.contains('input-error')) { const currentGoalValue = parseInt(goalInput.value.trim(), 10); if (!isNaN(currentGoalValue) && currentGoalValue !== savingsGoal) { setGoal(); } else if (goalInput.value.trim() === '' && savingsGoal !== DEFAULT_GOAL) { setGoal(); } } }); }
+            if (addCoinButton && addAmountInput) { addCoinButton.addEventListener('click', () => { const amount = validateAmountInput(addAmountInput, DEFAULT_ADD_AMOUNT); if (amount !== null) { addAmount(amount); addAmountInput.value = ''; addAmountInput.placeholder = DEFAULT_ADD_AMOUNT; } }); addAmountInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); const amount = validateAmountInput(addAmountInput, DEFAULT_ADD_AMOUNT); if (amount !== null) { addAmount(amount); addAmountInput.value = ''; addAmountInput.placeholder = DEFAULT_ADD_AMOUNT; } } }); addAmountInput.addEventListener('input', () => clearInputFeedback(addAmountInput)); }
+            if (withdrawButton && withdrawAmountInput) { withdrawButton.addEventListener('click', () => { const amount = validateAmountInput(withdrawAmountInput, DEFAULT_WITHDRAW_AMOUNT); if (amount !== null && withdrawAmount(amount)) { withdrawAmountInput.value = ''; withdrawAmountInput.placeholder = DEFAULT_WITHDRAW_AMOUNT; } }); withdrawAmountInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); const amount = validateAmountInput(withdrawAmountInput, DEFAULT_WITHDRAW_AMOUNT); if (amount !== null && withdrawAmount(amount)) { withdrawAmountInput.value = ''; withdrawAmountInput.placeholder = DEFAULT_WITHDRAW_AMOUNT; } } }); withdrawAmountInput.addEventListener('input', () => clearInputFeedback(withdrawAmountInput)); }
+
+            // --- Local Storage ---
+            function saveData() { const dataToSave = JSON.stringify({ savings: currentSavings, goal: savingsGoal, badges: earnedBadges }); try { localStorage.setItem(STORAGE_KEY, dataToSave); } catch (error) { console.error("LS Save Fail:", error); } }
+            function loadData() { try { const savedData = localStorage.getItem(STORAGE_KEY); if (savedData) { const data = JSON.parse(savedData); currentSavings = (typeof data.savings === 'number' && data.savings >= 0) ? data.savings : 0; savingsGoal = (typeof data.goal === 'number' && data.goal > 0) ? data.goal : DEFAULT_GOAL; earnedBadges = Array.isArray(data.badges) ? data.badges.filter(id => typeof id === 'string') : []; } else { currentSavings = 0; savingsGoal = DEFAULT_GOAL; earnedBadges = []; } } catch (error) { console.error("LS Load/Parse Fail:", error); currentSavings = 0; savingsGoal = DEFAULT_GOAL; earnedBadges = []; } }
+
+            // --- Final Initial UI Update ---
+            updateUI();
+
+        }); // End DOMContentLoaded Listener
+    </script>
+
+</body>
+</html>

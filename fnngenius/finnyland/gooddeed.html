@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Deeds Rewards!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Fredoka One', cursive;
+            background-color: #f0fdf4; /* Very light green */
+            color: #14532d; /* Dark green */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            user-select: none;
+        }
+
+        h1 {
+            color: #16a34a; /* Green */
+            margin-bottom: 20px;
+            text-shadow: 1px 1px #fff;
+        }
+
+        .tracker-container {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px; /* Space between sections */
+        }
+
+        /* --- Deeds List --- */
+        .deeds-list {
+            width: 95%;
+            border: 3px dashed #86efac; /* Lighter green dash */
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #f0fdf4;
+        }
+        .deeds-list h2 {
+            color: #15803d; /* Darker green */
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3em;
+        }
+        .deed-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            background-color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+        }
+        .deed-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px; /* Bigger checkbox */
+            height: 20px;
+            cursor: pointer;
+        }
+         .deed-item input[type="checkbox"]:disabled + label {
+             text-decoration: line-through; /* Strike through completed deed */
+             color: #9ca3af; /* Grey out text */
+             cursor: not-allowed;
+         }
+         .deed-item label {
+             flex-grow: 1; /* Allow label to take space */
+             cursor: pointer;
+         }
+         .deed-reward {
+             font-weight: bold;
+             color: #ca8a04; /* Gold */
+             margin-left: 10px;
+             white-space: nowrap; /* Prevent wrapping */
+         }
+
+
+        /* --- Rewards Display --- */
+        .rewards-display {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #16a34a;
+        }
+        #reward-count {
+            color: #ca8a04; /* Gold */
+            font-size: 1.2em;
+            margin: 0 5px;
+        }
+
+        /* --- Savings Meter --- */
+        .savings-meter-container {
+            width: 90%;
+            text-align: center;
+        }
+        .savings-meter-container h3 {
+            color: #15803d;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        .savings-meter-bar {
+            width: 100%;
+            height: 30px;
+            background-color: #e5e7eb; /* Light grey background */
+            border: 2px solid #9ca3af; /* Grey border */
+            border-radius: 15px;
+            overflow: hidden; /* Keep fill inside */
+            position: relative; /* For goal text */
+        }
+        .savings-meter-fill {
+            width: 0%; /* Initial width */
+            height: 100%;
+            background: linear-gradient(90deg, #fcd34d, #fbbf24); /* Yellow/gold gradient */
+            border-radius: 13px 0 0 13px; /* Match outer radius */
+            transition: width 0.5s ease-in-out; /* Smooth fill animation */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Text at end of fill */
+            color: #78350f; /* Dark brown text on fill */
+            font-size: 0.8em;
+            font-weight: bold;
+            padding-right: 5px;
+        }
+         .savings-meter-goal-text {
+             position: absolute;
+             right: 10px;
+             top: 50%;
+             transform: translateY(-50%);
+             font-size: 0.8em;
+             color: #4b5563;
+             font-weight: bold;
+         }
+
+        /* --- Narration Area --- */
+        .narration-area {
+            margin-top: 10px; /* Reduced margin */
+            background-color: #f0f9ff; /* Light blue */
+            border: 3px dashed #7dd3fc; /* Sky blue */
+            border-radius: 10px;
+            padding: 15px;
+            width: 90%;
+            text-align: center;
+            font-size: 1.1em;
+            color: #075985; /* Darker blue */
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>My Good Deeds Reward Tracker! ✨</h1>
+
+    <div class="tracker-container">
+        <!-- List of Deeds -->
+        <div class="deeds-list">
+            <h2>Today's Good Deeds:</h2>
+            <!-- Deeds will be added here by JS -->
+        </div>
+
+        <!-- Reward Counter -->
+        <div class="rewards-display">
+            You Earned: <span id="reward-count">0</span> 💰 Coins!
+        </div>
+
+        <!-- Savings Meter -->
+        <div class="savings-meter-container">
+            <h3>Savings Goal Meter!</h3>
+            <div class="savings-meter-bar">
+                <div id="savings-meter-fill" class="savings-meter-fill"></div>
+                <span id="savings-meter-goal-text" class="savings-meter-goal-text">Goal: 10</span>
+            </div>
+        </div>
+
+        <!-- Narration -->
+        <div class="narration-area">
+            <p id="narration-text">Check off a good deed when you complete it!</p>
+        </div>
+
+         <!-- Reset Button (Optional) -->
+         <button id="reset-button" style="padding: 8px 15px; font-family: 'Fredoka One', cursive; background-color: #f87171; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 10px;">Start Over</button>
+
+    </div> <!-- End tracker-container -->
+
+
+    <!-- Audio Elements (Optional) -->
+    <audio id="reward-sound" src="sounds/coin-collect.mp3" preload="auto"></audio>
+    <audio id="goal-sound" src="sounds/fanfare.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Good Deeds Tracker Initializing...");
+
+            // --- Get DOM Elements ---
+            const deedsListContainer = document.querySelector('.deeds-list');
+            const rewardCountElement = document.getElementById('reward-count');
+            const meterFillElement = document.getElementById('savings-meter-fill');
+            const meterGoalTextElement = document.getElementById('savings-meter-goal-text');
+            const narrationElement = document.getElementById('narration-text');
+            const rewardSound = document.getElementById('reward-sound');
+            const goalSound = document.getElementById('goal-sound');
+            const resetButton = document.getElementById('reset-button');
+
+            // --- Configuration ---
+            const REWARD_GOAL = 10; // Target number of coins for the meter
+            const deedsData = [
+                { id: 'deed1', text: "Cleaned my room", reward: 2, completed: false },
+                { id: 'deed2', text: "Helped set the table", reward: 1, completed: false },
+                { id: 'deed3', text: "Finished homework on time", reward: 3, completed: false },
+                { id: 'deed4', text: "Shared toys nicely", reward: 1, completed: false },
+                { id: 'deed5', text: "Helped with groceries", reward: 2, completed: false },
+                { id: 'deed6', text: "Read a book", reward: 1, completed: false }
+            ];
+            const encouragingMessages = [
+                "Great job! Helping is wonderful!",
+                "Awesome! Every good deed counts!",
+                "Fantastic! Keep up the great work!",
+                "You're doing amazing! Helping others is like saving kindness!",
+                "Super! That deserves a reward!",
+                "Well done! Being responsible is important."
+            ];
+
+            // --- State ---
+            let currentRewardCount = 0;
+
+             // --- Helper Functions ---
+            function playSound(soundElement) {
+                if (soundElement) { soundElement.currentTime = 0; soundElement.play().catch(e => console.error("Sound Error:", e)); }
+                else { console.warn("Missing sound element"); }
+            }
+
+            function updateRewardsDisplay() {
+                 rewardCountElement.textContent = currentRewardCount;
+            }
+
+            function updateSavingsMeter() {
+                 const percentage = Math.min(100, Math.max(0, (currentRewardCount / REWARD_GOAL) * 100));
+                 meterFillElement.style.width = `${percentage}%`;
+                 // Optional: Add text inside the fill bar
+                 // meterFillElement.textContent = `${Math.round(percentage)}%`;
+                 console.log("Meter updated:", percentage);
+
+                 // Check if goal reached
+                 if (currentRewardCount >= REWARD_GOAL) {
+                     meterFillElement.style.background = 'linear-gradient(90deg, #a3e635, #84cc16)'; // Green gradient
+                     updateNarration("You reached the savings goal! 🎉 Amazing job!");
+                     playSound(goalSound);
+                     // Maybe disable all checkboxes now?
+                     // document.querySelectorAll('.deed-item input[type="checkbox"]').forEach(cb => cb.disabled = true);
+                 } else {
+                      // Reset gradient if goal not reached (in case of reset)
+                      meterFillElement.style.background = 'linear-gradient(90deg, #fcd34d, #fbbf24)';
+                 }
+            }
+
+            function updateNarration(message) {
+                 narrationElement.textContent = message;
+            }
+
+            function getRandomEncouragement() {
+                return encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
+            }
+
+            // --- Render Deeds ---
+            function renderDeeds() {
+                console.log("Rendering deeds...");
+                // Clear existing deeds except the h2
+                const existingDeeds = deedsListContainer.querySelectorAll('.deed-item');
+                existingDeeds.forEach(item => item.remove());
+
+                deedsData.forEach(deed => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'deed-item';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = deed.id;
+                    checkbox.dataset.reward = deed.reward; // Store reward value
+                    checkbox.checked = deed.completed; // Set initial state
+                    checkbox.disabled = deed.completed; // Disable if already completed
+
+                    const label = document.createElement('label');
+                    label.htmlFor = deed.id;
+                    label.textContent = deed.text;
+
+                    const rewardSpan = document.createElement('span');
+                    rewardSpan.className = 'deed-reward';
+                    rewardSpan.textContent = `+${deed.reward} 💰`;
+
+                    itemDiv.appendChild(checkbox);
+                    itemDiv.appendChild(label);
+                    itemDiv.appendChild(rewardSpan);
+                    deedsListContainer.appendChild(itemDiv);
+
+                    // Add event listener
+                    checkbox.addEventListener('change', handleDeedCheck);
+
+                    // Apply completed style immediately if needed
+                     if (deed.completed) {
+                         label.style.textDecoration = 'line-through';
+                         label.style.color = '#9ca3af';
+                         label.style.cursor = 'not-allowed';
+                     }
+                });
+                 console.log("Deeds rendered.");
+            }
+
+            // --- Handle Deed Checkbox Change ---
+            function handleDeedCheck(event) {
+                const checkbox = event.target;
+                const deedId = checkbox.id;
+                const rewardValue = parseInt(checkbox.dataset.reward, 10);
+                const deed = deedsData.find(d => d.id === deedId);
+
+                if (checkbox.checked && deed && !deed.completed) {
+                    console.log("Deed checked:", deedId, "Reward:", rewardValue);
+                    deed.completed = true; // Update state
+                    checkbox.disabled = true; // Prevent unchecking/re-rewarding
+                    // Style the label of the checked item immediately
+                    const label = document.querySelector(`label[for='${deedId}']`);
+                    if (label) {
+                        label.style.textDecoration = 'line-through';
+                        label.style.color = '#9ca3af';
+                         label.style.cursor = 'not-allowed';
+                    }
+
+
+                    currentRewardCount += rewardValue; // Add reward
+                    updateRewardsDisplay();
+                    updateSavingsMeter();
+                    updateNarration(getRandomEncouragement());
+                    playSound(rewardSound);
+
+                }
+                // Note: We don't handle unchecking since they become disabled.
+            }
+
+            // --- Reset Function ---
+             function resetGame() {
+                 console.log("Resetting game...");
+                 currentRewardCount = 0;
+                 // Reset deed completion status
+                 deedsData.forEach(deed => deed.completed = false);
+                 // Re-render the deeds (this will re-enable checkboxes etc.)
+                 renderDeeds();
+                 // Update displays
+                 updateRewardsDisplay();
+                 updateSavingsMeter();
+                 updateNarration("Let's start fresh! Do some good deeds!");
+             }
+
+            // --- Initialize ---
+            function initialize() {
+                meterGoalTextElement.textContent = `Goal: ${REWARD_GOAL}`;
+                renderDeeds(); // Create the list items
+                updateRewardsDisplay(); // Set initial count (0)
+                updateSavingsMeter(); // Set initial meter state (0%)
+                 // Add reset listener
+                 if(resetButton) {
+                    resetButton.addEventListener('click', resetGame);
+                 }
+                 console.log("Tracker ready.");
+            }
+
+            initialize(); // Start the tracker
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>

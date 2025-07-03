@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teen Investors - Finnyland Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Add this style to prevent default link styling on the cards */
+    /* You should ideally move this to your styles.css file */
+    .module-link {
+      text-decoration: none;
+      color: inherit;
+      display: block; /* Ensures the link takes up the card space */
+    }
+    .module-link:hover .comic-panel,
+    .module-link:focus .comic-panel {
+        /* Optional: Add a subtle hover/focus effect */
+        transform: scale(1.02);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+    .comic-panel {
+        /* Add transition for smooth hover effect */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+  </style>
+</head>
+<body class="teen-investors-page">
+  <div class="dashboard-container">
+    <div class="dashboard-content">
+      <div class="header with-back-button">
+        <a href="index.html" class="back-button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </a>
+        <h1 class="page-title">💼 Teen Investors Kingdom</h1>
+      </div>
+
+      <div class="speech-bubble centered">
+        <p class="font-comic">Become the Finance Hero!</p>
+        <div class="speech-bubble-tail"></div>
+      </div>
+
+      <div class="modules-grid three-columns">
+        <!-- UPI Simulator Module -->
+        <div class="module-card" data-id="upi-simulator">
+          <!-- Make the entire card clickable -->
+          <a href="teenupi.html" class="module-link">
+            <div class="comic-panel">
+              <div class="panel-content">
+                <h2 class="module-title">UPI Simulator</h2>
+
+                <div class="upi-simulator">
+                  <div class="qr-code">
+                    <div class="qr-inner">
+                      <div class="qr-grid">
+                        <!-- QR code grid cells will be added via CSS -->
+                      </div>
+                    </div>
+                  </div>
+                  <p class="qr-label">A UPI simulator</p> <!-- Updated text reflected -->
+                  <div class="payment-details">
+                    <p class="amount">Amount: ₹100</p>
+                    <p class="recipient">To: Comic Book Store</p>
+                  </div>
+                </div>
+
+                <div class="comic-button">Make Payment!</div>
+
+                <!-- Speech bubble that appears on hover -->
+                <div class="thought-bubble hidden">
+                  <p class="font-comic">Sending ₹100... POW!</p>
+                  <div class="thought-bubble-tail"></div>
+                </div>
+
+                <!-- Comic-style decorative elements -->
+                <div class="comic-exclamation bottom-left blue">PAY!</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Stock Game Module -->
+        <div class="module-card" data-id="stock-game">
+           <!-- Make the entire card clickable -->
+           <a href="teenvest.html" class="module-link">
+            <div class="comic-panel">
+              <div class="panel-content">
+                <h2 class="module-title">Virtual Stock Game</h2>
+
+                <div class="stock-list">
+                  <div class="stock-item">
+                    <div class="stock-info">
+                      <div class="stock-icon yellow"></div>
+                      <span class="stock-name">Banana Corp</span>
+                    </div>
+                    <div class="stock-price">
+                      <span class="price-value">$45</span>
+                      <span class="price-change positive">
+                        <svg class="trend-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                          <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        2.5%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="stock-item">
+                    <div class="stock-info">
+                      <div class="stock-icon red"></div>
+                      <span class="stock-name">Rocket Shoes</span>
+                    </div>
+                    <div class="stock-price">
+                      <span class="price-value">$78</span>
+                      <span class="price-change negative">
+                        <svg class="trend-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                          <polyline points="17 18 23 18 23 12"></polyline>
+                        </svg>
+                        1.2%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="stock-item">
+                    <div class="stock-info">
+                      <div class="stock-icon pink"></div>
+                      <span class="stock-name">Sweet Treats</span>
+                    </div>
+                    <div class="stock-price">
+                      <span class="price-value">$32</span>
+                      <span class="price-change positive">
+                        <svg class="trend-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                          <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        0.8%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="stock-item">
+                    <div class="stock-info">
+                      <div class="stock-icon blue"></div>
+                      <span class="stock-name">Fun Games</span>
+                    </div>
+                    <div class="stock-price">
+                      <span class="price-value">$120</span>
+                      <span class="price-change negative">
+                        <svg class="trend-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                          <polyline points="17 18 23 18 23 12"></polyline>
+                        </svg>
+                        3.5%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="comic-button">Trade Now!</div>
+
+                <!-- Speech bubble that appears on hover -->
+                <div class="thought-bubble hidden">
+                  <p class="font-comic">Banana Corp is up 2.5%!</p>
+                  <div class="thought-bubble-tail"></div>
+                </div>
+
+                <!-- Comic-style decorative elements -->
+                <div class="comic-exclamation bottom-left green">TRADE!</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Savings vs Investment Planner Module -->
+        <div class="module-card" data-id="savings-planner">
+          <!-- Make the entire card clickable -->
+          <a href="savings-planner.html" class="module-link">
+            <div class="comic-panel">
+              <div class="panel-content">
+                <h2 class="module-title">Savings vs Investment Planner</h2>
+
+                <div class="savings-vs-investment">
+                  <div class="character-comparison">
+                    <div class="character">
+                      <div class="character-avatar blue">
+                        <span>S</span>
+                      </div>
+                      <p class="character-name">Sir Save-a-lot</p>
+                      <p class="character-percentage" id="savingsPercentage">50%</p>
+                    </div>
+                    <div class="vs-label">VS</div>
+                    <div class="character">
+                      <div class="character-avatar purple">
+                        <span>I</span>
+                      </div>
+                      <p class="character-name">InvestoGirl</p>
+                      <p class="character-percentage" id="investmentPercentage">50%</p>
+                    </div>
+                  </div>
+
+                  <div class="slider-container">
+                    <input type="range" min="0" max="100" value="50" step="10" class="slider" id="investmentSlider">
+                     <!-- Note: The logic for this slider needs to be on savings-planner.html -->
+                  </div>
+
+                  <div class="investment-result">
+                    <p>After 10 years with $1000:</p>
+                    <p class="result-values">
+                      Savings: $<span id="savingsResult">150</span> |
+                      Investments: $<span id="investmentResult">400</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="comic-button">Make My Plan!</div>
+
+                <!-- Speech bubble that appears on hover -->
+                <div class="thought-bubble hidden">
+                  <p class="font-comic">Invest for the future!</p>
+                  <div class="thought-bubble-tail"></div>
+                </div>
+
+                <!-- Comic-style decorative elements -->
+                <div class="comic-exclamation bottom-left purple">GROW!</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-text">
+        <p>Begin your investment journey with these fun activities!</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+   <!-- Reminder: Interactive elements like the slider need their JavaScript logic
+       on the TARGET page (savings-planner.html), not on this dashboard page. -->
+</body>
+</html>
