@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scam Message Checker - FinGenius</title>
+    <!-- Link to your MAIN styles.css file -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts (include if not globally imported by styles.css) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Specific JS for this page -->
+    <script src="scam-checker.js" defer></script>
+</head>
+<body class="dark-mode">
+    
+    <!-- Optional: You can include your standard Navbar here if you want consistency -->
+    <header class="navbar">
+        <div class="container">
+            <a href="/" class="logo"><span>FinGenius</span></a>
+            <!-- Minimal nav just for context -->
+            <nav>
+                <a href="/" class="nav-link">← Back Home</a>
+            </nav>
+        </div>
+     </header>
+
+    <main class="container" style="padding-top: 6rem; padding-bottom: 4rem;"> <!-- Adjust top padding if navbar height changes -->
+        <h1 class="section-title" style="text-align: left; margin-bottom: 1rem;">Spam Message Checker</h1>
+        <p class="section-description" style="text-align: left; max-width: 700px; margin: 0 auto 2rem auto;"> <!-- Centered description -->
+            Enter a message (like an SMS or email) below. Our analyzer will tell you that you getting spammed or not?  
+        </p>
+
+        <div class="scam-checker-container">
+            <textarea id="messageInput" aria-label="Message to check" placeholder="Paste the suspicious message here..." rows="8"></textarea>
+
+            <button id="checkButton" class="scam-check-button">
+                Check Message
+                <!-- Scan icon -->
+                <i data-lucide="scan-search" style="margin-left: 0.5rem; width: 1.1rem; height: 1.1rem; vertical-align: middle;"></i>
+            </button>
+
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                <p>Analyzing message...</p>
+                <!-- You can add a visual spinner here if desired -->
+            </div>
+
+            <!-- Results Area -->
+            <div id="resultContainer" class="result-area" style="display: none;">
+                <h2 class="result-title">Analysis Result:</h2>
+
+                <div id="probabilityResult" class="result-item probability">
+                    Likelihood of Scam: <span class="value">--%</span>
+                </div>
+
+                <div id="verdictResult" class="result-item verdict">
+                    Verdict: <span class="value">--</span>
+                </div>
+
+                <div id="linksResult" class="result-item links" style="display: none;">
+                    <!-- Heading added for clarity -->
+                    <strong>Potentially Suspicious Links Found:</strong>
+                    <ul id="suspiciousLinksList">
+                        <!-- Links will be added here by JS -->
+                    </ul>
+                </div>
+
+                <!-- General Error Message Area -->
+                <div id="errorMessage" class="result-error" style="display: none;">
+                    <!-- Error messages will be shown here by JS -->
+                </div>
+            </div> <!-- End resultContainer -->
+
+        </div> <!-- End scam-checker-container -->
+    </main>
+    <!-- Optional: Include Footer -->
+    <footer class="footer">
+        <div class="container">
+             <div class="footer-bottom">
+                <p class="footer-copyright">© <span id="current-year-scam"></span> FinGenius. All rights reserved.</p>
+             </div>
+        </div>
+    </footer>
+    <script>
+      // Simple script for footer year on this page
+      const yearSpan = document.getElementById('current-year-scam');
+      if(yearSpan) yearSpan.textContent = new Date().getFullYear();
+      // Re-render icons after page load if needed (sometimes needed if added dynamically later)
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+          lucide.createIcons();
+      }
+    </script>
+</body>
+</html>

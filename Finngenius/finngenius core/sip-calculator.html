@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP Calculator</title>
+    <style>
+        /* --- Embedded CSS Start --- */
+        :root {
+            --bg-primary: #111111;
+            --bg-secondary: #1A1A1A;
+            --bg-tertiary: #2A2A2A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --blue-primary: #3B82F6;
+            --blue-secondary: #2563EB;
+            --green-primary: #22C55E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .calculator-container {
+            background-color: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            background-color: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .tab.active {
+            background-color: var(--blue-primary);
+        }
+
+        .investment-type {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .type-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            background-color: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .type-btn:hover {
+            background-color: #333333;
+        }
+
+        .type-btn.active {
+            background-color: var(--blue-primary);
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: none;
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        input[type="number"]:focus {
+            outline: 2px solid var(--blue-primary);
+        }
+
+        .suffix {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-top: 1rem;
+            accent-color: var(--blue-primary); /* Modern way to color range sliders */
+            cursor: pointer;
+            height: 8px; /* Optional: Consistent height */
+            background: var(--bg-tertiary); /* Track background */
+            border-radius: 4px;
+        }
+
+        /* --- Optional Range Slider Thumb Styling (Cross-browser) --- */
+        input[type=range]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          background: var(--blue-primary);
+          border-radius: 50%;
+          cursor: pointer;
+        }
+
+        input[type=range]::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          background: var(--blue-primary);
+          border-radius: 50%;
+          cursor: pointer;
+          border: none; /* Reset default border */
+        }
+        /* --- End Optional Range Slider Thumb Styling --- */
+
+
+        .donut-chart {
+            position: relative;
+            aspect-ratio: 1;
+            max-width: 300px; /* Control max size */
+            margin: 0 auto; /* Center the chart area */
+        }
+
+        .donut-chart svg {
+             display: block;
+             width: 100%;
+             height: 100%;
+        }
+
+        .chart-bg {
+            fill: none;
+            stroke: var(--bg-tertiary);
+            stroke-width: 10; /* Adjust thickness */
+        }
+
+        .investment-arc {
+            fill: none;
+            stroke: var(--blue-primary);
+            stroke-width: 10;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dasharray 0.3s ease-out; /* Smoother transition */
+            stroke-linecap: round; /* Rounded ends */
+        }
+
+        .wealth-arc {
+            fill: none;
+            stroke: var(--green-primary);
+            stroke-width: 10;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dasharray 0.3s ease-out, stroke-dashoffset 0.3s ease-out; /* Smoother transition */
+             stroke-linecap: round; /* Rounded ends */
+        }
+
+        .chart-center {
+            position: absolute;
+            inset: 10px; /* Padding inside */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center; /* Ensure center alignment */
+        }
+
+        .chart-center span {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-center strong {
+            font-size: 1.5rem;
+            word-break: break-word; /* Prevent long numbers overflowing */
+            line-height: 1.2; /* Adjust line height if needed */
+        }
+
+        .results { /* Container for chart and stats */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center chart and stats block */
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%; /* Take full width of results column */
+            max-width: 350px; /* Limit width of stats cards */
+            margin-top: 2rem; /* Space below chart */
+        }
+
+        .stat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .stat-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-label svg { /* Style the icon */
+            width: 18px;
+            height: 18px;
+            stroke: var(--text-secondary); /* Match text color */
+        }
+
+        .dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+        }
+
+        .dot.wealth {
+            background-color: var(--green-primary);
+        }
+
+        .stat-card strong {
+             font-size: 1.1rem; /* Slightly larger stat value */
+        }
+
+        .invest-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--blue-primary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem; /* Add space above button */
+        }
+
+        .invest-btn:hover {
+            background-color: var(--blue-secondary);
+        }
+
+        .sip-info {
+            color: var(--text-secondary);
+            padding: 2rem;
+            background-color: var(--bg-secondary);
+            border-radius: 1rem;
+            margin-top: 2rem;
+        }
+
+        .sip-info h2 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .sip-info h3 {
+            color: var(--text-primary);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.25rem;
+        }
+
+        .sip-info p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .sip-info ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .sip-info li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .calculator-grid {
+                grid-template-columns: 1fr; /* Stack columns */
+            }
+            .results {
+                margin-top: 2rem; /* Add space when stacked */
+            }
+        }
+
+        @media (max-width: 600px) {
+             body {
+                padding: 1rem;
+             }
+             .tabs, .investment-type {
+                 flex-wrap: wrap; /* Allow buttons to wrap */
+             }
+             nav {
+                 flex-direction: column;
+                 align-items: flex-start;
+                 gap: 1rem;
+             }
+             .calculator-container {
+                 padding: 1rem;
+             }
+             .sip-info {
+                 padding: 1rem;
+             }
+        }
+        /* --- Embedded CSS End --- */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2zM11 7h2v4h-2zM7 7h2v4H7zm8 0h2v4h-2z"/></svg>
+                <h1>SIP Calculator</h1>
+            </div>
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 19-7-7 7-7"/>
+                    <path d="M19 12H5"/>
+                </svg>
+                Back Home
+            </button>
+            
+        </nav>
+
+        <p class="description">
+            An SIP is a disciplined way to invest in mutual funds. It involves contributing a fixed amount regularly, leveraging compounding for long-term goals.
+        </p>
+
+        <div class="calculator-container">
+            <div class="tabs">
+                <button class="tab active" data-tab="investment">I know my investment amount</button>
+                <button class="tab" data-tab="goal">I know my goal amount</button>
+            </div>
+
+            <div class="calculator">
+                <div class="investment-type" id="investment-type-buttons">
+                    <button class="type-btn active" data-type="monthly">Monthly SIP</button>
+                    <button class="type-btn" data-type="yearly">Yearly SIP</button>
+                    <button class="type-btn" data-type="lumpsum">Lumpsum</button>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label>I want to invest</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="amount" value="10000" placeholder="Enter investment amount">
+                                <span class="suffix">/Month</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Investment Period</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="years" value="10" min="1" max="40">
+                                <span class="suffix">Years</span>
+                            </div>
+                            <input type="range" id="years-range" min="1" max="40" value="10">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Expected Return Rate</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="returns" value="12" min="1" max="30">
+                                <span class="suffix">% Annually</span>
+                            </div>
+                            <input type="range" id="returns-range" min="1" max="30" value="12">
+                        </div>
+                    </div>
+
+                    <div class="results">
+                        <div class="donut-chart">
+                            <svg viewBox="0 0 100 100">
+                                <circle class="chart-bg" cx="50" cy="50" r="45"/>
+                                <circle class="investment-arc" cx="50" cy="50" r="45"/>
+                                <circle class="wealth-arc" cx="50" cy="50" r="45"/>
+                            </svg>
+                             <!-- Chart labels moved inside stats for potentially better layout -->
+                        </div>
+
+                        <div class="stats">
+                             <div class="stat-card">
+                                <div class="stat-label">
+                                    <div class="dot" style="background-color: var(--blue-primary);"></div> <!-- Manual color dot -->
+                                    <span>Total Investment</span>
+                                </div>
+                                <strong>₹<span id="total-investment">0</span></strong>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-label">
+                                    <div class="dot wealth"></div>
+                                    <span>Wealth Gained</span>
+                                </div>
+                                <strong>₹<span id="wealth-gained">0</span></strong>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-label">
+                                    <!-- Replaced SVG icon with text for simplicity -->
+                                    <span>💰</span>
+                                    <span>Total Wealth</span>
+                                </div>
+                                <strong>₹<span id="total-wealth">0</span></strong>
+                            </div>
+
+                            <button class="invest-btn">START INVESTING</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sip-info">
+            <h2>What is SIP and Why Should You Choose SIP?</h2>
+            <p>A Systematic Investment Plan (SIP) is a disciplined method of investing money in mutual funds. It allows investors to contribute a fixed amount of money regularly, typically on a monthly basis, into a selected mutual fund scheme.</p>
+
+            <p>SIPs in Equity Linked Saving Schemes (ELSS) enjoy the EEE (Exempt, Exempt, Exempt) tax benefit. This means the ELSS SIPs offer significant tax benefits under Section 80C of the Income Tax Act, allowing you to save up to Rs. 1.5 lakh per year. Use a mutual fund SIP calculator to plan your investments and reap these tax advantages.</p>
+
+            <p>SIP is a smart way to save and grow your money. It helps you save regularly, reducing the impact of market ups and downs. Plus, it lets your money grow over time through compounding. Similarly, term insurance ensures financial security for your loved ones, working alongside SIP to create a comprehensive financial plan. So, SIP is a simple and effective method for building wealth.</p>
+
+            <h3>Let's understand the working of the SIP mutual fund calculator with an example:</h3>
+            <p>Ram, a young professional, wants to invest ₹10,000 monthly for 30 years at a 12% interest rate. The monthly interest rate is calculated as 12% / 12 = 1% or 0.01 in decimal.</p>
+
+            <p>Where:</p>
+            <ul>
+                <li>P is the monthly investment amount (₹10,000)</li>
+                <li>r is the periodic interest rate (12% per year, compounded monthly, so 12%/12 = 1% per month or 0.01)</li>
+                <li>n is the total number of payments (30 years * 12 months/year = 360 months)</li>
+            </ul>
+
+            <p>Calculation:</p>
+            <p>Future Value = 10000 * (((1 + 0.01)^360 - 1) / 0.01) * (1 + 0.01)</p>
+
+            <p>You'll find:</p>
+            <p>Future Value ≈ ₹3.53 Cr. <span style="color: #ffcc00;">(Note: The example text calculation result might differ slightly depending on formula version - annuity due vs ordinary. The calculator uses annuity due consistent with the text.)</span></p>
+
+            <p>Therefore, Ram's investment of ₹10,000 per month for 30 years at a 12% annual interest rate will grow to approximately ₹3.53 Cr</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Embedded JavaScript Start ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab');
+            const typeButtons = document.querySelectorAll('.type-btn');
+            const amountInput = document.getElementById('amount');
+            const yearsInput = document.getElementById('years');
+            const yearsRange = document.getElementById('years-range');
+            const returnsInput = document.getElementById('returns');
+            const returnsRange = document.getElementById('returns-range');
+            const totalInvestmentSpan = document.getElementById('total-investment');
+            const wealthGainedSpan = document.getElementById('wealth-gained');
+            const totalWealthSpan = document.getElementById('total-wealth');
+            const investmentArc = document.querySelector('.investment-arc');
+            const wealthArc = document.querySelector('.wealth-arc');
+            const investmentTypeButtons = document.getElementById('investment-type-buttons');
+            const amountSuffixSpan = document.querySelector('.input-group .suffix'); // Target the first suffix for amount
+            const amountLabel = document.querySelector('.input-group label'); // Target the first label
+
+            let currentTab = 'investment';
+            let investmentType = 'monthly'; // Default
+
+            // --- Helper Functions ---
+            function updateSuffix() {
+                if (currentTab === 'goal') {
+                    amountSuffixSpan.textContent = ''; // No suffix for goal amount
+                } else {
+                    amountSuffixSpan.textContent =
+                        investmentType === 'monthly' ? '/Month' :
+                        investmentType === 'yearly' ? '/Year' : '';
+                }
+            }
+
+            function formatValue(value) {
+                if (isNaN(value) || !isFinite(value) || value == 0) return '0.00';
+                
+                let suffix = '';
+                let divisor = 1;
+
+                if (value >= 10000000) { // Crore
+                    suffix = 'Cr';
+                    divisor = 10000000;
+                } else if (value >= 100000) { // Lakh
+                    suffix = 'L';
+                    divisor = 100000;
+                }
+                
+                // Ensure minimum two decimal places, adjust precision for larger numbers
+                let formattedValue = (value / divisor).toLocaleString('en-IN', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                });
+
+                return `${formattedValue}${suffix}`;
+            }
+
+
+             function calculateGoalMonthlyInvestment(targetAmount, years, rate) {
+                if (years <= 0 || rate < 0) return 0; // Invalid input
+
+                const n = years * 12; // Number of months
+                const r = rate / 12 / 100; // Monthly interest rate
+
+                // Handle zero rate case
+                if (r === 0) {
+                    return n > 0 ? targetAmount / n : 0;
+                }
+
+                // Future Value of Annuity Due formula solved for P (Payment/Monthly Investment):
+                // FV = P * [((1 + r)^n - 1) / r] * (1 + r)
+                // P = FV / ( [((1 + r)^n - 1) / r] * (1 + r) )
+                const denominator = ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+
+                if (denominator === 0) return Infinity; // Avoid division by zero
+
+                const monthlyAmount = targetAmount / denominator;
+                return monthlyAmount;
+            }
+
+            function calculateSIP() {
+                const amount = parseFloat(amountInput.value) || 0;
+                const years = parseFloat(yearsInput.value) || 0;
+                const rate = parseFloat(returnsInput.value) || 0;
+
+                let totalInvestment = 0;
+                let totalWealth = 0;
+                let displayAmount = amount; // The amount shown in the result stats
+
+                if (currentTab === 'investment') {
+                    if (investmentType === 'monthly') {
+                        if (years > 0 && rate >= 0) {
+                            const monthlyRate = rate / 100 / 12;
+                            const months = years * 12;
+                            totalInvestment = amount * months;
+                             // Using Annuity Due formula (investment at start of period)
+                            totalWealth = monthlyRate === 0 ? totalInvestment : amount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
+                        } else {
+                             totalInvestment = years > 0 ? amount * years * 12 : 0;
+                             totalWealth = totalInvestment;
+                        }
+                        displayAmount = totalInvestment; // Display total invested for investment tab
+                    } else if (investmentType === 'yearly') {
+                         if (years > 0 && rate >= 0) {
+                            const yearlyRate = rate / 100;
+                            totalInvestment = amount * years;
+                             // Annuity Due for yearly
+                             totalWealth = yearlyRate === 0 ? totalInvestment : amount * ((Math.pow(1 + yearlyRate, years) - 1) / yearlyRate) * (1 + yearlyRate);
+                        } else {
+                            totalInvestment = years > 0 ? amount * years : 0;
+                            totalWealth = totalInvestment;
+                        }
+                        displayAmount = totalInvestment;
+                    } else { // lumpsum
+                        if (years > 0 && rate >= 0) {
+                            totalInvestment = amount;
+                            totalWealth = amount * Math.pow(1 + rate / 100, years);
+                        } else {
+                             totalInvestment = amount;
+                             totalWealth = totalInvestment;
+                        }
+                        displayAmount = totalInvestment;
+                    }
+                } else { // Goal-based calculation
+                    totalWealth = amount; // Target amount is the 'amount' input
+                    if (years > 0 && rate >= 0) {
+                        const monthlyInvestmentRequired = calculateGoalMonthlyInvestment(amount, years, rate);
+                        totalInvestment = monthlyInvestmentRequired * years * 12;
+                        // To verify, recalculate FV with the derived monthly investment
+                        // const monthlyRate = rate / 100 / 12;
+                        // const months = years * 12;
+                        // totalWealth = monthlyRate === 0 ? totalInvestment : monthlyInvestmentRequired * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
+                        // It should be very close to the target 'amount'
+                    } else {
+                         totalInvestment = 0; // Cannot calculate investment if years/rate invalid
+                    }
+                     displayAmount = totalInvestment; // Show the derived total investment needed
+                }
+
+                 // Ensure wealth gained is not negative (can happen with rounding or edge cases)
+                const wealthGained = Math.max(0, totalWealth - totalInvestment);
+
+                // --- Update Display ---
+                totalInvestmentSpan.textContent = formatValue(displayAmount); // Show relevant investment figure
+                wealthGainedSpan.textContent = formatValue(wealthGained);
+                totalWealthSpan.textContent = formatValue(totalWealth); // Always show final corpus
+
+                // --- Update Donut Chart ---
+                const chartTotal = displayAmount + wealthGained; // Base chart on displayed investment + gain
+                let investmentPercentage = 0;
+                let wealthPercentage = 0;
+
+                if (chartTotal > 0) {
+                    investmentPercentage = Math.max(0, Math.min(100, (displayAmount / chartTotal) * 100));
+                    wealthPercentage = Math.max(0, Math.min(100, (wealthGained / chartTotal) * 100));
+                     // Ensure percentages add up to 100 or less due to rounding/clamping
+                     if (investmentPercentage + wealthPercentage > 100) {
+                         // Prioritize showing wealth gained accurately if sum exceeds 100
+                         investmentPercentage = 100 - wealthPercentage;
+                     }
+                } else {
+                    investmentPercentage = 0; // Or 100 if you want the blue circle full on zero input
+                    wealthPercentage = 0;
+                }
+
+
+                const circumference = 2 * Math.PI * 45; // 45 is the radius in SVG viewBox units
+                investmentArc.style.strokeDasharray = `${(investmentPercentage / 100) * circumference} ${circumference}`;
+                wealthArc.style.strokeDasharray = `${(wealthPercentage / 100) * circumference} ${circumference}`;
+                // Offset the wealth arc by the size of the investment arc
+                wealthArc.style.strokeDashoffset = `-${(investmentPercentage / 100) * circumference}`;
+            }
+
+            // --- Event Listeners ---
+
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentTab = tab.dataset.tab;
+
+                    // Update UI based on tab
+                    if (currentTab === 'investment') {
+                        amountLabel.textContent = 'I want to invest';
+                        amountInput.placeholder = 'Enter investment amount';
+                        investmentTypeButtons.style.display = 'flex'; // Show type buttons
+                    } else { // Goal tab
+                        amountLabel.textContent = 'I want to save';
+                        amountInput.placeholder = 'Enter goal amount';
+                        investmentTypeButtons.style.display = 'none'; // Hide type buttons
+                        // Force to monthly calculation for goal
+                        investmentType = 'monthly';
+                        typeButtons.forEach(b => b.classList.remove('active'));
+                        document.querySelector('.type-btn[data-type="monthly"]').classList.add('active'); // Ensure monthly is visually active
+                    }
+                    updateSuffix(); // Update suffix based on new state
+                    calculateSIP(); // Recalculate
+                });
+            });
+
+            // Investment type switching
+            typeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (currentTab === 'investment') { // Only allow type change on investment tab
+                        typeButtons.forEach(b => b.classList.remove('active'));
+                        button.classList.add('active');
+                        investmentType = button.dataset.type;
+                        updateSuffix();
+                        calculateSIP();
+                    }
+                });
+            });
+
+            // Input synchronization & Recalculation
+            yearsInput.addEventListener('input', () => { yearsRange.value = yearsInput.value; calculateSIP(); });
+            yearsRange.addEventListener('input', () => { yearsInput.value = yearsRange.value; calculateSIP(); });
+            returnsInput.addEventListener('input', () => { returnsRange.value = returnsInput.value; calculateSIP(); });
+            returnsRange.addEventListener('input', () => { returnsInput.value = returnsRange.value; calculateSIP(); });
+            amountInput.addEventListener('input', calculateSIP);
+
+            // --- Initial Setup ---
+            updateSuffix(); // Set initial suffix
+            calculateSIP(); // Run initial calculation
+        });
+        // --- Embedded JavaScript End ---
+    </script>
+</body>
+</html>

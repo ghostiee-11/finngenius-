@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Recommender</title>
+    <!-- Link to Google Font (Inter) - REQUIRED for the new CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <!-- Link to the NEW Dark Theme CSS -->
+    <link rel="stylesheet" href="loan_rec.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-container">
+            <div class="logo">FinGenius</div>
+            <nav>
+                <a href="index.html" class="back-home">← Go Back</a>
+            </nav>
+        </div>
+    </header>
+    
+
+    <main class="container">
+        <!-- Title and Description -->
+        <h1>Find Your Best Loan Match</h1>
+        <p class="description">
+            Enter your details below to get personalized loan recommendations and compare options.
+        </p>
+
+        <!-- *** NEW WRAPPER for the main dark box *** -->
+        <div class="main-content-wrapper">
+
+            <section id="loan-form-section"> <!-- Removed .card class -->
+                <h2><span class="section-icon">📝</span> Enter Your Profile</h2>
+                <form id="loan-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="loan-type">Select Loan Type:</label>
+                            <select id="loan-type" name="loan_type" required>
+                                <option value="" disabled selected>-- Please Select --</option>
+                                <!-- Options -->
+                                <option value="Home Loan">Home Loan</option>
+                                <option value="Auto Loan">Auto Loan</option>
+                                <option value="Education Loan">Education Loan</option>
+                                <option value="Personal Loan">Personal Loan</option>
+                                <option value="Business Loan">Business Loan</option>
+                                <option value="Gold Loan">Gold Loan</option>
+                                <option value="Loan Against Property">Loan Against Property</option>
+                                <option value="Credit Card Loan">Credit Card Loan</option>
+                                <option value="Short-term Loan">Short-term Loan</option>
+                                <option value="Agricultural Loan">Agricultural Loan</option>
+                                <option value="Mortgage Loan">Mortgage Loan</option>
+                                <option value="Bridge Loan">Bridge Loan</option>
+                                <option value="Overdraft Facility">Overdraft Facility</option>
+                                <option value="Professional Loan">Professional Loan</option>
+                                <option value="Construction Loan">Construction Loan</option>
+                                <option value="Loan Against Shares/Mutual Funds">Loan Against Shares/Mutual Funds</option>
+                                <option value="Reverse Mortgage Loan for Senior Citizens">Reverse Mortgage Loan</option>
+                                <option value="Microfinance Loan">Microfinance Loan</option>
+                                <option value="Development Loan">Development Loan</option>
+                                <option value="vacation loan">Vacation Loan</option>
+                            </select>
+                            <div id="min-age-info" class="min-age-display"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="loan_amount">Desired Loan Amount (₹):</label><input type="number" id="loan_amount" name="loan_amount" min="1000" step="1000" placeholder="e.g., 500000" required></div>
+                        <div class="form-group"><label for="loan_term">Desired Loan Term (Years):</label><input type="number" id="loan_term" name="loan_term" min="1" max="30" placeholder="e.g., 5" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="age">Your Age:</label><input type="number" id="age" name="age" min="18" max="100" placeholder="e.g., 35" required></div>
+                        <div class="form-group"><label for="score">Your Credit Score:</label><input type="number" id="score" name="score" min="0" max="900" placeholder="e.g., 750" required><small>(Enter 0 if not applicable)</small></div>
+                    </div>
+                    <div class="button-container">
+                         <button type="submit" id="submit-button" class="button button-primary">
+                             <span class="button-text">Find Loans</span>
+                             <span class="spinner"></span> <!-- Spinner now part of button -->
+                         </button>
+                    </div>
+                 </form>
+            </section>
+
+            <!-- Results Section will be inside the wrapper -->
+            <section id="results-section" style="display: none;">
+                 <h2 class="results-title"><span class="section-icon">🏆</span> Top Recommendations</h2>
+                 <p class="disclaimer"><strong>Disclaimer:</strong> EMI & Total Costs are estimates based on the provided rate range (midpoint/lower bound used). Actual values depend on the final rate, fees, and bank policies.</p>
+                 <div class="results-actions">
+                     <button id="compare-button" class="button button-secondary" disabled>Compare Selected (0)</button>
+                 </div>
+                 <div id="results-list">
+                     <!-- Loan recommendation cards will be inserted here -->
+                 </div>
+             </section>
+
+        </div> <!-- *** END of main-content-wrapper *** -->
+
+    </main>
+
+    <!-- Modal remains outside the main wrapper -->
+    <div id="comparison-modal" class="modal">
+        <div class="modal-content"> <!-- Removed .card, styled directly -->
+            <span class="close-button">×</span>
+            <h2><span class="section-icon">⚖️</span> Loan Comparison</h2>
+            <div id="comparison-table-container">
+                <!-- Comparison table will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>© FinGenius. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Link to the SAME JavaScript file -->
+    <script src="loan_rec.js"></script>
+</body>
+</html>

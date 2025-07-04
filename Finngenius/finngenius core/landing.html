@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinGenius - Financial Solutions</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="relative min-h-screen bg-dark overflow-x-hidden">
+        <!-- Background Animations -->
+        <div class="finance-symbols">
+            <div class="symbol">₹</div>
+            <div class="symbol">$</div>
+            <div class="symbol">€</div>
+            <div class="symbol">£</div>
+            <div class="symbol">¥</div>
+        </div>
+        <div class="candle-container">
+            <div class="candle green"></div>
+            <div class="candle red"></div>
+            <div class="candle green"></div>
+            <div class="candle red"></div>
+            <div class="candle green"></div>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-content">
+                    <div class="logo">
+                        <span>ENTER TO FINANCIAL WORLD</span>
+                    </div>
+                    <div class="nav-links">
+                        <a href="#features">Features</a>
+                        <a href="#about">About</a>
+                        <a href="#contact">Contact</a>
+                        <button class="login-btn">Login</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">FinGenius</h1>
+            <p class="hero-subtitle">The future of financial solutions</p>
+            <p class="hero-description">Empowering your financial journey with smart technology</p>
+            <button class="cta-button">
+                Launch Dashboard
+                <i data-lucide="arrow-right"></i>
+            </button>
+            <div class="scroll-indicator">
+                <div class="scroll-dot"></div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-section">
+            <div class="features-grid">
+                <!-- Features will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Create multiple sets of symbols
+        function createSymbols() {
+            const symbolsContainer = document.querySelector('.finance-symbols');
+            const symbols = ['₹', '$', '€', '£', '¥'];
+            
+            for (let i = 0; i < 15; i++) {
+                const symbol = document.createElement('div');
+                symbol.className = 'symbol';
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                symbol.style.left = `${Math.random() * 100}vw`;
+                symbol.style.animationDelay = `${Math.random() * 5}s`;
+                symbol.style.animationDuration = `${10 + Math.random() * 20}s`;
+                symbolsContainer.appendChild(symbol);
+            }
+        }
+
+        // Create multiple sets of candles
+        function createCandles() {
+            const candleContainer = document.querySelector('.candle-container');
+            for (let i = 0; i < 3; i++) {
+                const group = document.createElement('div');
+                group.className = 'candle-group';
+                group.style.left = `${20 + i * 30}%`;
+                
+                for (let j = 0; j < 5; j++) {
+                    const candle = document.createElement('div');
+                    candle.className = `candle ${Math.random() > 0.5 ? 'green' : 'red'}`;
+                    candle.style.animationDelay = `${Math.random() * 2}s`;
+                    group.appendChild(candle);
+                }
+                
+                candleContainer.appendChild(group);
+            }
+        }
+
+        // Initialize animations
+        createSymbols();
+        createCandles();
+
+        // Features data with proper color mappings
+        const features = [
+            { 
+                icon: 'line-chart', 
+                title: 'Real-time News', 
+                color: 'blue',
+                description: 'Stay updated with real-time financial news and market insights.'
+            },
+            { 
+                icon: 'bell', 
+                title: 'Stock Alerts', 
+                color: 'purple',
+                description: 'Get instant notifications for your stock price targets.'
+            },
+            { 
+                icon: 'message-square', 
+                title: 'Chatbot', 
+                color: 'green',
+                description: 'AI-powered assistant for your financial queries.'
+            },
+            { 
+                icon: 'piggy-bank', 
+                title: 'Investment Planner', 
+                color: 'yellow',
+                description: 'Plan your investments with smart portfolio suggestions.'
+            },
+            { 
+                icon: 'calculator', 
+                title: 'Loan Advisor', 
+                color: 'red',
+                description: 'Calculate and compare loan options instantly.'
+            },
+            { 
+                icon: 'briefcase', 
+                title: 'GST Calculator', 
+                color: 'indigo',
+                description: 'Simple and accurate GST calculations for your business.'
+            },
+            { 
+                icon: 'heart', 
+                title: 'PF/EPF Tracker', 
+                color: 'pink',
+                description: 'Track and manage your provident fund investments.'
+            },
+            { 
+                icon: 'shield', 
+                title: 'Insurance Analyzer', 
+                color: 'teal',
+                description: 'Compare and analyze insurance policies effectively.'
+            }
+        ];
+
+        // Generate feature cards
+        const featuresGrid = document.querySelector('.features-grid');
+
+        if (featuresGrid) {
+            features.forEach(feature => {
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                
+                card.innerHTML = `
+                    <div class="feature-icon">
+                        <i data-lucide="${feature.icon}" style="width: 1.5rem; height: 1.5rem; color: white;"></i>
+                    </div>
+                    <h3 class="feature-title">${feature.title}</h3>
+                    <p class="feature-description">${feature.description}</p>
+                `;
+                
+                featuresGrid.appendChild(card);
+            });
+
+            // Refresh Lucide icons after adding feature cards
+            lucide.createIcons();
+        }
+
+        // Scroll animation for feature cards
+        const handleScroll = () => {
+            const features = document.querySelectorAll('.feature-card');
+            features.forEach(feature => {
+                const rect = feature.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.8) {
+                    feature.classList.add('show');
+                }
+            });
+        };
+
+        // Mouse move effect for feature cards
+        const handleMouseMove = (e) => {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (
+                    x >= 0 && x <= rect.width &&
+                    y >= 0 && y <= rect.height
+                ) {
+                    card.style.transform = `
+                        scale(1.05)
+                        perspective(1000px)
+                        rotateY(${(x - rect.width / 2) / 20}deg)
+                        rotateX(${(y - rect.height / 2) / -20}deg)
+                    `;
+                } else {
+                    card.style.transform = '';
+                }
+            });
+        };
+
+        // Event listeners
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('mousemove', handleMouseMove);
+
+        // Initial check for visible features
+        handleScroll();
+    </script>
+</body>
+</html>

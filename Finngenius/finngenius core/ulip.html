@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Return Calculator</title>
+    <style>
+        /* --- Basic Reset & Font --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: #1c1c1e; /* Dark background */
+            color: #f2f2f7; /* Light text */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+            flex-shrink: 0; /* Prevent header from shrinking */
+        }
+
+        header h1 {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* --- Main Content Layout --- */
+        main {
+            flex-grow: 1; /* Allow main to take available space */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align card to top */
+            padding-top: 20px;
+            width: 100%;
+        }
+
+        .calculator-card {
+            background-color: #2c2c2e; /* Card background */
+            border-radius: 12px;
+            padding: 25px 30px;
+            width: 100%;
+            max-width: 850px; /* Slightly wider for better spacing */
+            display: grid;
+            grid-template-columns: 1fr; /* Single column default */
+            gap: 25px;
+        }
+
+        @media (min-width: 800px) { /* Side-by-side on larger screens */
+             .calculator-card {
+                grid-template-columns: 1fr 1fr; /* Equal columns */
+                gap: 40px;
+             }
+             .form-section {
+                 grid-column: 1 / 2;
+             }
+             .output-section {
+                grid-column: 2 / 3;
+                padding-top: 40px; /* Align output roughly with first input */
+             }
+        }
+
+        /* --- Card Title --- */
+        .card-title {
+            grid-column: 1 / -1; /* Span full width */
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+
+        /* --- Form Section --- */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Consistent gap between input groups */
+        }
+
+        /* Input Group Styling */
+        .input-group {
+             /* Removed margin-bottom, using gap in form-section instead */
+         } 
+
+        .input-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #c7c7cc; /* Lighter grey label */
+            font-size: 0.9em;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            background-color: #3a3a3c; /* Input background */
+            border: 1px solid #545458; /* Subtle border */
+            border-radius: 8px;
+            padding: 0 12px; /* Padding inside container */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-container:focus-within { /* Highlight border on focus */
+             border-color: #0a84ff;
+             box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.3);
+        }
+
+        .input-container span.unit {
+            color: #8e8e93; /* Muted unit text */
+            padding-right: 8px;
+            font-weight: 500;
+            white-space: nowrap; /* Prevent unit wrapping */
+        }
+
+        .input-container input[type="number"] {
+            flex-grow: 1;
+            width: 100%; /* Take available space */
+            padding: 10px 0; /* Vertical padding only */
+            background-color: transparent; /* Inherit container background */
+            border: none;
+            color: #f2f2f7; /* Light text */
+            font-size: 1em;
+            outline: none; /* Remove default outline */
+            min-width: 50px; /* Ensure it doesn't collapse */
+        }
+         /* Hide spinner buttons */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+             -webkit-appearance: none;
+             margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+        .amount-in-words {
+            font-size: 0.8em;
+            color: #8e8e93; /* Muted */
+            margin-top: 5px;
+            min-height: 1.2em; /* Prevent layout shift */
+            padding-left: 2px;
+        }
+
+        .validation-message {
+            font-size: 0.8em;
+            color: #ff453a; /* Apple dark mode red */
+            margin-top: 5px;
+            min-height: 1.2em; /* Prevent layout shift */
+            display: none; /* Hidden by default */
+             padding-left: 2px;
+        }
+
+        /* --- Slider Styling --- */
+        .slider-container {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .slider-container span {
+             font-size: 0.85em;
+             color: #8e8e93;
+             min-width: 20px; /* Prevent shrinking */
+             text-align: center;
+        }
+        input[type="range"] {
+            flex-grow: 1;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px; /* Track height */
+            background: #545458; /* Track background */
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        input[type="range"]:hover {
+            opacity: 0.8;
+        }
+        /* Thumb (Chrome, Safari, Edge) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #f2f2f7; /* White thumb */
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -6px; /* Center thumb vertically */
+            border: 1px solid #545458;
+        }
+        /* Thumb (Firefox) */
+        input[type="range"]::-moz-range-thumb {
+            width: 16px; /* Slightly smaller for FF consistency */
+            height: 16px;
+            background: #f2f2f7;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid #545458;
+        }
+
+        /* --- Toggle Buttons (Investment Type) --- */
+        .toggle-group {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #545458;
+             /* margin-bottom: 20px; */ /* Removed, using gap */
+        }
+        .toggle-button {
+            flex: 1;
+            padding: 10px 15px;
+            background-color: #3a3a3c;
+            color: #aeaeb2; /* Muted text */
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            text-align: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border-right: 1px solid #545458; /* Separator */
+        }
+        .toggle-button:last-child {
+            border-right: none;
+        }
+        .toggle-button.active {
+            background-color: #0a84ff; /* Blue active state */
+            color: #ffffff;
+        }
+        .toggle-button:not(.active):hover {
+            background-color: #48484a;
+        }
+
+        /* --- Output Section Styling --- */
+        .output-section {
+             display: flex;
+             flex-direction: column;
+             gap: 25px; /* Gap between chart and summary */
+        }
+
+        /* Chart Styling */
+        .chart-container {
+            display: flex;
+            justify-content: space-around; /* Evenly space the bars */
+            align-items: flex-end; /* Align bars to the bottom */
+            height: 180px; /* Chart height */
+            background-color: #3a3a3c; /* Dark background for the chart area */
+            border-radius: 8px;
+            padding: 25px 10px 25px 10px; /* Top, H, Bottom padding */
+            /* margin-bottom: 20px; */ /* Removed, using gap */
+            position: relative; /* Needed for absolute positioning inside */
+            min-height: 100px; /* Ensure it doesn't collapse */
+        }
+
+        .chart-bar {
+            display: flex;
+            flex-direction: column; /* Stack value, bar, label vertically */
+            align-items: center; /* Center items horizontally */
+            justify-content: flex-end; /* Align bar to the bottom */
+            width: 20%; /* Width of the bar container */
+            height: 100%; /* Take full height of container for alignment */
+            text-align: center;
+            position: relative; /* For positioning value/label */
+        }
+        /* Hide bars initially or if not used */
+        .chart-bar.hidden {
+            display: none;
+        }
+
+        .bar-value {
+            font-size: 0.8em;
+            font-weight: 500;
+            color: #f2f2f7;
+            white-space: nowrap; /* Prevent wrapping */
+            position: absolute;
+            top: -20px; /* Position above bar area */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(44, 44, 46, 0.7); /* Slight dark bg for readability */
+            padding: 2px 5px;
+            border-radius: 3px;
+            opacity: 0; /* Hidden initially, shown by JS */
+            transition: opacity 0.3s ease-in;
+            z-index: 1;
+        }
+        .chart-bar:not(.no-value) .bar-value { /* Show value if bar has value */
+            opacity: 1;
+        }
+
+        .bar {
+            width: 60%; /* Make bars slightly narrower than their container */
+            max-width: 30px; /* Optional max width */
+            background-color: #30d158; /* Green bars */
+            border-radius: 4px 4px 0 0; /* Rounded top */
+            height: 0%; /* Default height, controlled by JS */
+            transition: height 0.4s ease-out; /* Smooth height transition */
+            align-self: center; /* Ensure bar is centered */
+            position: relative; /* Ensure it's below value */
+        }
+
+        .bar-label {
+            font-size: 0.75em;
+            color: #aeaeb2; /* Muted label */
+            white-space: nowrap;
+            position: absolute;
+            bottom: -20px; /* Position below bar area */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Summary Boxes */
+        .summary-boxes {
+            display: flex;
+            gap: 15px;
+            width: 100%; /* Ensure full width */
+        }
+
+        .summary-box {
+            flex: 1; /* Each box takes equal space */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            min-height: 100px; /* Ensure minimum height */
+        }
+
+        .summary-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            font-weight: 500;
+             text-transform: uppercase; /* Match sample */
+        }
+
+        .summary-box .value {
+            font-size: 1.6em;
+            font-weight: 600;
+            line-height: 1.2; /* Adjust line height */
+             margin-bottom: 5px;
+        }
+
+        .summary-box .description {
+            font-size: 0.8em;
+             line-height: 1.3;
+        }
+
+
+        .summary-box.invested {
+             background-color: #0a84ff; /* Blue */
+             color: #ffffff;
+        }
+         .summary-box.invested h3 { color: rgba(255,255,255,0.8); }
+         .summary-box.invested .description { color: rgba(255,255,255,0.7); }
+
+
+        .summary-box.returns {
+             background-color: #30d158; /* Green */
+             color: #ffffff; /* White text on green */
+        }
+         .summary-box.returns h3 { color: rgba(255,255,255,0.8); }
+          .summary-box.returns .description { color: rgba(255,255,255,0.7); }
+
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #8e8e93;
+            font-size: 0.85em;
+            flex-shrink: 0; /* Prevent footer from shrinking */
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>FinGenius</h1>
+        <!-- Optional Back Link -->
+        <!-- <a href="#" style="color: #0a84ff; text-decoration: none;">← Back Home</a> -->
+    </header>
+
+    <main>
+        <div class="calculator-card">
+            <h2 class="card-title">Investment Return Calculator</h2>
+
+            <!-- Form Section -->
+            <div class="form-section">
+                <div class="toggle-group" id="investmentType">
+                    <button class="toggle-button active" data-type="onetime">One Time</button>
+                    <button class="toggle-button" data-type="monthly">Monthly</button>
+                    <button class="toggle-button" data-type="yearly">Yearly</button>
+                </div>
+
+                <div class="input-group">
+                    <label for="amount">Amount I wish to Invest</label>
+                    <div class="input-container">
+                        <span class="unit">₹</span>
+                        <input type="number" id="amount" placeholder="e.g., 50000" inputmode="numeric">
+                    </div>
+                    <div class="amount-in-words" id="amountWords"></div>
+                    <div class="validation-message" id="amountError">Amount should be between 1,000 and 1,00,00,000</div>
+                </div>
+
+                <!-- "Invest For" Group - Hidden for One Time -->
+                <div class="input-group" id="investForGroup">
+                    <label for="investForYears">Invest For (in Years)</label> <!-- Contribution Period -->
+                     <div class="input-container">
+                         <input type="number" id="investForYears" value="10" min="1" max="30" inputmode="numeric">
+                         <span class="unit">Years</span>
+                    </div>
+                    <div class="slider-container">
+                        <span>1</span>
+                        <input type="range" id="investForSlider" value="10" min="1" max="30">
+                        <span>30</span>
+                    </div>
+                     <div class="validation-message" id="investForError">Enter value between 1 and 30</div>
+                </div>
+
+                <!-- "Stay Invested For" Group -->
+                <div class="input-group">
+                    <label for="stayInvestedYears">Stay invested for (in Years)</label> <!-- Total Period -->
+                    <div class="input-container">
+                         <input type="number" id="stayInvestedYears" value="10" min="1" max="30" inputmode="numeric">
+                          <span class="unit">Years</span>
+                    </div>
+                     <div class="slider-container">
+                        <span>1</span>
+                        <input type="range" id="stayInvestedSlider" value="10" min="1" max="30">
+                        <span>30</span>
+                    </div>
+                     <div class="validation-message" id="stayInvestedError">Enter value between 1 and 30</div>
+                </div>
+
+                <!-- "Expected Rate" Group -->
+                <div class="input-group">
+                    <label for="rate">Expected rate of return (in %)</label>
+                    <div class="input-container">
+                        <input type="number" id="rate" value="8" min="1" max="35" inputmode="numeric">
+                         <span class="unit">% /Year</span>
+                    </div>
+                    <div class="slider-container">
+                        <span>1</span>
+                        <input type="range" id="rateSlider" value="8" min="1" max="35">
+                        <span>35</span>
+                    </div>
+                     <div class="validation-message" id="rateError">Enter value between 1% and 35%</div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="chart-container">
+                    <!-- Bars managed by JS -->
+                    <div class="chart-bar hidden" id="chartBar1">
+                        <div class="bar-value" id="val1">₹ --</div>
+                        <div class="bar" id="bar1"></div>
+                        <div class="bar-label" id="lab1">In -- Yr</div>
+                    </div>
+                     <div class="chart-bar hidden" id="chartBar2">
+                        <div class="bar-value" id="val2">₹ --</div>
+                        <div class="bar" id="bar2"></div>
+                        <div class="bar-label" id="lab2">In -- Yr</div>
+                    </div>
+                     <div class="chart-bar hidden" id="chartBar3">
+                        <div class="bar-value" id="val3">₹ --</div>
+                        <div class="bar" id="bar3"></div>
+                         <div class="bar-label" id="lab3">In -- Yr</div>
+                    </div>
+                     <div class="chart-bar hidden" id="chartBar4">
+                        <div class="bar-value" id="val4">₹ --</div>
+                        <div class="bar" id="bar4"></div>
+                        <div class="bar-label" id="lab4">In -- Yr</div>
+                    </div>
+                </div>
+
+                <div class="summary-boxes">
+                    <div class="summary-box invested">
+                        <h3>YOU INVEST</h3>
+                        <div class="value" id="totalInvested">₹ --</div>
+                         <div class="description" id="investedDesc">--</div>
+                    </div>
+                    <div class="summary-box returns">
+                        <h3>YOU GET</h3>
+                        <div class="value" id="totalReturns">₹ --</div>
+                        <div class="description" id="returnsDesc">--</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        © 2025 FinGenius. All rights reserved.
+    </footer>
+
+    <script>
+        // --- DOM Elements ---
+        const amountInput = document.getElementById('amount');
+        const amountWordsDiv = document.getElementById('amountWords');
+        const investForYearsInput = document.getElementById('investForYears');
+        const investForSlider = document.getElementById('investForSlider');
+        const stayInvestedYearsInput = document.getElementById('stayInvestedYears');
+        const stayInvestedSlider = document.getElementById('stayInvestedSlider');
+        const rateInput = document.getElementById('rate');
+        const rateSlider = document.getElementById('rateSlider');
+        const investmentTypeButtons = document.querySelectorAll('#investmentType .toggle-button');
+        const investForGroup = document.getElementById('investForGroup');
+
+        const totalInvestedEl = document.getElementById('totalInvested');
+        const totalReturnsEl = document.getElementById('totalReturns');
+        const investedDescEl = document.getElementById('investedDesc');
+        const returnsDescEl = document.getElementById('returnsDesc');
+
+        // Chart elements
+        const chartBarsData = [
+            { container: document.getElementById('chartBar1'), barEl: document.getElementById('bar1'), valEl: document.getElementById('val1'), labEl: document.getElementById('lab1') },
+            { container: document.getElementById('chartBar2'), barEl: document.getElementById('bar2'), valEl: document.getElementById('val2'), labEl: document.getElementById('lab2') },
+            { container: document.getElementById('chartBar3'), barEl: document.getElementById('bar3'), valEl: document.getElementById('val3'), labEl: document.getElementById('lab3') },
+            { container: document.getElementById('chartBar4'), barEl: document.getElementById('bar4'), valEl: document.getElementById('val4'), labEl: document.getElementById('lab4') }
+        ];
+
+        // Validation Message Elements
+        const amountErrorEl = document.getElementById('amountError');
+        const investForErrorEl = document.getElementById('investForError');
+        const stayInvestedErrorEl = document.getElementById('stayInvestedError');
+        const rateErrorEl = document.getElementById('rateError');
+
+        let currentInvestmentType = 'onetime'; // Default
+
+        // --- Event Listeners ---
+
+        // Investment Type Toggle
+        investmentTypeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (button.classList.contains('active')) return; // Do nothing if already active
+                investmentTypeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentInvestmentType = button.getAttribute('data-type');
+                toggleInvestForGroup();
+                updateCalculations();
+            });
+        });
+
+        // Input syncing and calculation trigger
+        amountInput.addEventListener('input', handleInputChange);
+        investForYearsInput.addEventListener('input', () => handleInputChange(investForYearsInput, investForSlider));
+        stayInvestedYearsInput.addEventListener('input', () => handleInputChange(stayInvestedYearsInput, stayInvestedSlider));
+        rateInput.addEventListener('input', () => handleInputChange(rateInput, rateSlider));
+
+        investForSlider.addEventListener('input', () => handleSliderChange(investForSlider, investForYearsInput));
+        stayInvestedSlider.addEventListener('input', () => handleSliderChange(stayInvestedSlider, stayInvestedYearsInput));
+        rateSlider.addEventListener('input', () => handleSliderChange(rateSlider, rateInput));
+
+        // --- Input Handlers ---
+        function handleInputChange(inputElement = null, sliderElement = null) {
+            if (inputElement && sliderElement) {
+                 // Basic range clamping for number inputs
+                const min = parseFloat(inputElement.min);
+                const max = parseFloat(inputElement.max);
+                let value = parseFloat(inputElement.value);
+                if (!isNaN(value)) {
+                     if (value < min) value = min;
+                     // Allow typing beyond max temporarily, validate later
+                     // if (value > max) value = max;
+                     // inputElement.value = value; // Update input if clamped
+                }
+                sliderElement.value = isNaN(value) ? min : Math.min(max, Math.max(min, value)); // Update slider within valid range
+            }
+             if (inputElement === amountInput) {
+                 updateAmountWords();
+             }
+            updateCalculations();
+        }
+
+        function handleSliderChange(sliderElement, inputElement) {
+            inputElement.value = sliderElement.value;
+            updateCalculations();
+        }
+
+
+        // --- Helper Functions ---
+
+        function toggleInvestForGroup() {
+            if (currentInvestmentType === 'onetime') {
+                investForGroup.style.display = 'none';
+            } else {
+                investForGroup.style.display = 'block';
+            }
+            // Clear potential error message when hiding/showing
+            investForErrorEl.style.display = 'none';
+        }
+
+        function formatCurrency(value) {
+            if (isNaN(value) || !isFinite(value)) return '₹ --';
+            value = Math.round(value); // Round to nearest whole number
+
+            if (value >= 10000000) { // Crores
+                return `₹${(value / 10000000).toFixed(2)} Cr`;
+            } else if (value >= 100000) { // Lakhs
+                return `₹${(value / 100000).toFixed(2)} L`;
+            } else if (value >= 1000) { // Thousands (show with K only above 10k maybe?)
+                 return `₹${(value / 1000).toFixed(1)} K`;
+                 // Or show full amount below 1Lakh:
+                 // return `₹${value.toLocaleString('en-IN')}`;
+            } else {
+                return `₹${value}`;
+            }
+        }
+
+        // Basic number to words (expandable)
+        function numberToWords(num) {
+            // Simple cases for demo
+            if (isNaN(num) || num <= 0) return '';
+             try {
+                // Very basic placeholder for demonstration
+                 const single = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+                 const teen = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+                 const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+                 const suffix = ["", "Thousand", "Lakh", "Crore"];
+
+                 let words = "";
+                 let i = 0;
+
+                function toWords(n) { // Converts < 1000 to words
+                     let w = "";
+                     if (n >= 100) {
+                         w += single[Math.floor(n / 100)] + " Hundred ";
+                         n %= 100;
+                     }
+                     if (n >= 20) {
+                         w += tens[Math.floor(n / 10)] + " ";
+                         n %= 10;
+                     } else if (n >= 10) {
+                         w += teen[n - 10] + " ";
+                         n = 0;
+                     }
+                     if (n > 0) {
+                         w += single[n] + " ";
+                     }
+                     return w.trim();
+                 }
+
+                 while (num > 0) {
+                     let chunk;
+                     if (i === 0) { // Units, Tens, Hundreds
+                         chunk = num % 1000;
+                         num = Math.floor(num / 1000);
+                     } else { // Thousands, Lakhs, Crores (groups of 2 digits)
+                         chunk = num % 100;
+                         num = Math.floor(num / 100);
+                     }
+                     if (chunk > 0) {
+                         words = toWords(chunk) + " " + suffix[i] + " " + words;
+                     }
+                     i++;
+                 }
+                 return words.trim() || ''; // Return empty string if num was 0 initially
+             } catch (e) {
+                 console.error("Error in numberToWords:", e);
+                 return ''; // Fallback
+             }
+        }
+
+
+        function updateAmountWords() {
+            const amount = parseFloat(amountInput.value);
+            amountWordsDiv.textContent = numberToWords(amount);
+        }
+
+        function validateInputs(values) {
+            let isValid = true;
+            const { P, t_contrib, t_total, r_percent } = values;
+
+            // Reset errors
+             amountErrorEl.style.display = 'none';
+             investForErrorEl.style.display = 'none';
+             stayInvestedErrorEl.style.display = 'none';
+             rateErrorEl.style.display = 'none';
+             investForErrorEl.textContent = 'Enter value between 1 and 30'; // Reset message
+
+             // Amount Validation (e.g., 1k to 1 Cr)
+            if (isNaN(P) || P < 1000 || P > 10000000) {
+                amountErrorEl.style.display = 'block'; isValid = false;
+            }
+            // Stay Invested Validation
+            if (isNaN(t_total) || t_total < 1 || t_total > 30) {
+                stayInvestedErrorEl.style.display = 'block'; isValid = false;
+            }
+            // Rate Validation
+            if (isNaN(r_percent) || r_percent < 1 || r_percent > 35) {
+                rateErrorEl.style.display = 'block'; isValid = false;
+            }
+            // Invest For Validation (only if not one time)
+            if (currentInvestmentType !== 'onetime') {
+                if (isNaN(t_contrib) || t_contrib < 1 || t_contrib > 30) {
+                     investForErrorEl.style.display = 'block'; isValid = false;
+                 } else if (t_contrib > t_total) { // Check if exceeds total time
+                     investForErrorEl.textContent = 'Cannot exceed "Stay Invested For" years';
+                     investForErrorEl.style.display = 'block'; isValid = false;
+                 }
+            }
+            return isValid;
+        }
+
+        // --- Calculation Logic ---
+        function calculateReturns() {
+            const P_raw = parseFloat(amountInput.value);
+            const t_contrib_raw = parseInt(investForYearsInput.value);
+            const t_total_raw = parseInt(stayInvestedYearsInput.value);
+            const r_percent_raw = parseFloat(rateInput.value);
+
+             const inputs = {
+                P: P_raw,
+                t_contrib: t_contrib_raw,
+                t_total: t_total_raw,
+                r_percent: r_percent_raw
+             };
+
+            if (!validateInputs(inputs)) {
+                return { totalInvested: NaN, finalValue: NaN, yearlyValues: [] };
+            }
+
+            // Use validated (or potentially clamped) values for calculation if needed
+            const P = P_raw;
+            const t_contrib = (currentInvestmentType === 'onetime') ? 0 : Math.min(t_contrib_raw, t_total_raw); // Use 0 for one time, ensure contrib <= total
+            const t_total = t_total_raw;
+            const r = r_percent_raw / 100; // Annual rate as decimal
+
+            let totalInvested = 0;
+            let finalValue = 0;
+            let yearlyValues = [];
+
+            if (currentInvestmentType === 'onetime') {
+                totalInvested = P;
+                finalValue = P * Math.pow((1 + r), t_total);
+                for (let i = 1; i <= t_total; i++) {
+                    yearlyValues.push(P * Math.pow((1 + r), i));
+                }
+            } else { // Monthly or Yearly SIP
+                const n = (currentInvestmentType === 'monthly') ? 12 : 1; // Periods per year
+                const P_periodic = P; // Amount per period
+
+                totalInvested = P_periodic * n * t_contrib;
+
+                let accumulatedValue = 0;
+                for (let year = 1; year <= t_total; year++) {
+                    let yearlyGrowthFactor = (1 + r);
+                    let contributionThisYear = 0;
+
+                    if (year <= t_contrib) { // If still contributing
+                         if (currentInvestmentType === 'monthly') {
+                             // Approximate Future Value of this year's monthly investments at year end
+                             // Assumes end-of-month contribution, compounded annually at year end for simplicity in yearly chart
+                             // More accurate: compound monthly within the year
+                             let monthlyRate = r / 12;
+                             // FV of ordinary annuity formula portion for one year
+                             contributionThisYear = P_periodic * ((Math.pow(1 + monthlyRate, 12) - 1) / monthlyRate);
+                             // The formula gives value at the time of the *last* payment,
+                             // but we need value at year end. For simplicity, we add this lump sum
+                             // and then grow the *entire* previous balance by the annual rate.
+                             // This is an approximation.
+
+                             // Grow previous balance by annual rate
+                             accumulatedValue *= yearlyGrowthFactor;
+                             // Add the value of this year's contributions (calculated as FV at year end)
+                             accumulatedValue += contributionThisYear;
+
+                         } else { // Yearly contribution (assume at start of year or end - affects precision)
+                              // Assuming contribution at the start of the year:
+                              // accumulatedValue += P_periodic;
+                              // accumulatedValue *= yearlyGrowthFactor;
+                              // Assuming contribution at the end of the year (simpler):
+                              accumulatedValue *= yearlyGrowthFactor;
+                              accumulatedValue += P_periodic;
+                         }
+                    } else { // No more contributions, just growth
+                        accumulatedValue *= yearlyGrowthFactor;
+                    }
+                    yearlyValues.push(accumulatedValue);
+                }
+                finalValue = accumulatedValue;
+            }
+            return { totalInvested, finalValue, yearlyValues };
+        }
+
+
+        // --- Update UI ---
+        function updateCalculations() {
+            const { totalInvested, finalValue, yearlyValues } = calculateReturns();
+
+            const t_total = parseInt(stayInvestedYearsInput.value); // Get potentially unvalidated value for display
+
+            // Update Summary Boxes
+            totalInvestedEl.textContent = formatCurrency(totalInvested);
+            totalReturnsEl.textContent = formatCurrency(finalValue);
+
+            // Update descriptions
+            let investedPeriodText = '--';
+            if (!isNaN(totalInvested)) { // Only show description if calc is valid
+                if (currentInvestmentType === 'onetime') {
+                    investedPeriodText = 'One Time';
+                } else {
+                    const t_contrib = parseInt(investForYearsInput.value);
+                    investedPeriodText = `Over ${isNaN(t_contrib) ? '--' : t_contrib} Year${t_contrib > 1 ? 's' : ''}`;
+                }
+            }
+            investedDescEl.textContent = investedPeriodText;
+            returnsDescEl.textContent = `After ${isNaN(t_total) ? '--' : t_total} Year${t_total > 1 ? 's' : ''}`;
+
+            // --- Update Chart Logic ---
+            // Hide all bars initially and mark as no-value
+            chartBarsData.forEach(item => {
+                item.container.classList.add('hidden');
+                item.container.classList.add('no-value'); // Prevents showing stale value text briefly
+                item.barEl.style.height = '0%'; // Reset height
+            });
+
+            if (!isNaN(finalValue) && finalValue >= 0 && yearlyValues && yearlyValues.length > 0 && t_total >= 1) {
+                let pointsToShow = []; // Array to store { year, value }
+
+                // Determine the years to display
+                 if (t_total === 1) {
+                     pointsToShow.push({ year: 1, value: yearlyValues[0] });
+                 } else if (t_total === 2) {
+                     pointsToShow.push({ year: 1, value: yearlyValues[0] });
+                     pointsToShow.push({ year: 2, value: yearlyValues[1] });
+                 } else if (t_total === 3) {
+                     pointsToShow.push({ year: 1, value: yearlyValues[0] });
+                     pointsToShow.push({ year: Math.min(2, yearlyValues.length), value: yearlyValues[1] }); // Ensure index valid
+                     pointsToShow.push({ year: Math.min(3, yearlyValues.length), value: yearlyValues[2] }); // Ensure index valid
+                 } else { // t_total >= 4
+                     let year1 = Math.max(1, Math.floor(t_total / 4));
+                     let year2 = Math.max(year1 + 1, Math.floor(t_total / 2));
+                     let year3 = Math.max(year2 + 1, Math.floor(3 * t_total / 4));
+                     let year4 = t_total;
+
+                     // Ensure indices are valid and years are distinct where possible
+                     const years = [...new Set([year1, year2, year3, year4])].sort((a, b) => a - b);
+
+                     years.forEach(y => {
+                         if (y > 0 && y <= yearlyValues.length) {
+                             pointsToShow.push({ year: y, value: yearlyValues[y - 1] });
+                         }
+                     });
+                 }
+
+                // Ensure we have max 4 points
+                pointsToShow = pointsToShow.slice(0, 4);
+
+                // Find the maximum value among the points being shown for scaling
+                const maxChartValue = pointsToShow.reduce((max, p) => Math.max(max, p.value), 0);
+
+                // Update the visible bars
+                pointsToShow.forEach((point, index) => {
+                    if (index < chartBarsData.length) { // Check if bar exists
+                        const item = chartBarsData[index];
+                        const value = point.value;
+                        const year = point.year;
+
+                        // Calculate height safely
+                         const barHeight = (maxChartValue > 0 && !isNaN(value) && value >= 0) ? (value / maxChartValue) * 100 : 0;
+
+                        item.container.classList.remove('hidden'); // Make bar visible
+                        item.container.classList.remove('no-value'); // Allow value display
+
+                        item.valEl.textContent = formatCurrency(value);
+                        item.barEl.style.height = `${Math.max(0, Math.min(100, barHeight))}%`; // Clamp height 0-100
+                        item.labEl.textContent = `In ${year} Yr${year !== 1 ? 's' : ''}`;
+                    }
+                });
+            }
+            // Any bars not updated remain hidden and reset
+        }
+
+        // --- Initial Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+             toggleInvestForGroup();
+             updateAmountWords();
+             updateCalculations(); // Run on load to populate initial values/chart
+        });
+
+    </script>
+
+</body>
+</html>

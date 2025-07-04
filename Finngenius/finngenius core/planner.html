@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings vs. Investment Planner 🌱</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+    <style>
+        :root {
+            --background-color: #f4f7f6; /* Very light grey-green */
+            --card-background: #ffffff;
+            --text-color: #333;
+            --heading-color: #0a4f42; /* Dark Teal/Green */
+            --primary-color: #2ecc71; /* Green Accent */
+            --secondary-color: #3498db; /* Blue Accent */
+            --input-border: #ccc;
+            --chart-saving-color: rgba(52, 152, 219, 0.7); /* Blue for Savings */
+            --chart-invest-color: rgba(46, 204, 113, 0.7); /* Green for Investment */
+            --border-radius: 10px;
+            --shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .planner-container {
+            max-width: 850px;
+            width: 100%;
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            text-align: center;
+            color: var(--heading-color);
+            margin-bottom: 30px;
+            font-size: 1.8em; /* Slightly smaller heading */
+            font-weight: 700;
+        }
+        header h1 span { margin-left: 8px; }
+
+        .input-section,
+        .results-section,
+        .explanation-section,
+        .tip-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #fff; /* Ensure white background for sections */
+            border-radius: var(--border-radius);
+             border: 1px solid #e0e0e0; /* Subtle border */
+        }
+         .input-section h2,
+         .results-section h2 {
+              font-size: 1.2em;
+              color: var(--heading-color);
+              margin-bottom: 15px;
+              border-bottom: 1px solid var(--primary-color);
+              padding-bottom: 5px;
+         }
+
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 20px; /* Space between input fields */
+            align-items: flex-end; /* Align bottom edges */
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            flex: 1; /* Allow fields to grow */
+            min-width: 150px; /* Minimum width before wrapping */
+        }
+
+        .form-control label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .form-control input[type="number"],
+        .form-control select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            font-size: 1em;
+            background-color: #fdfdfd;
+        }
+         /* Hide spinner buttons on number input */
+        .form-control input[type=number]::-webkit-outer-spin-button,
+        .form-control input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .form-control input[type=number] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+
+        .calculate-button {
+            padding: 10px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+             height: 42px; /* Match input height */
+        }
+        .calculate-button:hover {
+            background-color: #27ae60; /* Darker green */
+        }
+
+        /* Results Area */
+        .results-section {
+            /* Initially hidden, shown by JS */
+            display: none;
+        }
+        .results-section.visible {
+            display: block;
+        }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .summary-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .summary-box h3 {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .summary-box .value {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        .summary-box .value.saving { color: var(--secondary-color); }
+        .summary-box .value.investment { color: var(--primary-color); }
+
+        .chart-container {
+            position: relative;
+            height: 250px; /* Fixed height for chart */
+            width: 100%;
+            margin-bottom: 15px; /* Space below chart */
+        }
+
+        /* Explanation Section */
+        .explanation-section h3 {
+            font-size: 1.1em;
+            color: var(--heading-color);
+            margin-bottom: 10px;
+        }
+        .explanation-section p {
+            font-size: 0.95em;
+            color: #444;
+        }
+        .explanation-section strong {
+            font-weight: 600;
+        }
+        .explanation-section .saving-point { color: var(--secondary-color); }
+        .explanation-section .investing-point { color: var(--primary-color); }
+
+         /* Disclaimer */
+        .disclaimer {
+             font-size: 0.8em;
+             color: #777;
+             margin-top: 15px;
+             text-align: center;
+             font-style: italic;
+        }
+
+        /* Tip Section */
+        .tip-section {
+             background-color: #e8f6f3; /* Light green background */
+             border-left: 5px solid var(--primary-color);
+             padding: 15px 20px;
+             margin-bottom: 0; /* No margin if it's the last element */
+        }
+        .tip-section h3 {
+            font-size: 1em;
+            color: var(--heading-color);
+            margin-bottom: 5px;
+             display: flex;
+             align-items: center;
+        }
+        .tip-section h3 span { margin-right: 8px; font-size: 1.2em;}
+        .tip-section p {
+            font-size: 0.95em;
+            color: #2c5c51; /* Darker green text */
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+             body { padding: 10px; }
+             .planner-container { padding: 20px; }
+             header h1 { font-size: 1.5em; }
+             .input-group { flex-direction: column; align-items: stretch; gap: 15px; }
+             .calculate-button { width: 100%; }
+             .results-summary { grid-template-columns: 1fr; } /* Stack summary boxes */
+             .chart-container { height: 200px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="planner-container">
+        <header>
+            <h1>Savings vs. Investment Planner <span>🌱</span></h1>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <h2>Plan Your Future Growth</h2>
+            <div class="input-group">
+                <div class="form-control">
+                    <label for="monthly-saving">How much can you save monthly? (₹)</label>
+                    <input type="number" id="monthly-saving" placeholder="e.g., 1000" min="1" required aria-label="Monthly Saving Amount in Rupees">
+                </div>
+                <div class="form-control">
+                    <label for="investment-type">Choose how to grow it:</label>
+                    <select id="investment-type" required aria-label="Investment Type">
+                        <option value="FD">Fixed Deposit (FD)</option>
+                        <option value="MF">Mutual Funds</option>
+                        <option value="Stocks">Stocks</option>
+                    </select>
+                </div>
+                 <button id="calculate-btn" class="calculate-button">Calculate</button>
+            </div>
+        </section>
+
+        <!-- Results Section (Initially Hidden) -->
+        <section class="results-section" id="results">
+            <h2>Projected Growth Comparison</h2>
+            <div class="results-summary">
+                <div class="summary-box">
+                    <h3>After 1 Year</h3>
+                    <p><span class="value saving" id="saving-1y">₹0</span> <small>(Saving)</small></p>
+                    <p><span class="value investment" id="invest-1y">₹0</span> <small>(<span class="invest-type-label">Investment</span>)</small></p>
+                </div>
+                <div class="summary-box">
+                    <h3>After 3 Years</h3>
+                    <p><span class="value saving" id="saving-3y">₹0</span> <small>(Saving)</small></p>
+                    <p><span class="value investment" id="invest-3y">₹0</span> <small>(<span class="invest-type-label">Investment</span>)</small></p>
+                </div>
+                <div class="summary-box">
+                    <h3>After 5 Years</h3>
+                    <p><span class="value saving" id="saving-5y">₹0</span> <small>(Saving)</small></p>
+                    <p><span class="value investment" id="invest-5y">₹0</span> <small>(<span class="invest-type-label">Investment</span>)</small></p>
+                </div>
+            </div>
+             <div class="chart-container">
+                 <canvas id="comparisonChart"></canvas>
+             </div>
+             <p class="disclaimer">
+                *Investment returns are simplified estimates and not guaranteed. Actual returns vary and involve risk. Savings rates are also estimates.
+            </p>
+        </section>
+
+        <!-- Explanation Section -->
+        <section class="explanation-section">
+            <h3>Saving vs. Investing: What's the Diff? 🤔</h3>
+            <p>Think of it like growing a plant:</p>
+            <ul>
+                <li><strong class="saving-point">Saving</strong> is like keeping your seeds safe in a jar. They are secure, won't get lost easily, but they won't grow much on their own. It's good for short-term goals and emergencies. (Lower Risk, Lower Return)</li>
+                <li><strong class="investing-point">Investing</strong> is like planting your seeds in good soil. They have the potential to grow into bigger plants (more money!), but there's also a chance the weather (market changes) might affect them. It's often better for long-term goals. (Higher Risk, Potential for Higher Return)</li>
+            </ul>
+        </section>
+
+        <!-- Smart Tip Section -->
+        <section class="tip-section">
+            <h3><span>💡</span> Smart Tip of the Day</h3>
+            <p id="smart-tip">Loading tip...</p>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const monthlySavingInput = document.getElementById('monthly-saving');
+            const investmentTypeSelect = document.getElementById('investment-type');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resultsSection = document.getElementById('results');
+            const smartTipEl = document.getElementById('smart-tip');
+
+            // Result value placeholders
+            const saving1yEl = document.getElementById('saving-1y');
+            const saving3yEl = document.getElementById('saving-3y');
+            const saving5yEl = document.getElementById('saving-5y');
+            const invest1yEl = document.getElementById('invest-1y');
+            const invest3yEl = document.getElementById('invest-3y');
+            const invest5yEl = document.getElementById('invest-5y');
+            const investTypeLabelEls = document.querySelectorAll('.invest-type-label'); // Select all elements with this class
+
+             // Chart instance (global within this scope)
+            const chartCanvas = document.getElementById('comparisonChart');
+            let comparisonChart = null;
+
+            // --- Configuration ---
+            const assumedRates = {
+                saving: 0.02, // 2% annual rate for simple saving (e.g., basic savings account)
+                FD: 0.06,     // 6% assumed annual rate for Fixed Deposit
+                MF: 0.12,     // 12% assumed average annual rate for Mutual Funds (Illustrative!)
+                Stocks: 0.14  // 14% assumed average annual rate for Stocks (Illustrative!)
+            };
+
+            const smartTips = [
+                "Start saving early, even small amounts add up over time thanks to compounding!",
+                "Set clear financial goals (like saving for a bike or college) to stay motivated.",
+                "Track your spending for a week to see where your money actually goes.",
+                "Understand the difference between 'needs' (food, shelter) and 'wants' (latest gadget).",
+                "Pay yourself first! Treat saving like a bill you have to pay each month.",
+                "Before investing, build an emergency fund (3-6 months of expenses in savings).",
+                "Diversification (not putting all your eggs in one basket) can help reduce investment risk.",
+                "Never invest money you might need in the very near future.",
+                "Compound interest is powerful! It's interest earning interest.",
+                "Learn about inflation - it makes your money worth slightly less over time, which is why investing can be important."
+            ];
+
+            // --- Functions ---
+
+            // Simple Future Value calculation with monthly compounding
+            function calculateFutureValue(monthlyContribution, annualRate, years) {
+                const months = years * 12;
+                const monthlyRate = annualRate / 12;
+                let futureValue = 0;
+
+                for (let i = 0; i < months; i++) {
+                    futureValue = (futureValue + monthlyContribution) * (1 + monthlyRate);
+                }
+                return futureValue;
+            }
+
+            function formatCurrency(amount) {
+                 // Basic formatting, could use Intl.NumberFormat for more robustness
+                return `₹${amount.toFixed(0)}`; // Show whole rupees for simplicity
+            }
+
+             function displayRandomTip() {
+                const randomIndex = Math.floor(Math.random() * smartTips.length);
+                smartTipEl.textContent = smartTips[randomIndex];
+            }
+
+            function updateChart(savingValues, investmentValues, investmentLabel) {
+                const ctx = chartCanvas.getContext('2d');
+
+                // Destroy previous chart instance if it exists
+                if (comparisonChart) {
+                    comparisonChart.destroy();
+                }
+
+                 // Create new chart
+                comparisonChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['1 Year', '3 Years', '5 Years'],
+                        datasets: [
+                            {
+                                label: 'Savings',
+                                data: savingValues, // [val1y, val3y, val5y]
+                                backgroundColor: 'rgba(52, 152, 219, 0.7)', // Blue
+                                borderColor: 'rgba(52, 152, 219, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: investmentLabel, // e.g., 'Fixed Deposit (FD)'
+                                data: investmentValues, // [val1y, val3y, val5y]
+                                backgroundColor: 'rgba(46, 204, 113, 0.7)', // Green
+                                borderColor: 'rgba(46, 204, 113, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Allow chart to fill container height
+                        plugins: {
+                             title: {
+                                 display: true,
+                                 text: 'Projected Growth: Savings vs. Investment',
+                                 font: { size: 14 }
+                             },
+                             tooltip: {
+                                 callbacks: {
+                                     label: function(context) {
+                                         let label = context.dataset.label || '';
+                                         if (label) {
+                                             label += ': ';
+                                         }
+                                         if (context.parsed.y !== null) {
+                                             // Format tooltip value as currency
+                                              label += new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(context.parsed.y);
+                                         }
+                                         return label;
+                                     }
+                                 }
+                             }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                         // Format Y-axis ticks as currency (optional)
+                                         return '₹' + value.toLocaleString('en-IN');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function handleCalculation() {
+                const monthlySaving = parseFloat(monthlySavingInput.value);
+                const investmentType = investmentTypeSelect.value; // FD, MF, Stocks
+                const selectedInvestmentLabel = investmentTypeSelect.options[investmentTypeSelect.selectedIndex].text; // Get full text like "Fixed Deposit (FD)"
+
+
+                // Basic Validation
+                if (isNaN(monthlySaving) || monthlySaving <= 0) {
+                    alert("Please enter a valid monthly saving amount (greater than 0).");
+                    monthlySavingInput.focus();
+                    return;
+                }
+
+                 // Get the correct assumed rate
+                const savingRate = assumedRates.saving;
+                const investmentRate = assumedRates[investmentType]; // e.g., assumedRates['FD']
+
+                // Calculate values
+                const saving1y = calculateFutureValue(monthlySaving, savingRate, 1);
+                const saving3y = calculateFutureValue(monthlySaving, savingRate, 3);
+                const saving5y = calculateFutureValue(monthlySaving, savingRate, 5);
+
+                const invest1y = calculateFutureValue(monthlySaving, investmentRate, 1);
+                const invest3y = calculateFutureValue(monthlySaving, investmentRate, 3);
+                const invest5y = calculateFutureValue(monthlySaving, investmentRate, 5);
+
+                 // Update display values
+                saving1yEl.textContent = formatCurrency(saving1y);
+                saving3yEl.textContent = formatCurrency(saving3y);
+                saving5yEl.textContent = formatCurrency(saving5y);
+                invest1yEl.textContent = formatCurrency(invest1y);
+                invest3yEl.textContent = formatCurrency(invest3y);
+                invest5yEl.textContent = formatCurrency(invest5y);
+
+                 // Update investment type labels in the summary boxes
+                 investTypeLabelEls.forEach(el => el.textContent = selectedInvestmentLabel);
+
+
+                 // Prepare data for the chart
+                const savingValues = [saving1y, saving3y, saving5y];
+                const investmentValues = [invest1y, invest3y, invest5y];
+
+                // Update the chart
+                updateChart(savingValues, investmentValues, selectedInvestmentLabel);
+
+                // Show the results section
+                resultsSection.classList.add('visible');
+
+                // Show a new tip
+                displayRandomTip();
+            }
+
+            // --- Event Listeners ---
+            calculateBtn.addEventListener('click', handleCalculation);
+
+             // Optional: Calculate on pressing Enter in the input field
+             monthlySavingInput.addEventListener('keypress', function(event) {
+                 if (event.key === 'Enter') {
+                     event.preventDefault(); // Prevent form submission if it were in a form
+                     handleCalculation();
+                 }
+             });
+
+
+            // --- Initial Setup ---
+             displayRandomTip(); // Show first tip on load
+
+        });
+    </script>
+
+</body>
+</html>

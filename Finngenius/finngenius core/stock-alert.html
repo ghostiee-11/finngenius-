@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinGenius - Stock Price Alert Bot</title>
+    <style>
+        /* Your provided inline styles remain here */
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-card: #252525;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b3b3b3;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --error: #ef4444;
+            --success: #10b981;
+            --border: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background-color: var(--bg-secondary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        select:focus, input:focus {
+            outline: 2px solid var(--accent);
+            border-color: transparent;
+        }
+
+        .price-display {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid var(--error);
+            font-size: 0.9rem; /* Slightly smaller error text */
+        }
+
+        .button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .button:hover {
+            background-color: var(--accent-hover);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: var(--accent); /* Keep color but reduce opacity */
+        }
+
+
+        .button-large {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+
+        /* Alert Status (Optional - Add if you want feedback here) */
+        .alert-status-feedback {
+             margin-top: 1rem;
+             padding: 1rem;
+             border-radius: 0.5rem;
+             font-size: 0.9rem;
+             text-align: center;
+             display: none; /* Hidden by default */
+             border: 1px solid transparent;
+        }
+        .alert-status-feedback.success {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border-color: var(--success);
+            display: block;
+        }
+        .alert-status-feedback.error {
+             background-color: rgba(239, 68, 68, 0.2);
+             color: var(--error);
+             border-color: var(--error);
+             display: block;
+        }
+
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+            margin-top: auto;
+        }
+
+        @media (max-width: 640px) {
+            header { padding: 1rem; }
+            main { padding: 1rem; }
+            .card { padding: 1.5rem; }
+            h1 { font-size: 2rem; }
+            .description { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">FinGenius</a>
+        <a href="#" class="back-link">← Back Home</a>
+    </header>
+
+    <main>
+        <h1>Stock Price Alert Bot</h1>
+        <p class="description">Select a stock and set price alerts. We'll notify you when your target price is reached.</p>
+
+        <!-- Stock List Fetch Error -->
+        <div id="fetch-error" class="error-message" style="display: none;">
+            Could not load stock list. Failed to fetch. Check connection or backend server.
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Stock Selection</h2>
+            <div class="form-group">
+                <label for="stock-select">Select a Stock</label>
+                <select id="stock-select">
+                    <!-- Initial option set by JS -->
+                    <option value="" disabled selected>-- Loading Stocks --</option>
+                </select>
+            </div>
+
+            <!-- Price Display / Error Area -->
+            <div id="price-container" style="display: none;">
+                <div class="price-display">
+                    Latest Price: <span id="latest-price">--</span>
+                </div>
+            </div>
+            <div id="price-error" class="error-message" style="display: none;">
+                Could not fetch stock price.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Set Alert Conditions</h2>
+             <!-- Alert Status Feedback Area -->
+            <div id="alert-feedback" class="alert-status-feedback"></div>
+
+            <form id="alert-form"> <!-- Added form element -->
+                <div class="form-group">
+                    <label for="target-price">Target Price (INR)</label>
+                    <input type="number" id="target-price" placeholder="e.g., 2500.50" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="whatsapp-number">WhatsApp Number (with country code)</label>
+                    <input type="tel" id="whatsapp-number" placeholder="e.g., +919876543210" pattern="\+\d{10,15}" title="Enter 10-15 digits starting with '+' and country code." required>
+                </div>
+                <button type="submit" id="set-alert-btn" class="button button-large">Set Alert</button>
+            </form>
+        </div>
+
+    </main>
+
+    <footer>
+        © 2025 FinGenius. All rights reserved.
+    </footer>
+
+    <!-- Link to EXTERNAL JavaScript file -->
+    <script src="stock-alert.js"></script>
+</body>
+</html>

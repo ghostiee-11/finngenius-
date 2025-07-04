@@ -1,0 +1,498 @@
+/* --- Dark Theme Variables (from finedu.css) --- */
+:root {
+    --bg-dark-primary: #111111;    /* Deep background */
+    --bg-dark-secondary: #1A1A1A; /* Container background */
+    --bg-dark-tertiary: #2A2A2A;  /* Input/Hover/Bot message background */
+    --text-dark-primary: #E5E7EB; /* Main text (light grey) */
+    --text-dark-secondary: #9CA3AF;/* Muted text */
+    --accent-dark-primary: #FFFFFF; /* Button text/icons */
+    --accent-dark-secondary: #3B82F6; /* Optional blue accent for links/active */
+    --button-bg: #FFFFFF;         /* White button background */
+    --button-text: #111111;       /* Dark button text */
+    --button-hover-bg: #F3F4F6;   /* Slightly off-white hover */
+    --border-dark: #374151;       /* Subtle borders */
+    --success-green: #22C55E;
+    --warning-yellow: #f1c40f;
+    --error-red: #dc3545;
+    --profile-button-bg: #2A2A2A; /* Default profile button bg */
+    --profile-button-hover-bg: #374151; /* Profile button hover */
+    --profile-button-active-bg: var(--accent-dark-secondary); /* Active profile blue */
+    --profile-button-active-text: var(--accent-dark-primary); /* Active profile text white */
+}
+
+/* --- General Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px; /* Base font size */
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-dark-primary);
+    color: var(--text-dark-primary);
+    line-height: 1.6;
+    padding-top: 20px; /* Add some space at the top */
+}
+
+.container {
+    max-width: 900px; /* Consistent width */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- Header & Footer --- */
+header {
+    background-color: var(--bg-dark-primary); /* Match body */
+    padding: 15px 0;
+    margin-bottom: 30px; /* Space below header */
+    border-bottom: 1px solid var(--border-dark);
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark-primary);
+}
+
+nav a.back-home {
+    text-decoration: none;
+    color: var(--text-dark-secondary);
+    font-weight: 500;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+nav a.back-home:hover {
+    color: var(--text-dark-primary);
+}
+
+footer {
+    margin-top: 50px;
+    text-align: center;
+    padding: 25px 0;
+    border-top: 1px solid var(--border-dark);
+    color: var(--text-dark-secondary);
+    font-size: 0.9rem;
+}
+
+/* --- Headings & Text --- */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-dark-primary);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+p.description {
+    text-align: center;
+    color: var(--text-dark-secondary);
+    max-width: 700px;
+    margin: 0 auto 30px auto;
+    font-size: 1.1rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-dark-primary);
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-dark-secondary); /* Default paragraphs muted */
+}
+strong { color: var(--text-dark-primary); } /* Make strong text lighter */
+
+/* --- Section Styling (Dark Container) --- */
+.content-section {
+    background-color: var(--bg-dark-secondary);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--border-dark);
+}
+
+/* --- Disclaimer (Adapted) --- */
+.disclaimer {
+    font-size: 0.9em;
+    color: #fde047; /* Lighter yellow for text */
+    background-color: rgba(241, 196, 15, 0.1); /* Transparent yellow */
+    border-left: 3px solid var(--warning-yellow);
+    padding: 12px 18px;
+    margin: 0 auto 30px auto; /* Center */
+    max-width: 900px; /* Match container width */
+    border-radius: 6px;
+}
+.disclaimer p { margin: 0; color: inherit;} /* Inherit yellow color */
+.disclaimer strong { font-weight: 600; color: #fef08a; } /* Even lighter yellow for strong */
+
+/* --- Instructions (Adapted) --- */
+.instructions {
+    font-size: 0.95em;
+    color: var(--text-dark-secondary);
+    margin-bottom: 20px;
+    background-color: rgba(59, 130, 246, 0.1); /* Transparent blue */
+    padding: 10px 15px;
+    border-left: 4px solid var(--accent-dark-secondary);
+    border-radius: 4px;
+}
+.instructions strong {
+    color: var(--text-dark-primary);
+}
+
+/* --- Input Area & Buttons --- */
+.input-area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    padding: 12px 15px;
+    background-color: var(--bg-dark-tertiary); /* Darker input bg */
+    border: 1px solid var(--border-dark);
+    border-radius: 0.75rem; /* Rounded */
+    color: var(--text-dark-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+input[type="text"]:focus {
+    border-color: var(--accent-dark-secondary); /* Blue focus */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+input[type="text"]::placeholder {
+     color: var(--text-dark-secondary);
+}
+
+/* Standard Button Style (like Send) */
+button {
+    background-color: var(--button-bg); /* White button */
+    color: var(--button-text);       /* Dark text */
+    padding: 12px 25px;
+    border: none;
+    border-radius: 0.75rem; /* Match input/target UI */
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+button:hover {
+    background-color: var(--button-hover-bg); /* Slightly grey hover */
+}
+button:disabled {
+    background-color: var(--bg-dark-tertiary);
+    color: var(--text-dark-secondary);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* --- Profile Selector --- */
+.profile-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+}
+
+.profile-button {
+    background-color: var(--profile-button-bg); /* Dark grey default */
+    color: var(--text-dark-secondary);
+    border: 1px solid var(--border-dark);
+    min-width: 120px;
+    padding: 10px 20px;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.profile-button:hover {
+    background-color: var(--profile-button-hover-bg);
+    color: var(--text-dark-primary);
+    border-color: #4b5563; /* Slightly lighter border on hover */
+}
+.profile-button.active { /* Style for selected button */
+    background-color: var(--profile-button-active-bg); /* Blue when active */
+    color: var(--profile-button-active-text); /* White text */
+    border-color: var(--profile-button-active-bg);
+    font-weight: 600;
+}
+.profile-button:disabled {
+    background-color: var(--bg-dark-tertiary);
+    color: var(--text-dark-secondary);
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: var(--border-dark);
+}
+
+
+/* --- Output & Loading --- */
+.loading {
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 10px;
+    font-style: italic;
+    color: var(--text-dark-secondary);
+    font-size: 0.9em;
+}
+.info-message {
+    text-align: left;
+    padding: 12px 15px;
+    margin: 10px 0;
+    font-style: normal;
+    color: var(--text-dark-secondary); /* Muted info */
+    background-color: transparent; /* No extra background needed */
+    border: none;
+    border-radius: 4px;
+    line-height: 1.5;
+}
+.error-text, /* Target error messages */
+.info-message.error { /* If info message used for errors */
+    color: var(--error-red);
+    background-color: rgba(220, 53, 69, 0.1); /* Faint red bg */
+    border: 1px solid rgba(220, 53, 69, 0.5);
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+
+.output-area {
+    margin-top: 20px;
+    padding: 1.5rem; /* More padding */
+    background-color: var(--bg-dark-tertiary); /* Slightly darker background for output */
+    border: 1px solid var(--border-dark);
+    border-radius: 0.75rem; /* Match input */
+    min-height: 100px;
+    max-height: 50vh;
+    overflow-y: auto;
+    line-height: 1.6;
+    color: var(--text-dark-primary); /* Ensure output text is light */
+}
+/* Custom Scrollbar for Output Areas */
+.output-area::-webkit-scrollbar { width: 6px; }
+.output-area::-webkit-scrollbar-track { background: var(--bg-dark-secondary); border-radius: 3px;}
+.output-area::-webkit-scrollbar-thumb { background-color: var(--border-dark); border-radius: 3px;}
+.output-area::-webkit-scrollbar-thumb:hover { background-color: var(--text-dark-secondary); }
+
+#explanationArea {
+     white-space: pre-wrap; /* Preserve line breaks */
+}
+.placeholder-text {
+    color: var(--text-dark-secondary);
+    font-style: italic;
+    text-align: center;
+}
+
+
+/* --- Results Table --- */
+#illustratorResultsArea {
+    margin-top: 0; /* Reset margin as it's inside output-area */
+    padding: 0;
+    border: none;
+    background: none;
+    overflow: visible; /* Table itself shouldn't scroll, parent does */
+}
+#illustratorResultsArea table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#illustratorResultsArea th,
+#illustratorResultsArea td {
+    border: 1px solid var(--border-dark);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.9em;
+    vertical-align: middle;
+    color: var(--text-dark-secondary); /* Default cell text muted */
+}
+
+#illustratorResultsArea th {
+    background-color: var(--bg-dark-secondary); /* Match section bg */
+    font-weight: 600;
+    color: var(--text-dark-primary); /* Header text primary */
+    white-space: nowrap;
+}
+
+#illustratorResultsArea tr:nth-child(even) td { /* Subtle alternating row */
+    background-color: rgba(42, 42, 42, 0.3); /* Very subtle difference */
+}
+
+#illustratorResultsArea tr:hover td {
+    background-color: rgba(55, 65, 81, 0.5); /* Subtle hover */
+}
+
+#illustratorResultsArea td {
+     word-break: break-word;
+     color: var(--text-dark-primary); /* Data text primary */
+}
+/* Adjust column widths if needed */
+#illustratorResultsArea th:nth-child(1), #illustratorResultsArea td:nth-child(1) { width: 20%; } /* AMC */
+#illustratorResultsArea th:nth-child(2), #illustratorResultsArea td:nth-child(2) { width: 30%; } /* Fund Name */
+
+/* --- Quiz Section Specifics --- */
+.quiz-container {
+    background-color: var(--bg-dark-tertiary); /* Container for quiz elements */
+    border: 1px solid var(--border-dark);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+#quizQuestions .quiz-question-single {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dotted var(--border-dark);
+}
+#quizQuestions .quiz-question-single:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+#quizQuestions p strong { /* Question number */
+     color: var(--text-dark-secondary);
+     margin-right: 5px;
+}
+#quizQuestions p { /* Question text itself */
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: var(--text-dark-primary); /* Lighter question text */
+}
+
+#quizQuestions .quiz-options div,
+#quizQuestions .quiz-options label {
+    margin-bottom: 10px; /* Space between radio options */
+    display: block; /* Ensure labels stack nicely */
+    cursor: pointer;
+}
+
+#quizQuestions input[type="radio"] {
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: var(--accent-dark-secondary); /* Blue radio button */
+    vertical-align: middle;
+}
+
+#quizQuestions label {
+    cursor: pointer;
+    font-size: 0.95em;
+    color: var(--text-dark-secondary); /* Muted option text */
+    display: inline-block;
+    vertical-align: middle;
+}
+#quizQuestions input[type="radio"]:checked + label {
+    color: var(--text-dark-primary); /* Lighter text for selected option */
+}
+
+
+.quiz-action-area {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+/* Style quiz action button like other main buttons */
+#quizActionButton {
+    min-width: 180px;
+    font-weight: 600;
+}
+
+/* Quiz Feedback */
+#quizFeedbackArea {
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.95em;
+}
+.feedback-correct {
+    color: var(--success-green);
+    background-color: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+.feedback-incorrect {
+    color: var(--error-red);
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+
+/* Quiz Result Area */
+#quizResultArea .quiz-result-card {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: var(--bg-dark-secondary); /* Match section bg */
+    border: 1px solid var(--border-dark);
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+#quizResultArea h3 {
+    margin-top: 0;
+    color: var(--text-dark-primary);
+    font-size: 1.4em;
+    margin-bottom: 15px;
+}
+
+#quizResultArea p {
+    margin-bottom: 12px;
+    font-size: 1em;
+    color: var(--text-dark-secondary);
+}
+#quizResultArea p:last-of-type { /* Last paragraph before button */
+    margin-bottom: 20px;
+}
+#quizResultArea p strong { /* Highlighted parts in result message */
+    color: var(--text-dark-primary);
+    font-weight: 600;
+}
+
+#retakeQuizButton { /* Style like primary button */
+    margin-top: 15px;
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.6rem; }
+    p.description { font-size: 1rem; padding: 0 10px; }
+    .container { padding: 0 15px; }
+    .content-section { padding: 1.5rem; margin-bottom: 2rem;}
+    .input-area { flex-direction: column; gap: 12px; align-items: stretch; }
+    button, .profile-button { width: 100%; } /* Make buttons full width */
+    .profile-selector { flex-direction: column; gap: 10px; }
+    #illustratorResultsArea th, #illustratorResultsArea td { padding: 8px 10px; font-size: 0.85em;}
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.4rem; }
+    .content-section { padding: 1rem; }
+    #illustratorResultsArea th, #illustratorResultsArea td { font-size: 0.8em;}
+    button, #quizActionButton, #retakeQuizButton { padding: 12px 20px; font-size: 0.95rem;}
+}

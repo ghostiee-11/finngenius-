@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinnGenius - Your All-in-One Financial Intelligence Hub</title>
+  <!-- Link CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- TradingView Script (Load before main script if possible) -->
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Link Main JS (Defer loading until HTML is parsed) -->
+  <script src="script.js" defer></script>
+</head>
+<body class="dark-mode">
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container">
+      <a href="/" class="logo">
+        <span>FinnGenius</span>
+      </a>
+
+      <nav class="desktop-nav">
+        <!-- Animated hover indicator -->
+        <div class="hover-indicator"></div>
+
+        <a href="/" class="nav-link">Home</a>
+
+        <div class="dropdown">
+          <button class="dropdown-trigger nav-link">
+            Tools <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+          </button>
+          <div class="dropdown-content">
+            <div class="dropdown-scroll">
+              <!-- Dropdown items -->
+              <a href="finedu.html" class="dropdown-item"><span class="dropdown-item-title">FinEdu</span><span class="dropdown-item-desc">Personalized Finance Learning Module</span></a>
+              <a href="stock-alert.html" class="dropdown-item"><span class="dropdown-item-title">Stock Price Alert</span><span class="dropdown-item-desc">Real-time stock price monitoring</span></a>
+              <a href="chatbot.html" class="dropdown-item"><span class="dropdown-item-title">AI Financial Assistant</span><span class="dropdown-item-desc">Smart financial guidance</span></a>
+              <a href="loan_rec.html" class="dropdown-item"><span class="dropdown-item-title">Loan Recommender</span><span class="dropdown-item-desc">Find the best loan options</span></a>
+              <a href="goal.html" class="dropdown-item"><span class="dropdown-item-title">Goal-Based Planner</span><span class="dropdown-item-desc">Plan investments for your goals</span></a>
+              <a href="mf_s.html" class="dropdown-item"><span class="dropdown-item-title">Mutual Fund Advisor</span><span class="dropdown-item-desc">SIP and mutual fund recommendations</span></a>
+              <a href="/tools/insurance" class="dropdown-item"><span class="dropdown-item-title">Insurance Claim Checker</span><span class="dropdown-item-desc">Verify insurance claim status</span></a>
+              <a href="scam-checker.html" class="dropdown-item"><span class="dropdown-item-title">Spam Checker</span><span class="dropdown-item-desc">Detect financial scams and spam</span></a>
+              <a href="financial-tools.html" class="dropdown-item"><span class="dropdown-item-title">Financial tools</span><span class="dropdown-item-desc">Calculations in Seconds.</span></a>
+              <a href="mt.html" class="dropdown-item"><span class="dropdown-item-title">Market analysis</span><span class="dropdown-item-desc">Analysis in a Click.</span></a>
+              <a href="indexp.html" class="dropdown-item"><span class="dropdown-item-title">Finnyland</span><span class="dropdown-item-desc"> A magical world where kids learn money skills through fun, games, and comic-style adventures!</span></a>
+            </div>
+          </div>
+        </div>
+
+        <a href="articles.html" class="nav-link">Articles</a>
+        <a href="forum.html" class="nav-link">Forum</a>
+        <a href="indexp.html" class="nav-link">Finnyland</a>
+        <a href="/about" class="nav-link">About</a>
+
+        <!-- Shows when logged OUT -->
+        <button class="nav-link auth-trigger-btn logged-out-item">Login / Sign Up</button>
+
+        <!-- Shows when logged IN -->
+        <span id="logged-in-user" class="nav-link logged-in-item" style="display: none; cursor: default;"></span> <!-- Welcome message area -->
+        <button id="logout-button" class="nav-link logged-in-item auth-action-btn" style="display: none;">Logout</button>
+
+      </nav> <!-- End desktop-nav -->
+
+      <button class="mobile-menu-button" aria-label="Open menu">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="mobile-menu">
+        <div class="mobile-menu-header">
+          <a href="/" class="logo">FinnGenius</a>
+          <button class="mobile-menu-close" aria-label="Close menu">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <nav class="mobile-nav">
+          <a href="/" class="mobile-nav-link">Home<i data-lucide="chevron-right"></i></a>
+
+          <div class="mobile-nav-section">
+             <div class="mobile-nav-section-title">Tools</div>
+             <div class="mobile-nav-section-content">
+                 <!-- Mobile Tool Links -->
+                 <a href="finedu.html" class="mobile-nav-link"><div><div>FinEdu</div><div class="mobile-nav-link-desc">Personalized Finance Learning Module</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="stock-alert.html" class="mobile-nav-link"><div><div>Stock Price Alert</div><div class="mobile-nav-link-desc">Real-time stock price monitoring</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="chatbot.html" class="mobile-nav-link"><div><div>AI Financial Assistant</div><div class="mobile-nav-link-desc">Smart financial guidance</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="loan_rec.html" class="mobile-nav-link"><div><div>Loan Recommender</div><div class="mobile-nav-link-desc">Find the best loan options</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="goal.html" class="mobile-nav-link"><div><div>Goal-Based Planner</div><div class="mobile-nav-link-desc">Plan investments for your goals</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="mf_s.html" class="mobile-nav-link"><div><div>Mutual Fund Advisor</div><div class="mobile-nav-link-desc">SIP and mutual fund recommendations</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="/tools/insurance" class="mobile-nav-link"><div><div>Insurance Claim Checker</div><div class="mobile-nav-link-desc">Verify insurance claim status</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="scam-checker.html" class="mobile-nav-link"><div><div>Spam Checker</div><div class="mobile-nav-link-desc">Detect financial scams and spam</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="financial-tools.html" class="mobile-nav-link"><div><div>Financial tools</div><div class="mobile-nav-link-desc">A hub of all the financial tools you need.</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="mt.html" class="mobile-nav-link"><div><div>Market Analysis</div><div class="mobile-nav-link-desc">A Click For Market Analysis.</div></div><i data-lucide="chevron-right"></i></a>
+                 <a href="indexp.html" class="mobile-nav-link"><div><div>Finnyland</div><div class="mobile-nav-link-desc">A magical world where kids learn money skills through fun, games, and comic-style adventures!</div></div><i data-lucide="chevron-right"></i></a>
+            </div>
+          </div>
+
+          <a href="articles.html" class="mobile-nav-link">Articles<i data-lucide="chevron-right"></i></a>
+          <a href="forum.html" class="mobile-nav-link">Forum<i data-lucide="chevron-right"></i></a>
+          <a href="indexp.html" class="mobile-nav-link">Finnyland<i data-lucide="chevron-right"></i></a>
+          <a href="/about" class="mobile-nav-link">About<i data-lucide="chevron-right"></i></a>
+
+          <!-- Mobile Auth - Logged Out State -->
+          <a href="#" class="mobile-nav-link auth-trigger-btn logged-out-item" role="button">
+            Login / Sign Up
+            <i data-lucide="log-in"></i>
+          </a>
+
+          <!-- Mobile Auth - Logged In State -->
+          <span id="mobile-logged-in-user" class="mobile-nav-link logged-in-item" style="display: none; justify-content: space-between; cursor: default;">
+             <!-- Text filled by JS --> <i data-lucide="user"></i>
+          </span>
+          <a href="#" id="mobile-logout-button" class="mobile-nav-link logged-in-item auth-action-btn" style="display: none;">
+            Logout
+            <i data-lucide="log-out"></i>
+          </a>
+
+        </nav> <!-- End mobile-nav -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Stock Ticker Section -->
+   <section class="stock-ticker-section">
+    <div class="stock-ticker-container">
+      <div class="ticker-track">
+        <!-- Ticker Items -->
+        <div class="ticker-item" id="ticker-nifty"><span class="name">NIFTY 50</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" id="ticker-sensex"><span class="name">SENSEX</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" id="ticker-banknifty"><span class="name">BANKNIFTY</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" id="ticker-dow"><span class="name">DOW JONES</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" id="ticker-btc"><span class="name">BTC</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" id="ticker-eth"><span class="name">ETH</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <!-- Duplicate Items for seamless loop -->
+        <div class="ticker-item" aria-hidden="true"><span class="name">NIFTY 50</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" aria-hidden="true"><span class="name">SENSEX</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" aria-hidden="true"><span class="name">BANKNIFTY</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" aria-hidden="true"><span class="name">DOW JONES</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" aria-hidden="true"><span class="name">BTC</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+        <div class="ticker-item" aria-hidden="true"><span class="name">ETH</span><span class="price loading">---</span><span class="change loading">---%</span></div>
+      </div>
+    </div>
+  </section>
+  <!-- End Stock Ticker Section -->
+
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <!-- TradingView Widget Container -->
+    <div id="tradingview-widget" class="tradingview-container"></div>
+    <!-- Hero Content Overlay -->
+    <div class="hero-content">
+      <h1 class="hero-title animate-fade-up">FinnGenius</h1>
+      <h2 class="hero-subtitle animate-fade-up animation-delay-100">Your All-in-One Financial Intelligence Hub</h2>
+      <p class="hero-description animate-fade-up animation-delay-200">
+        Smarter investing. Simplified finance. Personalized for you.
+      </p>
+    </div>
+  </section>
+
+  <!-- Tools Section -->
+  <section class="tools-section">
+    <div class="container">
+      <h2 class="section-title">Explore Our Tools</h2>
+      <p class="section-description">
+        Powerful financial tools designed to help you make smarter investment decisions.
+      </p>
+      <div class="tools-grid">
+        <!-- Tool Cards -->
+        <a href="finedu.html" class="tool-card animate-fade-up" style="animation-delay: 0ms;"><div class="tool-icon"><i data-lucide="book-open"></i></div><h3 class="tool-title">FinEdu</h3><p class="tool-description">Personalized Finance Learning Module tailored to your knowledge level.</p></a>
+        <a href="stock-alert.html" class="tool-card animate-fade-up" style="animation-delay: 100ms;"><div class="tool-icon"><i data-lucide="bell"></i></div><h3 class="tool-title">Stock Price Alert</h3><p class="tool-description">Get real-time notifications when stocks hit your target prices.</p></a>
+        <a href="chatbot.html" class="tool-card animate-fade-up" style="animation-delay: 200ms;"><div class="tool-icon"><i data-lucide="bot"></i></div><h3 class="tool-title">AI Financial Assistant</h3><p class="tool-description">Ask questions and get personalized financial guidance instantly.</p></a>
+        <a href="loan_rec.html" class="tool-card animate-fade-up" style="animation-delay: 300ms;"><div class="tool-icon"><i data-lucide="calculator"></i></div><h3 class="tool-title">Loan Recommender</h3><p class="tool-description">Compare and find the best loan options based on your profile.</p></a>
+        <a href="goal.html" class="tool-card animate-fade-up" style="animation-delay: 400ms;"><div class="tool-icon"><i data-lucide="target"></i></div><h3 class="tool-title">Goal-Based Planner</h3><p class="tool-description">Plan your investments to achieve specific financial goals.</p></a>
+        <a href="mf_s.html" class="tool-card animate-fade-up" style="animation-delay: 500ms;"><div class="tool-icon"><i data-lucide="trending-up"></i></div><h3 class="tool-title">Mutual Fund Advisor</h3><p class="tool-description">Get SIP and mutual fund recommendations based on your risk profile.</p></a>
+        <a href="/tools/insurance" class="tool-card animate-fade-up" style="animation-delay: 600ms;"><div class="tool-icon"><i data-lucide="shield"></i></div><h3 class="tool-title">Insurance Claim Checker</h3><p class="tool-description">Verify and track the status of your insurance claims.</p></a>
+        <a href="scam-checker.html" class="tool-card animate-fade-up" style="animation-delay: 700ms;"><div class="tool-icon"><i data-lucide="alert-triangle"></i></div><h3 class="tool-title">Spam Checker</h3><p class="tool-description">Detect financial scams, phishing attempts, and spam messages.</p></a>
+        <a href="financial-tools.html" class="tool-card animate-fade-up" style="animation-delay: 600ms;"><div class="tool-icon"><i data-lucide="calculator"></i></div><h3 class="tool-title">Financial Tools</h3><p class="tool-description">A hub of all the financial tools you need.</p></a>
+        <a href="mt.html" class="tool-card animate-fade-up" style="animation-delay: 600ms;"><div class="tool-icon"><i data-lucide="chart-area"></i></div><h3 class="tool-title">Market Analysis</h3><p class="tool-description">A Click For Market Analysis.</p></a>
+        <a href="indexp.html" class="tool-card animate-fade-up" style="animation-delay: 600ms;"><div class="tool-icon"><i data-lucide="globe"></i></div><h3 class="tool-title">Finnyland</h3><p class="tool-description">A magical world where kids learn money skills through fun, games, and comic-style adventures!</p></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Articles Section -->
+  <section class="articles-section">
+    <div class="container">
+      <h2 class="section-title">Latest Insights</h2>
+      <p class="section-description">
+        Stay updated with the latest financial news and analysis from trusted sources.
+      </p>
+      <div class="articles-grid" id="articles-container">
+        <!-- Skeletons -->
+        <div class="article-card-skeleton"></div><div class="article-card-skeleton"></div><div class="article-card-skeleton"></div>
+        <div class="article-card-skeleton"></div><div class="article-card-skeleton"></div><div class="article-card-skeleton"></div>
+      </div>
+      <div class="view-all-container">
+        <a href="articles.html" class="view-all-button">View all articles</a>
+      </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="container">
+      <h2 class="section-title">Empowering India's Financial Future</h2>
+      <p class="about-description">
+        At FinGenius, we're on a mission to democratize financial intelligence and empower every Indian investor with
+        the tools, insights, and knowledge needed to make confident financial decisions. We believe that financial
+        freedom should be accessible to everyone, regardless of their background or experience level.
+      </p>
+      <p class="about-description">
+        Our team of financial experts, data scientists, and technology enthusiasts work together to bring you
+        cutting-edge financial tools and actionable insights that simplify complex financial concepts and help you
+        achieve your financial goals.
+      </p>
+      <a href="/about" class="about-button">Learn more about us</a>
+    </div>
+  </section>
+
+  <!-- Authentication Modal -->
+  <div id="auth-modal" class="auth-modal">
+    <div class="modal-content">
+      <button class="close-button" aria-label="Close modal">×</button>
+
+      <!-- Login Form -->
+      <div id="login-view">
+        <h2>Login</h2>
+        <form id="login-form" novalidate> <!-- Add novalidate to prevent default browser validation if using custom JS validation -->
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" name="email" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" required autocomplete="current-password">
+          </div>
+          <!-- Error message placeholder added via JS -->
+          <button type="submit" class="btn btn-primary">Login</button>
+          <p class="switch-link">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+          <a href="#" class="forgot-password">Forgot Password?</a> <!-- Link functionality not implemented -->
+        </form>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signup-view" style="display: none;">
+        <h2>Sign Up</h2>
+        <form id="signup-form" novalidate>
+          <div class="form-group">
+            <label for="signup-name">Name</label>
+            <input type="text" id="signup-name" name="name" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" name="email" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" name="password" required minlength="6" autocomplete="new-password">
+          </div>
+           <div class="form-group">
+            <label for="signup-confirm-password">Confirm Password</label>
+            <input type="password" id="signup-confirm-password" name="confirm_password" required minlength="6" autocomplete="new-password">
+          </div>
+           <!-- Error message placeholder added via JS -->
+          <button type="submit" class="btn btn-primary">Create Account</button>
+          <div class="social-login-divider"><span>OR</span></div>
+          <button type="button" class="btn btn-social btn-google" id="google-signup-btn">
+            <i data-lucide="chrome"></i> Sign up with Google
+          </button>
+          <button type="button" class="btn btn-social btn-github" id="github-signup-btn">
+            <i data-lucide="github"></i> Sign up with GitHub
+          </button>
+          <p class="switch-link">Already have an account? <a href="#" id="show-login">Login</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- End Authentication Modal -->
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Footer Columns -->
+        <div class="footer-column">
+          <h3 class="footer-title">FinGenius</h3>
+          <p class="footer-text">Your All-in-One Financial Intelligence Hub. Smarter investing. Simplified finance. Personalized for you.</p>
+        </div>
+        <div class="footer-column">
+          <h3 class="footer-title">Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="/tools">Tools</a></li> <!-- Consider linking to tools section or a dedicated page -->
+            <li><a href="articles.html">Articles</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3 class="footer-title">Legal</h3>
+          <ul class="footer-links">
+            <li><a href="/legal/privacy-policy">Privacy Policy</a></li>
+            <li><a href="/legal/terms-of-service">Terms of Service</a></li>
+            <li><a href="/legal/disclaimer">Disclaimer</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3 class="footer-title">Connect</h3>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+            <a href="#" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+          </div>
+          <p class="footer-text">Email: contact@fingenius.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© <span id="current-year"></span> FinGenius. All rights reserved.</p>
+        <p class="footer-tagline">Made with ❤️ in India</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

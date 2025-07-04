@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MF Assistant (Dark Theme)</title>
+    <!-- Link to the NEW dark theme CSS -->
+    <link rel="stylesheet" href="mf_s.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+</head>
+<body>
+    <!-- Consistent Header -->
+    <header>
+        <div class="container">
+            <div class="logo">FinGenius Tools</div>
+            <nav>
+                <span 
+                    onclick="window.location.href='index.html'" 
+                    style="color: var(--text-dark-secondary); cursor: pointer; text-decoration: underline;"
+                >
+                    ← Go back
+                </span>
+            </nav>
+        </div>
+    </header>
+    
+
+    <main class="container">
+        <!-- Main Title -->
+        <h1>Mutual Fund Assistant</h1>
+        <p class="description">Explore mutual fund concepts, see illustrative examples based on historical data profiles, and test your understanding.</p>
+
+        <!-- Disclaimer - Adapted style -->
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> This tool provides information based on historical data and AI assistance. It is NOT financial advice. Fund examples are illustrations based on historical data similarity, not recommendations. Consult a SEBI-registered financial advisor before making investment decisions.</p>
+        </div>
+
+        <!-- Jargon Buster Section -->
+        <section class="content-section" id="explainer-section">
+            <h2>Ask a Question or Explain a Term</h2>
+            <div class="input-area">
+                <input type="text" id="termInput" placeholder="e.g., What is NAV?, Explain SIP, Beta..." autocomplete="off">
+                <button id="explainButton">Explain</button>
+            </div>
+            <div id="loadingExplain" class="loading" style="display: none;">Getting explanation...</div>
+            <div id="explanationArea" class="output-area">
+                 <p class="placeholder-text">Enter a term or question above and click Explain.</p>
+            </div>
+        </section>
+
+        <!-- Illustrative Finder Section -->
+        <section class="content-section" id="illustrator-section">
+            <h2>Illustrative Fund Examples by Profile</h2>
+            <p class="instructions">
+                Select a generic risk profile to see examples of funds from our dataset with similar historical characteristics (risk type, category, rating, returns).
+                <br><strong>**These are NOT recommendations.**</strong>
+            </p>
+            <div class="profile-selector">
+                <!-- Buttons styled according to dark theme -->
+                <button class="profile-button" data-profile="Conservative">Conservative</button>
+                <button class="profile-button" data-profile="Moderate">Moderate</button>
+                <button class="profile-button" data-profile="Aggressive">Aggressive</button>
+            </div>
+            <div id="loadingIllustrate" class="loading" style="display: none;">Finding examples...</div>
+            <div id="illustratorOutput" class="output-area"> <!-- Combined message and results area -->
+                 <div id="illustratorMessage" class="info-message" style="display: block;">Select a profile above to see illustrative examples.</div>
+                 <div id="illustratorResultsArea">
+                     <!-- Fund examples table will appear here -->
+                 </div>
+            </div>
+        </section>
+
+         <!-- Informational Risk Profile Quiz Section -->
+         <section class="content-section" id="quiz-section">
+            <h2>Understand Your Potential Risk Profile (Informational Quiz)</h2>
+            <p class="instructions">
+                Answer these questions to see which generic risk profile (Conservative, Moderate, Aggressive) your general approach might align with.
+                <br><strong>This is for educational purposes ONLY and IS NOT financial advice or a substitute for a professional assessment.</strong> It doesn't determine suitable investments.
+            </p>
+
+            <div class="quiz-container"> <!-- Added container for better visual grouping -->
+                <div id="quizQuestions">
+                    <!-- Current question will be loaded here -->
+                    <div id="loadingQuiz" class="loading" style="display: none;">Loading Quiz...</div>
+                </div>
+
+                <div id="quizFeedbackArea" style="margin-top: 15px; font-weight: 600; text-align: center;">
+                    <!-- Feedback (Correct/Incorrect) appears here -->
+                </div>
+
+                <div class="quiz-action-area"> <!-- Centering the button -->
+                    <button id="quizActionButton" disabled>Submit Answer</button>
+                </div>
+
+                <div id="quizResultArea" style="display: none; margin-top: 20px;">
+                    <!-- Final score appears here, styled like a result card -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Consistent Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 FinGenius Tools. All rights reserved.</p> <!-- Adjust year/name -->
+        </div>
+    </footer>
+
+    <!-- Link to the SAME JavaScript file -->
+    <script src="mf_s.js"></script>
+</body>
+</html>

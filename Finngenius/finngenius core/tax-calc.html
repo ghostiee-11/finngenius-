@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Tax Calculator - FinGenius</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --bg-input: #2C2C2C;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0; /* Adjusted gray */
+            --text-placeholder: #6B7280;
+            --border-color: #3A3A3A; /* Slightly lighter border */
+            --accent-blue: #3B82F6;
+            --accent-blue-light: #60A5FA;
+            --accent-blue-bg: rgba(59, 130, 246, 0.15); /* Slightly less intense */
+            --accent-green: #22C55E;
+            --accent-green-light: #4ADE80;
+            --accent-green-bg: rgba(34, 197, 94, 0.15); /* Slightly less intense */
+            --focus-ring: #2563EB;
+            --border-radius: 0.5rem; /* Corresponds to rounded-lg */
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 72rem; /* max-w-7xl */
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .main-container {
+             max-width: 42rem; /* max-w-4xl */
+             margin-left: auto;
+             margin-right: auto;
+             padding-left: 1rem;
+             padding-right: 1rem;
+             flex-grow: 1; /* Make main content take available space */
+        }
+
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        header .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem; /* space-x-4 */
+        }
+
+        header .back-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        header .back-link:hover {
+            color: var(--text-secondary);
+        }
+        header .back-link svg { /* Basic arrow */
+             width: 1.25rem;
+             height: 1.25rem;
+        }
+
+
+        header h1 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* gap-2 */
+        }
+         header h1 svg { /* Basic calculator icon */
+             width: 1.5rem;
+             height: 1.5rem;
+         }
+
+
+        main {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .calculator-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 2rem; /* p-8 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl approximation */
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem; /* space-y-6 approx */
+        }
+        .input-group:last-of-type {
+             margin-bottom: 0;
+        }
+
+
+        label {
+            display: block;
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+
+        input[type="number"] {
+            width: 100%;
+            box-sizing: border-box; /* Include padding and border in width */
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.75rem 1rem; /* px-4 py-3 */
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        input[type="number"]::placeholder {
+            color: var(--text-placeholder);
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--focus-ring);
+            box-shadow: 0 0 0 2px var(--focus-ring); /* focus:ring-2 */
+        }
+        /* Hide spinner buttons for number input */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearanc: textfield; /* Firefox */
+        }
+
+        .input-helper-text {
+            margin-top: 0.25rem; /* mt-1 */
+            font-size: 0.875rem; /* text-sm */
+            color: var(--text-placeholder);
+        }
+
+        /* Styles for the new word display elements */
+        .input-words-text {
+            margin-top: 0.25rem; /* mt-1 */
+            font-size: 0.8rem; /* Slightly smaller */
+            color: var(--text-placeholder);
+            font-style: italic;
+            min-height: 1.2em; /* Prevent layout shift when empty */
+            line-height: 1.4; /* Adjust line height */
+        }
+
+
+        .results-grid {
+            margin-top: 2rem; /* mt-8 */
+            display: grid;
+            grid-template-columns: 1fr; /* default */
+            gap: 1.5rem; /* gap-6 */
+        }
+
+        @media (min-width: 768px) { /* md: */
+            .results-grid {
+                grid-template-columns: 1fr 1fr; /* grid-cols-2 */
+            }
+        }
+
+        .result-card {
+            border-radius: var(--border-radius);
+            padding: 1.5rem; /* p-6 */
+            display: flex; /* Use flex for better vertical spacing */
+            flex-direction: column;
+            gap: 1rem; /* space-y-4 approx */
+        }
+
+        .result-card.old-regime {
+            background-color: var(--accent-blue-bg);
+        }
+        .result-card.new-regime {
+            background-color: var(--accent-green-bg);
+        }
+
+        .result-card h3 {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 500; /* font-medium */
+            margin: 0 0 0.5rem 0; /* mb-4 approx */
+        }
+        .result-card.old-regime h3 { color: var(--accent-blue-light); }
+        .result-card.new-regime h3 { color: var(--accent-green-light); }
+
+        .result-card .label {
+            font-size: 0.875rem; /* text-sm */
+        }
+        .result-card.old-regime .label { color: var(--accent-blue); opacity: 0.8; }
+        .result-card.new-regime .label { color: var(--accent-green); opacity: 0.8; }
+
+
+        .result-card .value-main {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            margin: 0;
+        }
+         .result-card .value-secondary {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            margin: 0;
+        }
+        .result-card.old-regime .value-main,
+        .result-card.old-regime .value-secondary { color: var(--accent-blue-light); }
+        .result-card.new-regime .value-main,
+        .result-card.new-regime .value-secondary { color: var(--accent-green-light); }
+
+        .result-card .percentage {
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem; /* mt-1 */
+        }
+        .result-card.old-regime .percentage { color: var(--accent-blue); opacity: 0.8; }
+        .result-card.new-regime .percentage { color: var(--accent-green); opacity: 0.8; }
+
+
+        .recommendation-box {
+            margin-top: 1.5rem; /* mt-6 */
+            background-color: var(--bg-input); /* bg-[#2C2C2C] */
+            border-radius: var(--border-radius);
+            padding: 1rem; /* p-4 */
+            display: flex;
+            align-items: flex-start; /* Align icon to top */
+            gap: 0.75rem; /* gap-3 */
+        }
+        .recommendation-box svg { /* Info icon */
+             width: 1.25rem; /* h-5 w-5 */
+             height: 1.25rem;
+             color: var(--accent-blue-light);
+             margin-top: 0.125rem; /* mt-0.5 approximation */
+             flex-shrink: 0; /* Prevent icon shrinking */
+        }
+
+        .recommendation-box h4 {
+            font-weight: 500; /* font-medium */
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.4; /* Adjust line height */
+        }
+        .recommendation-box p {
+            font-size: 0.875rem; /* text-sm */
+            color: var(--text-secondary);
+            margin: 0.25rem 0 0 0; /* mt-1 */
+            line-height: 1.5; /* Adjust line height */
+        }
+
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem; /* mt-12 */
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+            flex-shrink: 0; /* Prevent footer from shrinking */
+        }
+
+        footer p {
+            text-align: center;
+            font-size: 0.875rem; /* text-sm */
+            color: var(--text-placeholder);
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo-title">
+                 <a href="#" class="back-link">
+                     <!-- SVG Arrow Left -->
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                     </svg>
+                     Back Home
+                 </a>
+                 <!-- Removed FinGenius logo for simplicity, can be added back -->
+            </div>
+             <h1>
+                <!-- SVG Calculator -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V13.5Zm0 2.25h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V18Zm2.498-6.75h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V13.5Zm0 2.25h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V18Zm2.504-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5Zm0 2.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V18Zm2.498-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5ZM8.25 6.75h7.5v7.5h-7.5z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0Z" />
+                </svg>
+                 Income Tax Calculator FY 2024-25
+             </h1>
+             <!-- Placeholder for potential right-side elements if needed -->
+             <div></div>
+        </div>
+    </header>
+
+    <main class="main-container">
+         <div class="calculator-card">
+              <!-- Inputs -->
+              <div class="inputs-section">
+                  <div class="input-group">
+                    <label for="totalIncome">Total Annual Income</label>
+                    <input type="number" id="totalIncome" value="1000000">
+                    <p class="input-helper-text"><span id="totalIncomeFormatted">10,00,000</span> Rupees</p>
+                    <!-- Element for words -->
+                    <p class="input-words-text" id="totalIncomeInWords"></p>
+                  </div>
+
+                  <div class="input-group">
+                    <label for="totalDeductions">Total Deductions (80C + 80D + 80TTA + Others)</label>
+                    <input type="number" id="totalDeductions" value="150000">
+                    <p class="input-helper-text"><span id="totalDeductionsFormatted">1,50,000</span> Rupees</p>
+                     <!-- Element for words -->
+                    <p class="input-words-text" id="totalDeductionsInWords"></p>
+                  </div>
+              </div>
+
+              <!-- Results -->
+              <div class="results-grid">
+                  <div class="result-card old-regime">
+                      <h3>OLD TAX REGIME</h3>
+                      <div>
+                          <p class="label">Net Taxable Income</p>
+                          <p class="value-secondary" id="oldTaxableIncome">₹0</p>
+                      </div>
+                       <div>
+                          <p class="label">Tax Payable</p>
+                          <p class="value-main" id="oldTaxPayable">₹0</p>
+                          <p class="percentage"><span id="oldTaxPercentage">0</span>% of income</p>
+                      </div>
+                  </div>
+
+                   <div class="result-card new-regime">
+                      <h3>NEW TAX REGIME</h3>
+                       <div>
+                          <p class="label">Net Taxable Income</p>
+                          <p class="value-secondary" id="newTaxableIncome">₹0</p>
+                      </div>
+                       <div>
+                          <p class="label">Tax Payable</p>
+                          <p class="value-main" id="newTaxPayable">₹0</p>
+                          <p class="percentage"><span id="newTaxPercentage">0</span>% of income</p>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Recommendation -->
+              <div class="recommendation-box">
+                    <!-- SVG Info Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                    </svg>
+                    <div>
+                        <h4>Recommendation</h4>
+                        <p id="recommendationText">Calculating...</p>
+                    </div>
+              </div>
+         </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Income Tax Calculator. Calculations based on FY 2024-25 rules.</p>
+            <!-- Original Copyright: © 2025 FinGenius. All rights reserved. -->
+            <!-- <p>© 2025 FinGenius. All rights reserved.</p> -->
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Get Input/Output Elements ---
+            const totalIncomeInput = document.getElementById('totalIncome');
+            const totalDeductionsInput = document.getElementById('totalDeductions');
+            const totalIncomeFormattedEl = document.getElementById('totalIncomeFormatted');
+            const totalDeductionsFormattedEl = document.getElementById('totalDeductionsFormatted');
+            const totalIncomeInWordsEl = document.getElementById('totalIncomeInWords');
+            const totalDeductionsInWordsEl = document.getElementById('totalDeductionsInWords');
+
+            // --- Get Result Elements ---
+            const oldTaxableIncomeEl = document.getElementById('oldTaxableIncome');
+            const oldTaxPayableEl = document.getElementById('oldTaxPayable');
+            const oldTaxPercentageEl = document.getElementById('oldTaxPercentage');
+            const newTaxableIncomeEl = document.getElementById('newTaxableIncome');
+            const newTaxPayableEl = document.getElementById('newTaxPayable');
+            const newTaxPercentageEl = document.getElementById('newTaxPercentage');
+            const recommendationTextEl = document.getElementById('recommendationText');
+
+            // --- Helper Functions ---
+            const formatCurrency = (amount) => {
+                if (isNaN(amount) || amount === null) amount = 0;
+                 return new Intl.NumberFormat('en-IN', {
+                    style: 'currency', currency: 'INR', maximumFractionDigits: 0
+                }).format(amount);
+            };
+
+             const formatNumber = (amount) => {
+                 if (isNaN(amount) || amount === null) amount = 0;
+                 return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(amount);
+            };
+
+            // --- Number to Words Function (Indian System) ---
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+            const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+            function numToWords(num) {
+                if (num < 10) return ones[num];
+                if (num < 20) return teens[num - 10];
+                if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + ones[num % 10] : '');
+                if (num < 1000) return ones[Math.floor(num / 100)] + ' Hundred' + (num % 100 !== 0 ? ' and ' + numToWords(num % 100) : ''); // Added 'and' for better readability < 1000
+                return ''; // Should not happen with the main function logic
+            }
+
+            function numberToWordsIndian(num) {
+                num = Math.floor(num); // Ensure integer
+                if (isNaN(num) || num < 0) return ''; // Handle invalid input
+                if (num === 0) return 'Zero';
+
+                let words = '';
+                const crore = Math.floor(num / 10000000);
+                num %= 10000000;
+                const lakh = Math.floor(num / 100000);
+                num %= 100000;
+                const thousand = Math.floor(num / 1000);
+                num %= 1000;
+                const remaining = num; // 0-999 handled by numToWords
+
+                if (crore > 0) {
+                    words += numToWords(crore) + ' Crore ';
+                }
+                if (lakh > 0) {
+                    words += numToWords(lakh) + ' Lakh ';
+                }
+                if (thousand > 0) {
+                    words += numToWords(thousand) + ' Thousand ';
+                }
+                if (remaining > 0) {
+                     // Add 'and' only if there were higher denominations and the remaining part is less than 100
+                    if (words.length > 0 && remaining < 100 && !words.endsWith('Hundred ')) {
+                         words += 'and ';
+                    }
+                     words += numToWords(remaining);
+                }
+
+                return words.trim(); // Remove leading/trailing spaces
+            }
+
+
+            // --- Tax Calculation Functions ---
+            const calculateOldRegimeTax = (income, deductions) => {
+                const standardDeduction = 50000;
+                let taxableIncome = Math.max(0, income - (deductions || 0) - standardDeduction);
+
+                // Section 87A rebate check (apply before calculating tax)
+                if (taxableIncome <= 500000) {
+                    return { taxableIncome, tax: 0, percentage: 0 };
+                }
+
+                let tax = 0;
+                let calculationIncome = taxableIncome; // Use a temp var for slab calculation
+
+                // Calculate tax based on slabs (highest first)
+                if (calculationIncome > 1000000) {
+                    tax += (calculationIncome - 1000000) * 0.30;
+                    calculationIncome = 1000000; // Set to upper limit of this slab for next calc
+                }
+                 if (calculationIncome > 500000) {
+                    tax += (calculationIncome - 500000) * 0.20;
+                     calculationIncome = 500000; // Set to upper limit of this slab
+                }
+                if (calculationIncome > 250000) {
+                   tax += (calculationIncome - 250000) * 0.05;
+                }
+
+                // Add 4% health and education cess
+                tax += tax * 0.04;
+
+                return {
+                    taxableIncome: taxableIncome, // Return the actual taxable income
+                    tax: Math.round(tax),
+                    percentage: income > 0 ? Math.round((tax / income) * 100) : 0
+                };
+            };
+
+            const calculateNewRegimeTax = (income) => {
+                const standardDeduction = 50000;
+                let taxableIncome = Math.max(0, income - standardDeduction);
+
+                // Section 87A rebate check (apply before calculating tax)
+                if (taxableIncome <= 700000) {
+                     return { taxableIncome, tax: 0, percentage: 0 };
+                }
+
+                let tax = 0;
+                let calculationIncome = taxableIncome; // Use a temp var for slab calculation
+
+                // Calculate tax based on new regime slabs (highest first)
+                 if (calculationIncome > 1500000) {
+                    tax += (calculationIncome - 1500000) * 0.30;
+                    calculationIncome = 1500000;
+                }
+                 if (calculationIncome > 1200000) {
+                    tax += (calculationIncome - 1200000) * 0.20;
+                     calculationIncome = 1200000;
+                }
+                 if (calculationIncome > 900000) {
+                    tax += (calculationIncome - 900000) * 0.15;
+                     calculationIncome = 900000;
+                }
+                 if (calculationIncome > 600000) {
+                    tax += (calculationIncome - 600000) * 0.10;
+                     calculationIncome = 600000;
+                }
+                 if (calculationIncome > 300000) {
+                    tax += (calculationIncome - 300000) * 0.05;
+                }
+
+                // Add 4% health and education cess
+                tax += tax * 0.04;
+
+                return {
+                    taxableIncome: taxableIncome, // Return the actual taxable income
+                    tax: Math.round(tax),
+                    percentage: income > 0 ? Math.round((tax / income) * 100) : 0
+                };
+            };
+
+            // --- Update UI Function ---
+            const updateUI = () => {
+                const income = Number(totalIncomeInput.value) || 0;
+                const deductions = Number(totalDeductionsInput.value) || 0;
+
+                // Update formatted number helper text
+                totalIncomeFormattedEl.textContent = formatNumber(income);
+                totalDeductionsFormattedEl.textContent = formatNumber(deductions);
+
+                // Update words display
+                const incomeWords = numberToWordsIndian(income);
+                const deductionWords = numberToWordsIndian(deductions);
+                totalIncomeInWordsEl.textContent = incomeWords ? incomeWords + ' Rupees Only' : (income === 0 ? 'Zero Rupees Only' : '');
+                totalDeductionsInWordsEl.textContent = deductionWords ? deductionWords + ' Rupees Only' : (deductions === 0 ? 'Zero Rupees Only' : '');
+
+                // Calculate Tax
+                const oldRegimeResults = calculateOldRegimeTax(income, deductions);
+                const newRegimeResults = calculateNewRegimeTax(income);
+
+                // Update Results Display
+                oldTaxableIncomeEl.textContent = formatCurrency(oldRegimeResults.taxableIncome);
+                oldTaxPayableEl.textContent = formatCurrency(oldRegimeResults.tax);
+                oldTaxPercentageEl.textContent = oldRegimeResults.percentage;
+                newTaxableIncomeEl.textContent = formatCurrency(newRegimeResults.taxableIncome);
+                newTaxPayableEl.textContent = formatCurrency(newRegimeResults.tax);
+                newTaxPercentageEl.textContent = newRegimeResults.percentage;
+
+                // Update Recommendation
+                if (oldRegimeResults.tax === 0 && newRegimeResults.tax === 0) {
+                    recommendationTextEl.textContent = "Based on the income and deductions, there is no tax liability under either regime.";
+                } else if (oldRegimeResults.tax === newRegimeResults.tax) {
+                     recommendationTextEl.textContent = "Both tax regimes result in the same tax amount.";
+                } else if (oldRegimeResults.tax < newRegimeResults.tax) {
+                    const savings = formatCurrency(newRegimeResults.tax - oldRegimeResults.tax);
+                    recommendationTextEl.textContent = `The Old Tax Regime appears more beneficial, potentially saving ${savings} annually.`;
+                } else {
+                    const savings = formatCurrency(oldRegimeResults.tax - newRegimeResults.tax);
+                     recommendationTextEl.textContent = `The New Tax Regime appears more beneficial, potentially saving ${savings} annually.`;
+                }
+            };
+
+            // --- Event Listeners & Initial Call ---
+            totalIncomeInput.addEventListener('input', updateUI);
+            totalDeductionsInput.addEventListener('input', updateUI);
+            updateUI(); // Initial calculation on load
+        });
+    </script>
+
+</body>
+</html>

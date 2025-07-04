@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Goal Calculator</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome for icons -->
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --background-color: #121212;
+    --container-bg: #1c1c1e;
+    --input-bg: #2c2c2e;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a0a0a5;
+    --accent-color: #0A84FF; /* Apple blue */
+    --button-text: #ffffff;
+    --border-color: #3a3a3c;
+    --success-color: #34C759; /* Apple green */
+    --error-color: #FF3B30;   /* Apple red */
+    --slider-track: #4d4d52;
+    --slider-thumb: #f5f5f7;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.calculator-container {
+    background-color: var(--container-bg);
+    padding: 30px 40px;
+    border-radius: 18px; /* Slightly more rounded */
+    width: 100%;
+    max-width: 550px; /* Slightly wider */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin-bottom: auto;
+    position: relative;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.back-button:hover {
+    color: var(--text-primary);
+}
+
+.header-icon {
+    text-align: center;
+    font-size: 28px;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    margin-top: 10px; /* Space below back button */
+}
+
+h1 {
+    text-align: center;
+    font-size: 26px; /* Slightly larger */
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 40px; /* More space */
+    line-height: 1.6;
+    max-width: 400px; /* Constrain width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.input-group {
+    margin-bottom: 25px; /* More space between groups */
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+/* Input with Symbol Styling */
+.input-with-symbol {
+    position: relative;
+}
+
+.input-with-symbol .currency-symbol {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 16px;
+    pointer-events: none; /* Allows clicking through */
+}
+
+.input-with-symbol input[type="number"] {
+    padding-left: 35px; /* Make space for symbol */
+    width: 100%;
+    box-sizing: border-box;
+}
+/* Nested symbol adjustments */
+.input-with-symbol.nested .currency-symbol {
+     left: 12px; /* Adjust as needed */
+     top: 50%;
+     font-size: 15px;
+}
+.input-with-symbol.nested input {
+    padding-left: 30px; /* Adjust */
+}
+
+
+/* General Input Styles */
+input[type="number"],
+select {
+    padding: 12px 15px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+select {
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a0a0a5'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+     background-repeat: no-repeat;
+     background-position: right 15px center;
+     background-size: 16px 16px;
+     padding-right: 40px;
+     width: 100%;
+     box-sizing: border-box;
+}
+
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
+}
+
+/* Remove number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+/* Combined Input Field (Frequency + Amount) */
+.combined-input .combined-fields {
+    display: flex;
+    gap: 10px;
+    align-items: center; /* Vertically align select and input */
+}
+
+.combined-input select {
+    flex: 0 0 120px; /* Fixed width for dropdown */
+}
+.combined-input .input-with-symbol.nested {
+    flex: 1; /* Input takes remaining space */
+    position: relative; /* Needed for nested symbol */
+}
+.combined-input .input-with-symbol.nested input{
+    width: 100%; /* Ensure input fills its container */
+    box-sizing: border-box;
+}
+
+
+/* Slider Styles */
+.slider-group {
+    margin-bottom: 15px; /* Less margin for slider */
+}
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+input[type="range"] {
+    flex-grow: 1;
+    height: 6px;
+    cursor: pointer;
+    background: var(--slider-track);
+    border-radius: 3px;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--slider-thumb);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    margin-top: -6px; /* Center thumb vertically */
+}
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--slider-thumb);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+}
+
+.slider-container input[type="number"] {
+    width: 70px; /* Fixed width for number input */
+    padding: 5px 8px;
+    text-align: right;
+    font-size: 15px;
+    background: transparent; /* Match container */
+    border: none; /* Remove inner border */
+    color: var(--text-primary);
+}
+.slider-container .percent-symbol {
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    padding: 0 5px; /* Align roughly with slider ends */
+}
+
+
+/* Buttons */
+.calculate-button, .refresh-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    color: var(--button-text);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between text and icon */
+}
+
+.calculate-button {
+    background-color: var(--success-color); /* Green for calculate */
+    margin-top: 30px;
+}
+.calculate-button:hover {
+    background-color: #30a14f; /* Darker green */
+}
+.calculate-button i {
+    font-size: 12px; /* Adjust icon size */
+}
+
+
+.refresh-button {
+    background-color: var(--accent-color); /* Blue for refresh */
+    margin-top: 20px;
+}
+.refresh-button:hover {
+    background-color: #007aff;
+}
+.refresh-button i {
+    font-size: 14px; /* Adjust icon size */
+}
+
+/* Result Section */
+.result-section {
+    margin-top: 40px;
+    padding: 25px 0px 10px 0px; /* Adjust padding */
+    border-top: 1px solid var(--border-color);
+    /* background-color: var(--background-color); Slightly darker background */
+    /* border-radius: 12px; */
+    /* box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); */
+}
+
+.result-header {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 10px;
+     margin-bottom: 25px;
+}
+.result-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+.result-header .header-icon {
+    margin: 0; /* Remove default margins */
+    font-size: 24px; /* Match heading size */
+}
+
+.result-content {
+    background-color: var(--input-bg); /* Use input background for content */
+    padding: 20px 25px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 25px; /* Space before refresh */
+    border: 1px solid var(--border-color);
+}
+
+.result-text {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+.result-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+
+.time-display {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Space between years and months */
+}
+
+.time-unit {
+    text-align: center;
+    padding: 10px 20px; /* Add some padding */
+    border: 1px solid var(--border-color); /* Match input border */
+    border-radius: 8px;
+    background-color: var(--container-bg); /* Use container bg */
+    min-width: 80px; /* Ensure minimum width */
+}
+
+.time-value {
+    display: block;
+    font-size: 32px; /* Larger value */
+    font-weight: 700;
+    color: var(--accent-color); /* Highlight with accent color */
+    margin-bottom: 5px;
+}
+
+.time-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: 14px;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+
+footer {
+    text-align: center;
+    margin-top: 50px;
+    padding: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    width: 100%;
+}
+        </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <button class="back-button" onclick="window.location.href='#'">← Back Home</button> <!-- Simple placeholder -->
+
+        <div class="header-icon"><i class="fas fa-calculator"></i></div>
+        <h1>Savings Calculator</h1>
+        <p class="subtitle">Plan how much you need to save and see how long it takes to reach your financial goals.</p>
+
+        <form id="savings-form">
+            <div class="input-group input-with-symbol">
+                <label for="goal">Your Savings Goal</label>
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="goal" name="goal" placeholder="e.g., 1000000" required min="1">
+            </div>
+
+            <div class="input-group input-with-symbol">
+                <label for="initial">Amount You Have Already</label>
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="initial" name="initial" placeholder="e.g., 50000" required min="0" value="0">
+            </div>
+
+            <div class="input-group combined-input">
+                 <label for="regular-saving">Regular Savings Contribution</label>
+                 <div class="combined-fields">
+                     <select id="frequency" name="frequency">
+                         <option value="monthly" selected>Monthly</option>
+                         <option value="yearly">Yearly</option>
+                     </select>
+                     <div class="input-with-symbol nested">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="regular-saving" name="regular-saving" placeholder="e.g., 10000" required min="1">
+                    </div>
+                 </div>
+            </div>
+
+
+            <div class="input-group slider-group">
+                <label for="rate">Expected Annual Interest Rate (%)</label>
+                <div class="slider-container">
+                    <input type="range" id="rate-slider" name="rate-slider" min="0" max="20" step="0.1" value="5">
+                    <input type="number" id="rate-number" name="rate-number" min="0" max="20" step="0.1" value="5">
+                    <span class="percent-symbol">%</span>
+                </div>
+                 <div class="slider-labels">
+                    <span>0%</span>
+                    <span>20%</span>
+                </div>
+            </div>
+
+
+            <button type="submit" class="calculate-button">Calculate <i class="fas fa-play"></i></button>
+        </form>
+
+        <div id="result-section" class="result-section" style="display: none;">
+             <div class="result-header">
+                 <div class="header-icon"><i class="fas fa-chart-line"></i></div> <!-- Changed Icon -->
+                 <h2>Result</h2>
+            </div>
+             <div class="result-content">
+                 <p class="result-text">To reach your savings goal of <strong id="result-goal">₹0</strong>, it will take approximately:</p>
+                 <div class="time-display">
+                     <div class="time-unit">
+                         <span class="time-value" id="result-years">0</span>
+                         <span class="time-label">Years</span>
+                     </div>
+                     <div class="time-unit">
+                         <span class="time-value" id="result-months">0</span>
+                         <span class="time-label">Months</span>
+                     </div>
+                 </div>
+                 <p id="unreachable-message" class="error-message" style="display: none;">Based on the current inputs, this savings goal may not be reachable.</p>
+             </div>
+            <button type="button" id="refresh-button" class="refresh-button">Refresh <i class="fas fa-sync-alt"></i></button>
+        </div>
+
+    </div>
+
+    <footer>
+        © 2024 FinGenius Clone. All rights reserved.
+    </footer>
+
+ <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    // --- Get DOM Elements ---
+    const form = document.getElementById('savings-form');
+    const goalInput = document.getElementById('goal');
+    const initialInput = document.getElementById('initial');
+    const regularSavingInput = document.getElementById('regular-saving');
+    const frequencySelect = document.getElementById('frequency');
+    const rateSlider = document.getElementById('rate-slider');
+    const rateNumberInput = document.getElementById('rate-number');
+
+    const resultSection = document.getElementById('result-section');
+    const resultGoalDisplay = document.getElementById('result-goal');
+    const resultYearsDisplay = document.getElementById('result-years');
+    const resultMonthsDisplay = document.getElementById('result-months');
+    const unreachableMessage = document.getElementById('unreachable-message');
+    const refreshButton = document.getElementById('refresh-button');
+
+    // --- Slider and Number Input Sync ---
+    rateSlider.addEventListener('input', () => {
+        rateNumberInput.value = rateSlider.value;
+    });
+
+    rateNumberInput.addEventListener('input', () => {
+        // Prevent invalid values in number input affecting slider
+        let value = parseFloat(rateNumberInput.value);
+        if (isNaN(value)) {
+            value = 0; // Or keep last valid? For now, reset to 0
+        } else if (value < 0) {
+            value = 0;
+        } else if (value > 20) {
+            value = 20;
+        }
+         // Update input value in case it was corrected
+        rateNumberInput.value = value;
+        rateSlider.value = value;
+    });
+
+    // --- Form Submission Handler ---
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // --- Get and Validate Inputs ---
+        const goal = parseFloat(goalInput.value);
+        const initial = parseFloat(initialInput.value);
+        const regularSaving = parseFloat(regularSavingInput.value);
+        const frequency = frequencySelect.value;
+        const annualRate = parseFloat(rateNumberInput.value);
+
+        // Basic Validation
+        if (isNaN(goal) || goal <= 0) {
+            alert('Please enter a valid savings goal.');
+            goalInput.focus();
+            return;
+        }
+        if (isNaN(initial) || initial < 0) {
+            alert('Please enter a valid initial savings amount (0 or more).');
+            initialInput.focus();
+            return;
+        }
+        if (isNaN(regularSaving) || regularSaving <= 0) {
+            alert('Please enter a valid regular savings amount (greater than 0).');
+            regularSavingInput.focus();
+            return;
+        }
+        if (isNaN(annualRate) || annualRate < 0) {
+             alert('Please enter a valid annual interest rate (0 or more).');
+            rateNumberInput.focus();
+            return;
+        }
+
+        // Check if goal is already met
+        if (initial >= goal) {
+            displayResult(goal, 0, 0); // 0 years, 0 months
+            return;
+        }
+
+        // --- Calculation Logic (Iterative) ---
+        let currentSavings = initial;
+        let periods = 0;
+        const maxPeriods = 100 * 12; // Set a limit (e.g., 100 years) to prevent infinite loops
+
+        let periodicRate = 0;
+        let periodsPerYear = 1;
+
+        if (frequency === 'monthly') {
+            periodicRate = annualRate / 12 / 100;
+            periodsPerYear = 12;
+        } else { // Yearly
+            periodicRate = annualRate / 100;
+            periodsPerYear = 1;
+        }
+
+        while (currentSavings < goal && periods < maxPeriods) {
+            const interestEarned = currentSavings * periodicRate;
+            currentSavings += interestEarned + regularSaving;
+            periods++;
+        }
+
+        // --- Display Results ---
+        if (currentSavings >= goal) {
+            const totalYears = Math.floor(periods / periodsPerYear);
+            const remainingPeriods = periods % periodsPerYear;
+            // If yearly, remainingPeriods doesn't make sense as months, treat as 0 months
+            const totalMonths = (frequency === 'monthly') ? remainingPeriods : 0;
+            displayResult(goal, totalYears, totalMonths);
+            unreachableMessage.style.display = 'none';
+        } else {
+            // Goal not reached within maxPeriods
+            displayResult(goal, '-', '-'); // Indicate failure
+            unreachableMessage.style.display = 'block';
+        }
+    });
+
+    // --- Refresh Button Handler ---
+    refreshButton.addEventListener('click', () => {
+        form.reset(); // Resets form fields to initial HTML values
+        // Manually reset slider/number input if 'reset()' doesn't cover it fully
+        rateSlider.value = 5;
+        rateNumberInput.value = 5;
+        resultSection.style.display = 'none'; // Hide results
+        unreachableMessage.style.display = 'none';
+    });
+
+
+    // --- Helper Function to Display Results ---
+    function displayResult(goalAmount, years, months) {
+         resultGoalDisplay.textContent = `₹${goalAmount.toLocaleString('en-IN')}`; // Format goal
+         resultYearsDisplay.textContent = years;
+         resultMonthsDisplay.textContent = months;
+         resultSection.style.display = 'block';
+         // Scroll to results smoothly
+         resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+}); // End DOMContentLoaded
+ </script>
+</body>
+</html>
