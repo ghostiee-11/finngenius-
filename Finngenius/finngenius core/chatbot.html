@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Financial Assistant - FinGenius</title>
+    <!-- Link to the NEW CSS inspired by the Spam Checker -->
+    <link rel="stylesheet" href="chatbot.css">
+    <!-- Link to Google Font (Inter) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body>
+    <!-- Header similar to target -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">FinGenius</div>
+            <nav>
+                <!-- Update href to your actual home page -->
+                <a href="#" class="back-home">← Back Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Title and Description -->
+        <h1>AI Financial Assistant</h1>
+        <p class="description">
+            Ask questions about your financial problems below. 
+        </p>
+
+        <!-- Status Area -->
+        <div id="status-area" class="status"></div>
+
+        <!-- Main Chat UI Wrapper (styles like the spam checker's dark box) -->
+        <div class="chat-ui-wrapper">
+
+            <!-- Chat History Area -->
+            <div id="chatMessages" class="chat-messages">
+                 <div class="chat-message bot"><em>Hello your AI Finance Assistant here...</em></div>
+                 <!-- Chat messages will appear here -->
+            </div>
+
+            <!-- Input Form -->
+            <form id="chat-form" class="chat-input-area">
+                <textarea id="chatInput" name="query" rows="4" placeholder="Ask your financial query here..." aria-label="Chat input"></textarea>
+                <div class="button-container">
+                    <button type="submit" id="chatSendButton" aria-label="Send chat message">
+                        Ask Assistant
+                        <!-- Icon similar to target (using a simple arrow for now) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/>
+                        </svg>
+                    </button>
+                     <!-- Optional: Clear button styled differently or removed to match target simplicity -->
+                     <button type="button" id="chatClearButton" class="secondary-button" aria-label="Clear chat history">Clear Chat</button>
+                </div>
+                 <div class="chat-loading" id="chatLoading" style="display: none;">Assistant is thinking...</div>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Footer similar to target -->
+    <footer>
+        <div class="container">
+            <p>© 2025 FinGenius. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Link to the same JavaScript file -->
+    <script src="chatbot.js"></script>
+</body>
+</html>

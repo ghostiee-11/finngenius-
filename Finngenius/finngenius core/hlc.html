@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Life Value Calculator</title>
+   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'); /* Using Inter font like many modern UIs */
+
+:root {
+    --background-color: #121212; /* Dark background */
+    --container-bg: #1c1c1e;    /* Slightly lighter container */
+    --input-bg: #2c2c2e;        /* Input field background */
+    --text-primary: #f5f5f7;    /* Light primary text */
+    --text-secondary: #a0a0a5;  /* Lighter secondary text */
+    --accent-color: #0A84FF;    /* Apple-like blue accent */
+    --button-text: #ffffff;
+    --border-color: #3a3a3c;
+    --success-color: #34C759;   /* Green for positive indication */
+    --error-color: #FF3B30;     /* Red for errors */
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.calculator-container {
+    background-color: var(--container-bg);
+    padding: 30px 40px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    margin-bottom: auto; /* Pushes footer down */
+    position: relative;
+}
+
+.back-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.back-button:hover {
+    color: var(--text-primary);
+}
+
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 20px; /* Account for back button */
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 35px;
+    line-height: 1.5;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+.input-group input[type="number"],
+.input-group select {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 16px;
+    box-sizing: border-box;
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+.input-group select {
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a0a0a5'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E"); /* Simple SVG chevron */
+     background-repeat: no-repeat;
+     background-position: right 15px center;
+     background-size: 16px 16px;
+     padding-right: 40px; /* Make space for arrow */
+}
+
+.input-group input[type="number"]:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3); /* Subtle focus ring */
+}
+
+/* Remove spinner buttons from number input */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.option-button {
+    flex: 1;
+    padding: 12px 15px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.option-button.active {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--button-text);
+}
+
+.option-button:not(.active):hover {
+    background-color: #3a3a3c; /* Slightly lighter hover for inactive */
+}
+
+.calculate-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 8px;
+    color: var(--button-text);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: background-color 0.2s ease;
+}
+
+.calculate-button:hover {
+    background-color: #007aff; /* Slightly darker blue on hover */
+}
+
+/* Result Section Styling */
+.result-section {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.result-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.hlv-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--success-color); /* Use green for the value */
+    margin-bottom: 25px;
+}
+
+/* Simple Gauge Placeholder */
+.gauge-container {
+    width: 80%;
+    margin: 0 auto 25px auto;
+}
+.gauge-bar {
+    height: 8px;
+    background: linear-gradient(to right, #FF3B30, #FFCC00, #34C759); /* Red-Yellow-Green */
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden; /* Needed if using a fill overlay */
+}
+/* Gauge fill can be added with JS if needed for % covered */
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+
+.result-info {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+.result-info strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.view-plans-button {
+    display: inline-block; /* Allows padding and centering */
+    padding: 12px 30px;
+    background-color: transparent;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    color: var(--accent-color);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-bottom: 20px;
+}
+
+.view-plans-button:hover {
+    background-color: rgba(10, 132, 255, 0.1); /* Light blue background on hover */
+}
+
+.note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px; /* Ensure space above footer */
+    padding: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    width: 100%;
+}
+   </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <button class="back-button">← Back Home</button> <!-- Simple placeholder -->
+
+        <h1>Human Life Value Calculator</h1>
+        <p class="subtitle">Estimate the ideal Term Insurance cover for your family's financial security.</p>
+
+        <form id="hlv-form">
+            <div class="input-group">
+                <label for="age">Your Age</label>
+                <select id="age" name="age" required>
+                    <option value="" disabled selected>Select Your Age</option>
+                    <!-- Dynamically generate age options or use ranges -->
+                    <option value="18">18 Years</option>
+                    <option value="19">19 Years</option>
+                    <option value="20">20 Years</option>
+                    <option value="21">21 Years</option>
+                    <option value="22">22 Years</option>
+                    <option value="23">23 Years</option>
+                    <option value="24">24 Years</option>
+                    <option value="25">25 Years</option>
+                    <option value="26">26 Years</option>
+                    <option value="27">27 Years</option>
+                    <option value="28">28 Years</option>
+                    <option value="29">29 Years</option>
+                    <option value="30">30 Years</option>
+                    <option value="31">31 Years</option>
+                    <option value="32">32 Years</option>
+                    <option value="33">33 Years</option>
+                    <option value="34">34 Years</option>
+                    <option value="35">35 Years</option>
+                    <option value="36">36 Years</option>
+                    <option value="37">37 Years</option>
+                    <option value="38">38 Years</option>
+                    <option value="39">39 Years</option>
+                    <option value="40">40 Years</option>
+                    <option value="41">41 Years</option>
+                    <option value="42">42 Years</option>
+                    <option value="43">43 Years</option>
+                    <option value="44">44 Years</option>
+                    <option value="45">45 Years</option>
+                    
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="income">Annual Income (₹)</label>
+                <input type="number" id="income" name="income" placeholder="e.g., 500000" required min="1">
+            </div>
+
+            <div class="input-group">
+                <label>Do you have an existing life insurance cover?</label>
+                <div class="button-group">
+                    <button type="button" class="option-button" data-value="yes">Yes</button>
+                    <button type="button" class="option-button active" data-value="no">No</button>
+                    <input type="hidden" id="existing-cover" name="existing-cover" value="no">
+                </div>
+            </div>
+
+            <button type="submit" class="calculate-button">Calculate HLV</button>
+        </form>
+
+        <div id="result-section" class="result-section" style="display: none;">
+             <h2>Your Estimated Human Life Value</h2>
+             <div class="hlv-value" id="hlv-result">₹ 0</div>
+             <div class="gauge-container">
+                 <!-- Simple visual representation - can be enhanced -->
+                 <div class="gauge-bar">
+                     <div class="gauge-fill"></div>
+                 </div>
+                 <div class="gauge-labels">
+                     <span>Low</span>
+                     <span>Medium</span>
+                     <span>High</span>
+                 </div>
+             </div>
+             <p class="result-info" id="result-message">
+                 To secure your family's financial future and protect their dreams, you may need a cover amount of approximately <strong id="result-amount-text">₹ 0</strong>.
+             </p>
+             <button class="view-plans-button">View Term Plans</button>
+             <p class="note">Note: This is a simplified calculation for estimation purposes.</p>
+        </div>
+
+    </div>
+
+    <footer>
+        © 2024 FinGenius Clone. All rights reserved.
+    </footer>
+
+   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('hlv-form');
+    const ageSelect = document.getElementById('age');
+    const incomeInput = document.getElementById('income');
+    const existingCoverButtons = document.querySelectorAll('.option-button');
+    const existingCoverInput = document.getElementById('existing-cover');
+    const resultSection = document.getElementById('result-section');
+    const hlvResultDisplay = document.getElementById('hlv-result');
+    const resultMessage = document.getElementById('result-message');
+    const resultAmountText = document.getElementById('result-amount-text');
+
+    // Handle Yes/No button clicks
+    existingCoverButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            existingCoverButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            existingCoverInput.value = button.getAttribute('data-value');
+        });
+    });
+
+    // Handle form submission
+    form.addEventListener('submit', (e) => {
+        e.preventDefault(); // Prevent actual form submission
+
+        const age = parseInt(ageSelect.value);
+        const annualIncome = parseFloat(incomeInput.value);
+        const hasExistingCover = existingCoverInput.value === 'yes'; // We get the value but don't use it in this simple calc
+
+        if (isNaN(age) || isNaN(annualIncome) || annualIncome <= 0) {
+            alert('Please enter valid age and annual income.');
+            return;
+        }
+
+        // --- Simplified HLV Calculation Logic ---
+        // Rule of thumb: Multiplier based on age
+        let multiplier = 10; // Default multiplier
+
+        if (age <= 25) {
+            multiplier = 24; // Higher for youngest
+        } else if (age <= 35) {
+            multiplier = 20;
+        } else if (age <= 45) {
+            multiplier = 15;
+        } else if (age <= 55) {
+            multiplier = 12;
+        } else {
+            multiplier = 10; // Lower for older ages
+        }
+
+        const calculatedHlv = annualIncome * multiplier;
+        // --- End of Calculation Logic ---
+
+
+        // Format the result (Lac/Crore)
+        const formattedHlv = formatCurrency(calculatedHlv);
+
+        // Display the results
+        hlvResultDisplay.textContent = formattedHlv;
+        resultAmountText.textContent = formattedHlv; // Update the text part too
+        resultSection.style.display = 'block'; // Show the result section
+
+        // Scroll to the result section smoothly (optional)
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // --- Helper Function to Format Currency ---
+    function formatCurrency(value) {
+        if (value >= 10000000) { // 1 Crore
+            return `₹ ${(value / 10000000).toFixed(1)} Crore`;
+        } else if (value >= 100000) { // 1 Lac
+            return `₹ ${(value / 100000).toFixed(1)} Lac`;
+        } else {
+             // Format with commas for thousands
+            return `₹ ${value.toLocaleString('en-IN')}`;
+        }
+    }
+
+    // --- Populate Age Dropdown (Optional Enhancement) ---
+    // You could dynamically generate more age options if needed
+    // Example:
+    // for (let i = 18; i <= 65; i++) {
+    //     const option = document.createElement('option');
+    //     option.value = i;
+    //     option.textContent = `${i} Years`;
+    //     ageSelect.appendChild(option);
+    // }
+    // Make sure to set the default disabled option correctly if doing this.
+
+}); // End DOMContentLoaded
+   </script>
+</body>
+</html>

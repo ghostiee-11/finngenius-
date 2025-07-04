@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTribe</title>
+    <link rel="stylesheet" href="forum.css">
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Area -->
+    <header class="main-header">
+        <div class="header-content">
+            <h1><a href="#">FinTribe</a></h1>
+    
+            <div class="user-info">
+                <span>Posting as: <strong id="current-user-display">Anonymous</strong></span>
+                <button id="change-user-btn" class="btn btn-secondary btn-small">Change User</button>
+            </div>
+    
+            <!-- Go Back Button -->
+            <a href="index.html" class="btn btn-primary btn-small go-back-btn">← Go Back</a>
+        </div>
+    </header>
+    
+    <div class="forum-container">
+        <div id="page-content">
+
+            <!-- START: Landing Page Content -->
+            <div id="landing-page-content">
+                <div class="new-thread-card card">
+                    <h2><i class="fas fa-plus-circle"></i> Start a New Thread</h2>
+                    <form id="new-thread-form">
+                        <div class="form-group">
+                            <label for="thread-author">Name (Uses current user if blank)</label>
+                            <input type="text" id="thread-author" placeholder="Leave blank for Anonymous or current user">
+                        </div>
+                        <div class="form-group">
+                            <label for="thread-subject">Subject (Optional)</label>
+                            <input type="text" id="thread-subject" placeholder="Thread Subject">
+                        </div>
+                        <div class="form-group">
+                            <label for="thread-content">Comment</label>
+                            <textarea id="thread-content" rows="5" placeholder="Share your thoughts..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="thread-media">Image (Optional, <1MB recommended)</label>
+                            <input type="file" id="thread-media" accept="image/png, image/jpeg, image/gif">
+                            <div id="thread-media-preview" class="media-preview"></div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" id="submit-thread-btn" class="btn btn-primary">Create Thread</button>
+                        </div>
+                        <div id="form-status" class="form-status"></div>
+                    </form>
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="threads-section">
+                    <h2>Threads</h2>
+                    <div id="threads-list">
+                        <p class="loading-message">Loading threads...</p>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Landing Page Content -->
+
+             <!-- START: Single Thread Page Content (Hidden initially) -->
+             <div id="single-thread-page-content" class="hidden">
+                 <div class="thread-header">
+                     <a href="#" class="btn btn-secondary btn-small back-button"><i class="fas fa-arrow-left"></i> Back to Board</a>
+                     <h2 id="single-thread-subject">Thread Subject</h2>
+                 </div>
+                <div id="single-thread-container">
+                    <!-- Full Thread (OP + Replies) loaded here -->
+                </div>
+
+                <!-- Reply Form (Now directly on thread page) -->
+                <div id="reply-form-container" class="card reply-form-card">
+                     <h3><i class="fas fa-reply"></i> Post a Reply</h3>
+                     <form id="reply-form">
+                        <input type="hidden" id="reply-parent-id">
+                        <div class="form-group">
+                             <label for="reply-author">Name (Uses current user if blank)</label>
+                            <input type="text" id="reply-author" placeholder="Leave blank for Anonymous or current user">
+                        </div>
+                        <div class="form-group">
+                            <label for="reply-content">Comment</label>
+                            <textarea id="reply-content" rows="4" placeholder="Your reply..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="reply-media">Image (Optional, <1MB)</label>
+                            <input type="file" id="reply-media" accept="image/png, image/jpeg, image/gif">
+                            <div id="reply-media-preview" class="media-preview"></div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" id="submit-reply-btn" class="btn btn-primary">Post Reply</button>
+                        </div>
+                         <div id="reply-form-status" class="form-status"></div>
+                    </form>
+                </div>
+             </div>
+            <!-- END: Single Thread Page Content -->
+
+        </div><!-- /#page-content -->
+
+    </div> <!-- /forum-container -->
+
+    <!-- User Switching Modal -->
+    <div id="user-modal" class="modal hidden">
+        <div class="modal-content card">
+            <button id="close-user-modal-btn" class="close-button">×</button>
+            <h3>Change Posting User</h3>
+            <div class="form-group">
+                <label for="new-username">Enter Username</label>
+                <input type="text" id="new-username" placeholder="Anonymous">
+            </div>
+            <div class="form-buttons modal-buttons">
+                <button id="set-user-btn" class="btn btn-primary">Set User</button>
+                <button id="cancel-user-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="forum.js"></script>
+</body>
+</html>

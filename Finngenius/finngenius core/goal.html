@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Investment Advisor</title>
+    <link rel="stylesheet" href="goal.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">FinGenius</div>
+            <nav>
+                <!-- Update href to your actual home page -->
+                <a href="index.html" class="back-home">← Back Home</a>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section id="goal-input-section" aria-labelledby="goal-input-heading">
+            <h2 id="goal-input-heading">Define Your Investment Goal</h2>
+            <form id="goal-form">
+                <div class="form-group">
+                    <label for="goal-name">Goal Name:</label>
+                    <input type="text" id="goal-name" name="goal-name" placeholder="E.g., Dream Vacation, House Down Payment" required>
+                </div>
+                <div class="form-group">
+                    <label for="risk-profile">Risk Profile:</label>
+                    <select id="risk-profile" name="risk-profile" required>
+                        <option value="Low">Low Risk (Capital Preservation Focus)</option>
+                        <option value="Medium" selected>Medium Risk (Balanced Growth)</option>
+                        <option value="High">High Risk (Aggressive Growth Focus)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="goal-duration">Goal Duration (Years):</label>
+                    <input type="number" id="goal-duration" name="goal-duration" min="1" value="5" required>
+                </div>
+
+                <!-- **** CHANGED INPUT **** -->
+                <div class="form-group">
+                    <label for="goal-target-amount">Goal Target Amount (₹):</label>
+                    <input type="number" id="goal-target-amount" name="goal-target-amount" min="1" step="any" placeholder="e.g., 500000" required>
+                </div>
+
+                <!-- **** REPURPOSED/RELABELED **** -->
+                <div class="form-group">
+                    <label for="preferred-frequency">Preferred Investment Frequency:</label>
+                    <select id="preferred-frequency" name="preferred-frequency" required>
+                        <option value="monthly" selected>Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submit-button">Calculate Plan</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section id="market-context-section" aria-labelledby="market-context-heading">
+             <!-- (Market context display remains the same) -->
+             <h2 id="market-context-heading">Current Market Snapshot</h2>
+             <div id="market-loading" class="loading-indicator">Loading Market Data...</div>
+             <div id="market-context-content"></div>
+             <p class="last-updated"><small>Last Updated: <span id="market-last-updated">Never</span></small></p>
+        </section>
+
+        <hr>
+
+        <section id="recommendation-section" aria-labelledby="recommendation-heading" style="display: none;">
+             <h2 id="recommendation-heading">Your Personalized Investment Plan</h2>
+             <div id="loading-spinner" class="loading-indicator" style="display: none;">Generating Plan... <span class="spinner"></span></div>
+             <div id="error-message" class="error-message" style="display: none;"></div>
+
+             <div id="recommendation-output">
+                 <!-- **** ADDED goal info echo **** -->
+                 <div id="goal-summary">
+                     <h3>Goal: <span id="display-goal-name"></span></h3>
+                     <p>Target: <strong id="display-goal-target"></strong> | Duration: <strong id="display-goal-duration"></strong> years | Est. Portfolio Return: <strong id="display-portfolio-return"></strong>% p.a.</p>
+                 </div>
+                 <!-- Allocation details (Chart & List) remain structurally similar -->
+                 <div id="allocation-details">
+                     <h3>Suggested Allocation:</h3>
+                     <div class="allocation-container">
+                         <div id="allocation-chart-container"><canvas id="allocationChart"></canvas></div>
+                         <ul id="allocation-list"></ul>
+                     </div>
+                 </div>
+                 <!-- Breakdown details will now show REQUIRED amounts -->
+                 <div id="breakdown-details">
+                     <h3>Required Investment Breakdown:</h3>
+                     <div id="breakdown-periods"></div>
+                     <!-- **** ADDED Log Button Placeholder **** -->
+                     <div class="log-investment-area">
+                         <button id="log-monthly-investment-btn" class="log-button" disabled>Log Monthly Investment</button>
+                         <span id="log-status" class="log-status-message"></span>
+                         <p><small>(Investment tracking is simulated)</small></p>
+                     </div>
+                     <!-- **** END Log Button Placeholder **** -->
+                 </div>
+                 <!-- Explanation remains structurally similar -->
+                 <div id="explanation-details">
+                     <h3>Explanation & Outlook (AI Generated):</h3>
+                     <div id="explanation-text" class="explanation-box"></div>
+                 </div>
+             </div>
+        </section>
+    </main>
+    <footer>
+        <p>Disclaimer: Calculations based on estimated returns. Actual results vary. Not financial advice. Consult advisor. Tracking simulated.</p>
+    </footer>
+    <footer>
+        <div class="container">
+            <p>© 2025 FinGenius. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="goal.js"></script>
+</body>
+</html>

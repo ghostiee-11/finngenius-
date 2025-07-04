@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinGenius - Financial Tools</title>
+    <link rel="stylesheet" href="financial-tools.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">FinGenius</div>
+            <nav>
+                <a href="index.html" class="back-home">← Back Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>Financial Tools</h1>
+        
+        <div class="intro">
+            <p>Access our comprehensive suite of financial calculators to help you make informed decisions about your finances. Whether you're planning for retirement, calculating taxes, or evaluating insurance options, we've got you covered.</p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for a financial tool...">
+            <button id="searchButton">Search</button>
+        </div>
+
+        <div class="tools-grid" id="toolsGrid">
+            <!-- Tools will be populated here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Modal Container -->
+    <div id="calculatorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Calculator</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Calculator forms will be inserted here -->
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 FinGenius. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="financial-tools.js"></script>
+</body>
+</html>

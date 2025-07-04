@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinEdu - Financial Education - FinGenius</title>
+    <link rel="stylesheet" href="finedu.css"> <!-- Make sure this exists -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <!-- Add necessary CSS from the previous example for DKT elements -->
+    <style>
+        /* --- General Chat & UI --- */
+        .chat-message.system, .quiz-message.system { /* Apply system style to quiz too */
+            font-style: italic;
+            color: #6c757d; /* Bootstrap's text-muted */
+            font-size: 0.9em;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        #chatLoading, #quizLoading { /* Apply loading style to quiz too */
+            display: none; /* Hidden by default */
+            text-align: center;
+            padding: 10px;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        /* --- DKT Specific Styles --- */
+        .dkt-item-container {
+            background-color: #f8f9fa; /* Light grey background */
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 5px; /* Add some margin */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .dkt-item-container h3 {
+            margin-top: 0;
+            color: #007bff; /* Primary color */
+            margin-bottom: 10px;
+        }
+
+        .dkt-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Space between buttons */
+            margin-top: 10px;
+        }
+
+        .dkt-option-button {
+            display: block; /* Make buttons take full width */
+            width: 100%;
+            padding: 10px 15px;
+            background-color: #ffffff; /* White background */
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            color: #333;
+        }
+
+        .dkt-option-button:hover:not(:disabled) {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .dkt-option-button:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        /* Feedback Styles */
+        .dkt-option-button.correct {
+            background-color: rgba(40, 167, 69, 0.2); /* Light green */
+            border-color: #28a745;
+            color: #155724; /* Darker green text */
+            font-weight: bold;
+        }
+
+        .dkt-option-button.incorrect {
+            background-color: rgba(220, 53, 69, 0.15); /* Light red */
+            border-color: #dc3545;
+            color: #721c24; /* Darker red text */
+        }
+
+
+        .dkt-result {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .module-content .module-sections p {
+            margin-bottom: 1em; /* Space between content paragraphs */
+            line-height: 1.6;
+        }
+
+        .dkt-continue-button { /* Style for the button added by JS */
+             display: block;
+             margin: 15px auto 5px auto; /* Center button */
+             padding: 10px 20px;
+             background-color: #007bff; /* Primary color */
+             color: white;
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+             font-size: 1rem;
+             transition: background-color 0.2s ease;
+        }
+
+        .dkt-continue-button:hover:not(:disabled) {
+            background-color: #0056b3; /* Darker shade */
+        }
+        .dkt-continue-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .dkt-end-message {
+            border-left: 5px solid #007bff; /* Primary color */
+        }
+
+        .knowledge-state-list {
+            list-style-type: none;
+            padding-left: 10px;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .knowledge-state-list li {
+            margin-bottom: 3px;
+        }
+         .action-button { /* Basic styling for start button */
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease;
+            margin-top: 10px;
+        }
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Consistent Header -->
+    <header>
+        <div class="container">
+            <div class="logo">FinGenius</div>
+            <nav>
+                <a href="index.html" class="back-home">← Back Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Main Title -->
+        <h1>Finance Education (FinEdu)</h1>
+
+        <!-- Introduction Section -->
+        <section class="content-section" id="finedu-introduction">
+            <h2>Welcome to FinEdu</h2>
+            <p>Explore key financial concepts, understand market dynamics through case studies, get answers from FinBot, and test your knowledge with our adaptive quiz. Our goal is to empower you with the knowledge to make informed financial decisions.</p>
+        </section>
+
+        <!-- Featured Articles Section -->
+        <section class="content-section" id="finedu-articles">
+             <!-- ... content ... -->
+        </section>
+
+        <!-- Case Studies Section -->
+        <section class="content-section" id="finedu-case-studies">
+            <h2>Finance Case Studies & Summaries</h2>
+            <p class="disclaimer">
+                <strong>Note:</strong> Case study summaries are generated by AI and are for informational purposes only.
+            </p>
+            <div id="case-studies-list">
+                <p>Loading case studies...</p>
+                <!-- JS will populate this -->
+            </div>
+        </section>
+
+        <!-- Chatbot Section (FinBot) -->
+        <section class="content-section" id="chatbot-section">
+            <h2>Ask FinBot</h2>
+            <p>Have a question about general finance? Ask FinBot! (Use the Adaptive Quiz section below for structured learning).</p>
+            <div class="chatbot-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message bot">Hello! I'm FinBot. Ask me about finance. I am here for you 24x7.</div>
+                </div>
+                <div class="chat-input-area">
+                    <textarea id="chatInput" placeholder="Ask a general finance question..." aria-label="Chat input" rows="3"></textarea>
+                    <button id="chatSendButton" aria-label="Send chat message">
+                        Send Message
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="chat-loading" id="chatLoading" style="display: none;">FinBot is thinking...</div>
+            </div>
+        </section>
+
+        <!-- *** ADAPTIVE QUIZ SECTION *** -->
+        <section class="content-section" id="adaptive-quiz-section">
+            <h2>Adaptive Finance Quiz</h2>
+            <p>Test your understanding with a personalized quiz that adapts to your knowledge level. Start the quiz to begin!</p>
+            <!-- Button to start the quiz session -->
+            <button id="startQuizButton" class="action-button">Start Adaptive Quiz</button> <!-- ID Changed -->
+
+            <!-- Quiz Interface Container (Initially Hidden) -->
+            <div class="quiz-interface-container" id="quizInterface" style="display: none;">
+                <div class="quiz-messages" id="quizMessages">
+                    <!-- Quiz questions, feedback, and modules appear here -->
+                </div>
+                <!-- Input area removed - MCQs use buttons -->
+                <!-- Continue button removed - Added dynamically by JS -->
+                <div class="quiz-loading" id="quizLoading" style="display: none;">Processing...</div>
+            </div>
+        </section>
+        <!-- *** END ADAPTIVE QUIZ SECTION *** -->
+
+    </main>
+
+    <!-- Consistent Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 FinGenius. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Link to the JavaScript file -->
+    <script src="finedu.js"></script> <!-- Ensure this is the correct path -->
+</body>
+</html>

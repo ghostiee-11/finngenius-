@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Financial Articles - FinGenius</title>
+    <!-- Link your existing CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts (if needed, same as index.html) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (if needed, same as index.html) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Specific JS for this page -->
+    <script src="articles.js" defer></script>
+</head>
+<body class="dark-mode">
+
+    <!-- You can optionally include your Navbar here if desired -->
+    <!-- <header class="navbar"> ... </header> -->
+
+    <main class="container" style="padding-top: 4rem; padding-bottom: 4rem;">
+        <h1 class="section-title" style="text-align: left; margin-bottom: 2rem;">Latest Articles :</h1>
+
+        <!-- Container where all articles will be loaded -->
+        <div id="all-articles-list" class="all-articles-container">
+            <p class="loading-message">Loading articles...</p>
+            <!-- Skeletons (Optional but good UX) -->
+            <div class="all-article-skeleton"></div>
+            <div class="all-article-skeleton"></div>
+            <div class="all-article-skeleton"></div>
+        </div>
+    </main>
+
+    <!-- You can optionally include your Footer here if desired -->
+    <!-- <footer class="footer"> ... </footer> -->
+
+</body>
+</html>

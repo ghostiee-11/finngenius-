@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Insurance Premium Estimator (Vanilla)</title>
+    <!-- Font Awesome for Icons (Optional, but used in this example) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        /* --- Dark Theme Variables --- */
+:root {
+    --bg-dark-primary: #111111;    /* Deep background */
+    --bg-dark-secondary: #1A1A1A; /* Container background */
+    --bg-dark-tertiary: #2A2A2A;  /* Input/Hover/Bot message background */
+    --text-dark-primary: #E5E7EB; /* Main text (light grey) */
+    --text-dark-secondary: #9CA3AF;/* Muted text */
+    --accent-dark-primary: #FFFFFF; /* Button text/icons */
+    --accent-dark-secondary: #3B82F6; /* Optional blue accent for links */
+    --button-bg: #FFFFFF;         /* White button background */
+    --button-text: #111111;       /* Dark button text */
+    --button-hover-bg: #F3F4F6;   /* Slightly off-white hover */
+    --border-dark: #374151;       /* Subtle borders */
+    --success-green: #22C55E;
+    --warning-yellow: #f1c40f;
+    --error-red: #dc3545;
+}
+
+/* --- General Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px; /* Base font size */
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-dark-primary);
+    color: var(--text-dark-primary);
+    line-height: 1.6;
+    padding-top: 20px; /* Add some space at the top */
+}
+
+.container {
+    max-width: 900px; /* Slightly narrower for focus */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- Header & Footer --- */
+header {
+    background-color: var(--bg-dark-primary); /* Match body */
+    padding: 15px 0;
+    margin-bottom: 40px; /* More space below header */
+    border-bottom: 1px solid var(--border-dark);
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark-primary); /* White/Light logo */
+}
+
+nav a.back-home {
+    text-decoration: none;
+    color: var(--text-dark-secondary); /* Muted color */
+    font-weight: 500;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+nav a.back-home:hover {
+    color: var(--text-dark-primary);
+}
+nav a.back-home svg { /* Style the arrow if needed */
+    width: 1em;
+    height: 1em;
+}
+
+
+footer {
+    margin-top: 60px;
+    text-align: center;
+    padding: 25px 0;
+    border-top: 1px solid var(--border-dark);
+    color: var(--text-dark-secondary);
+    font-size: 0.9rem;
+}
+
+/* --- Headings & Text --- */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-dark-primary);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+p.description { /* Optional styling for intro paragraph if needed */
+    text-align: center;
+    color: var(--text-dark-secondary);
+    max-width: 700px;
+    margin: 0 auto 40px auto;
+    font-size: 1.1rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-dark-primary);
+    margin-top: 0; /* Remove default top margin */
+    margin-bottom: 20px; /* Space below heading */
+    padding-bottom: 0; /* Remove previous border style */
+    border-bottom: none;
+    display: block; /* Make it block level */
+}
+
+h3 {
+    font-size: 1.25rem;
+    color: var(--text-dark-primary);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-dark-secondary); /* Default paragraphs muted */
+}
+
+a {
+    color: var(--accent-dark-secondary); /* Blue accent for links */
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Section Styling (Dark Container) --- */
+.content-section {
+    background-color: var(--bg-dark-secondary);
+    border-radius: 1rem; /* Match target UI */
+    padding: 2rem;      /* 32px padding */
+    margin-bottom: 2.5rem; /* Space between sections */
+    border: 1px solid var(--border-dark); /* Subtle border */
+}
+
+/* --- Articles / Case Studies --- */
+#finedu-articles article,
+#case-studies-list .case-study-item {
+    background-color: transparent; /* No inner background */
+    border: none;                  /* Remove inner border */
+    border-left: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-dark); /* Separator line */
+}
+
+#finedu-articles article:last-child,
+#case-studies-list .case-study-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.case-study-item h3 a {
+    color: var(--text-dark-primary);
+}
+.case-study-item h3 a:hover {
+     color: var(--accent-dark-secondary);
+}
+.case-study-item .source {
+    color: var(--text-dark-secondary);
+    font-size: 0.8rem; /* Smaller source text */
+}
+.case-study-item .summary {
+    color: var(--text-dark-secondary);
+    font-size: 1rem;
+}
+
+.disclaimer {
+    font-size: 0.9em;
+    color: var(--text-dark-secondary);
+    background-color: rgba(241, 196, 15, 0.1); /* Transparent yellow */
+    border-left: 3px solid var(--warning-yellow);
+    padding: 10px 15px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+.disclaimer strong {
+    color: var(--text-dark-primary);
+}
+
+/* --- Chatbot Styling (Mimicking Target UI Center Area) --- */
+#chatbot-section {
+    background-color: var(--bg-dark-secondary); /* Same as other sections */
+}
+
+.chatbot-container { /* New container for message/input area */
+    background-color: var(--bg-dark-tertiary); /* Slightly darker bg for chat area */
+    border-radius: 0.75rem; /* Match outer container */
+    padding: 1rem;
+    margin-top: 1.5rem;
+    border: 1px solid var(--border-dark);
+}
+
+.chat-messages {
+    height: 350px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    padding-right: 5px; /* Space for scrollbar */
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Space between messages */
+}
+
+/* Custom Scrollbar for Webkit */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-messages::-webkit-scrollbar-track {
+    background: var(--bg-dark-secondary);
+    border-radius: 3px;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+    background-color: var(--border-dark);
+    border-radius: 3px;
+}
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-dark-secondary);
+}
+
+.chat-message {
+    padding: 10px 15px;
+    border-radius: 18px; /* More rounded messages */
+    max-width: 85%;
+    word-wrap: break-word;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+.chat-message.user {
+    background-color: var(--accent-dark-secondary); /* Blue accent */
+    color: var(--accent-dark-primary); /* White text */
+    border-bottom-right-radius: 6px; /* Slightly flatter corner */
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.chat-message.bot {
+    background-color: var(--bg-dark-secondary); /* Matches section bg */
+    color: var(--text-dark-primary);
+    border: 1px solid var(--border-dark);
+    border-bottom-left-radius: 6px;
+    align-self: flex-start;
+    margin-right: auto;
+}
+.chat-message.bot strong { color: var(--text-dark-primary); font-weight: 600;}
+.chat-message.bot em { color: var(--text-dark-secondary); }
+.chat-message.bot ul { margin-top: 8px; margin-bottom: 8px; padding-left: 20px;}
+.chat-message.bot li { margin-bottom: 4px;}
+.chat-message.bot a { color: var(--accent-dark-secondary); }
+
+.chat-input-area {
+    display: flex;
+    flex-direction: column; /* Stack textarea and button */
+    gap: 10px;
+    margin-top: 1rem; /* Space above input area */
+}
+
+#chatInput { /* Changed to textarea */
+    flex-grow: 1;
+    padding: 12px 15px;
+    background-color: var(--bg-dark-secondary); /* Slightly lighter than chat bg */
+    border: 1px solid var(--border-dark);
+    border-radius: 0.75rem; /* Rounded textarea */
+    color: var(--text-dark-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    resize: none; /* Disable manual resize */
+    min-height: 50px; /* Minimum height */
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+#chatInput:focus {
+    border-color: var(--accent-dark-secondary); /* Blue focus */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3); /* Subtle focus ring */
+}
+#chatInput::placeholder {
+     color: var(--text-dark-secondary);
+}
+
+#chatSendButton {
+    background-color: var(--button-bg); /* White button */
+    color: var(--button-text);       /* Dark text */
+    padding: 12px 25px;
+    border: none;
+    border-radius: 0.75rem; /* Match target UI button */
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between text and icon */
+    align-self: center; /* Center button */
+    width: auto; /* Fit content */
+}
+#chatSendButton:hover {
+    background-color: var(--button-hover-bg); /* Slightly grey hover */
+}
+#chatSendButton:disabled {
+    background-color: var(--bg-dark-tertiary);
+    color: var(--text-dark-secondary);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+#chatSendButton svg {
+     vertical-align: middle;
+}
+
+.chat-loading {
+    text-align: center;
+    padding: 8px 15px;
+    font-style: italic;
+    color: var(--text-dark-secondary);
+    font-size: 0.9em;
+}
+
+/* Quiz & Links (Dark Theme Adjustments) */
+.quiz-container {
+    border: 1px solid var(--border-dark);
+    background-color: var(--bg-dark-secondary);
+    padding: 12px 18px;
+}
+.quiz-container strong { color: var(--text-dark-primary); }
+.quiz-options button {
+    background-color: var(--bg-dark-tertiary);
+    color: var(--text-dark-primary);
+    border: 1px solid var(--border-dark);
+}
+.quiz-options button:hover { background-color: #374151; } /* Darker grey hover */
+.quiz-options button:disabled { background-color: #4b5563; color: var(--text-dark-secondary); }
+.quiz-result { font-weight: 600; }
+.quiz-result[style*="color: var(--green-primary"] { color: var(--success-green);}
+.quiz-result[style*="color: orange"] { color: #f59e0b;} /* Amber/Orange */
+.quiz-options button[style*="background-color: #28a745"] { background-color: var(--success-green); border-color: var(--success-green);} /* Correct */
+.quiz-options button[style*="background-color: #dc3545"] { background-color: var(--error-red); border-color: var(--error-red); } /* Incorrect */
+
+
+.suggested-links {
+    border-top: 1px solid var(--border-dark);
+}
+.suggested-links strong { color: var(--text-dark-secondary); }
+.suggested-links a { color: var(--accent-dark-secondary); }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container { padding: 0 15px; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .content-section { padding: 1.5rem; }
+    .chat-messages { height: 300px; }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.8rem; }
+    p.description { font-size: 1rem; }
+    .content-section { padding: 1rem; }
+    .chat-message { max-width: 90%; }
+    #chatInput { padding: 10px; }
+    #chatSendButton { padding: 10px 20px; font-size: 0.95rem;}
+}
+        /* --- Embedded CSS Starts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'); /* Using Inter font */
+
+        :root {
+            /* Dark Theme Variables (like Spam Checker) */
+            --background-color: #121212;
+            --container-bg: #1c1c1e;
+            --input-bg: #2c2c2e;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a0a0a5;
+            --accent-color: #0A84FF; /* Blue for focus/accents if needed */
+            --button-bg: #f0f0f0; /* Light button like spam checker */
+            --button-text-dark: #1d1d1f; /* Dark text for light button */
+            --button-hover-bg: #dcdcdc;
+            --border-color: #3a3a3c;
+            --border-color-light: #505054;
+            --placeholder-color: #7e7e82;
+            --success-color: #34C759; /* Green for results */
+            --error-color: #FF3B30;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0; /* Remove body padding */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .main-wrapper {
+            flex-grow: 1; /* Allows container to take space and footer to stick bottom */
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Vertically center container */
+            padding: 40px 20px; /* Padding around container */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .estimator-container {
+            background-color: var(--container-bg);
+            padding: 35px 45px 40px 45px; /* Adjusted padding */
+            border-radius: 12px; /* Less rounded than Apple */
+            width: 100%;
+            max-width: 500px; /* Narrower container */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            text-align: center; /* Center align content */
+        }
+
+        .back-home-button {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+        .back-home-button i { font-size: 12px; }
+        .back-home-button:hover { color: var(--text-primary); }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 10px; /* Space below back button */
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 35px; /* Space before form */
+            line-height: 1.5;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #health-insurance-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between input groups */
+            margin-bottom: 30px; /* Space before button */
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left; /* Align labels left */
+            position: relative;
+        }
+
+        .input-group label {
+            font-size: 13px; /* Smaller label */
+            font-weight: 500;
+            margin-bottom: 7px;
+            color: var(--text-secondary);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        /* Input & Select Styling - Dark Theme */
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 11px 15px; /* Base padding */
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px; /* Less rounded */
+            color: var(--text-primary);
+            font-size: 15px;
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        select {
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a0a0a5'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+             background-repeat: no-repeat;
+             background-position: right 12px center;
+             background-size: 16px 16px;
+             padding-right: 35px;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color); /* Use blue for focus */
+            box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3); /* Subtle blue ring */
+        }
+
+        select:required:invalid { color: var(--placeholder-color); }
+        select option { background-color: var(--input-bg); color: var(--text-primary); }
+        select option[disabled] { color: var(--placeholder-color); }
+
+        /* City Search Specific */
+        .search-container { position: relative; }
+
+        /* Suggestions Dropdown - Dark Theme */
+        .suggestions-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--input-bg); /* Match input background */
+            border: 1px solid var(--border-color-light); /* Slightly lighter border */
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+        .suggestions-dropdown::-webkit-scrollbar { width: 5px; }
+        .suggestions-dropdown::-webkit-scrollbar-track { background: var(--input-bg); border-radius: 3px; }
+        .suggestions-dropdown::-webkit-scrollbar-thumb { background: var(--border-color-light); border-radius: 3px; }
+        .suggestions-dropdown::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+        .suggestion-item {
+            padding: 9px 15px; /* Adjust padding */
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 14px; /* Smaller suggestion text */
+        }
+        .suggestion-item:not(.none):hover {
+            background-color: var(--border-color); /* Darker hover */
+        }
+        .suggestion-item.none {
+            color: var(--text-secondary); cursor: default; font-style: italic;
+            padding: 9px 15px;
+        }
+
+        /* Calculate Button - Spam Checker Style */
+        .calculate-button {
+            width: auto;
+            min-width: 160px;
+            padding: 10px 25px; /* Adjust padding */
+            border-radius: 20px; /* Rounded like spam checker button */
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(0,0,0,0.1); /* Subtle border */
+            background-color: var(--button-bg);
+            color: var(--button-text-dark);
+            margin: 0 auto; /* Center the button */
+            display: block; /* Needed for margin:auto */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .calculate-button i.icon-button { font-size: 12px; } /* Specific class for button icon */
+        .calculate-button:hover:not(:disabled) {
+            background-color: var(--button-hover-bg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+        .calculate-button:disabled {
+            background-color: var(--border-color); /* Use dark border color for disabled */
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            border-color: var(--border-color);
+            box-shadow: none;
+            opacity: 0.8;
+        }
+
+
+        /* Results Section */
+        .results-section {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+            text-align: left; /* Align results content left */
+        }
+        .results-section h2 {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        #plan-results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .loading-text { text-align: center; color: var(--text-secondary); padding: 15px 0; font-style: italic; }
+
+        /* Plan Card - Dark Theme */
+        .plan-card {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .plan-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .plan-info { flex-grow: 1; }
+        .plan-name { font-size: 15px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+        .plan-subname { font-size: 13px; color: var(--text-secondary); margin-bottom: 5px; }
+        .plan-cover { font-size: 13px; color: var(--text-secondary); }
+        .plan-cover strong { color: var(--text-primary); font-weight: 500; }
+
+        .plan-premium { text-align: right; flex-shrink: 0; }
+        .plan-premium-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 1px; }
+        .plan-premium-value { font-size: 17px; font-weight: 600; color: var(--success-color); } /* Green premium */
+
+        .plan-actions {
+            padding-top: 10px;
+            text-align: right;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .view-details-button { /* Link style */
+            background: none; border: none;
+            color: var(--accent-color);
+            padding: 3px 0;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .view-details-button:hover { color: var(--accent-color-darker); text-decoration: underline; }
+        .view-details-button i { font-size: 0.8em; }
+
+        /* Reset Button - Text Style */
+        .reset-button {
+            display: block;
+            margin: 20px auto 0 auto;
+            background: none; border: none;
+            color: var(--text-secondary);
+            padding: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .reset-button i { font-size: 12px; }
+        .reset-button:hover { color: var(--text-primary); }
+
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            width: 100%;
+            margin-top: auto; /* Pushes footer down */
+            background-color: var(--background-color); /* Match body bg */
+            /* border-top: 1px solid var(--border-color); */ /* Optional: remove footer border */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 550px) {
+            .main-wrapper {
+                align-items: flex-start; /* Don't center vertically on mobile */
+                padding-top: 20px;
+            }
+            .estimator-container {
+                padding: 30px 25px;
+                margin-top: 20px; /* Add some top margin */
+            }
+            h1 { font-size: 22px; }
+            .subtitle { font-size: 14px; }
+             #health-insurance-form { gap: 18px; margin-bottom: 25px; }
+             .calculate-button { width: 100%; } /* Full width button on mobile */
+              .plan-card-top { flex-direction: column; align-items: stretch; gap: 5px; }
+              .plan-premium { text-align: left; margin-top: 5px;}
+              .plan-actions { text-align: center; }
+        }
+         /* --- Embedded CSS Ends --- */
+    </style>
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">FinGenius</div>
+            <nav>
+                <a href="index.html" class="back-home">← Back Home</a>
+            </nav>
+        </div>
+    </header>
+    <div class="main-wrapper">
+        <div class="estimator-container">
+            
+
+            <h1>Health Insurance Premium Estimator</h1>
+            <p class="subtitle">Enter your details below to get an estimated premium.</p>
+
+            <form id="health-insurance-form">
+                <!-- City Search -->
+                <div class="input-group search-container">
+                    <label for="city-search">Your City</label>
+                    <div class="input-wrapper">
+                         <input type="text" id="city-search" placeholder="Type city name..." autocomplete="off" required>
+                    </div>
+                    <div id="city-suggestions" class="suggestions-dropdown"></div>
+                </div>
+                <!-- Members to Insure -->
+                <div class="input-group">
+                     <label for="member-type">Who to Insure</label>
+                     <div class="input-wrapper">
+                         <select id="member-type" name="member-type" required>
+                            <option value="" disabled selected>Select members...</option>
+                            <!-- Options populated by JS -->
+                         </select>
+                     </div>
+                </div>
+                <!-- Age -->
+                 <div class="input-group">
+                     <label for="member-age">Eldest Member's Age</label>
+                      <div class="input-wrapper">
+                          <select id="member-age" name="member-age" required>
+                             <option value="" disabled selected>Select age...</option>
+                             <!-- Age options 18-75+ -->
+                              <script>
+                                 // Inline script for immediate population (Keep this small inline script)
+                                 const ageSelectElem = document.getElementById('member-age');
+                                 if (ageSelectElem) {
+                                     for (let i = 18; i <= 75; i++) {
+                                         const option = document.createElement('option'); option.value = i; option.textContent = `${i} Years`; ageSelectElem.appendChild(option);
+                                     }
+                                     const option75plus = document.createElement('option'); option75plus.value = '75+'; option75plus.textContent = '75+ Years'; ageSelectElem.appendChild(option75plus);
+                                  }
+                             </script>
+                         </select>
+                      </div>
+                 </div>
+                 <!-- Cover Amount -->
+                 <div class="input-group">
+                     <label for="cover-amount">Desired Cover Amount</label>
+                     <div class="input-wrapper">
+                          <select id="cover-amount" name="cover-amount" required>
+                             <option value="" disabled selected>Select cover...</option>
+                             <option value="recommended">Recommended</option>
+                             <option value="300000">₹ 3 Lakh</option>
+                             <option value="500000">₹ 5 Lakh</option>
+                             <option value="750000">₹ 7.5 Lakh</option>
+                             <option value="1000000">₹ 10 Lakh</option>
+                             <option value="1500000">₹ 15 Lakh</option>
+                             <option value="2000000">₹ 20 Lakh</option>
+                             <option value="2500000">₹ 25 Lakh</option>
+                             <option value="5000000">₹ 50 Lakh</option>
+                             <option value="10000000">₹ 1 Crore</option>
+                         </select>
+                     </div>
+                 </div>
+                 <button type="submit" class="calculate-button" id="calculate-premium" disabled>
+                     Calculate Estimate <i class="fas fa-arrow-right icon-button"></i>
+                 </button>
+            </form>
+            <!-- Results Section (Initially Hidden) -->
+            <div id="results-section" class="results-section" style="display: none;">
+                 <h2>Estimated Plans</h2>
+                 <div id="plan-results-container">
+                     <p class="loading-text">Calculating premiums...</p>
+                 </div>
+                 <button type="button" class="reset-button" id="reset-calc">
+                     <i class="fas fa-redo"></i> Reset
+                 </button>
+            </div>
+        </div> <!-- End estimator-container -->
+    </div> <!-- End main-wrapper -->
+
+    <footer>
+        © 2024 FinGenius Clone. All rights reserved.
+    </footer>
+
+    <script>
+        // --- Embedded JavaScript Starts ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- State Variables ---
+            let selections = { city: null, members: null, age: null, cover: null };
+
+            // --- DOM Elements ---
+            const form = document.getElementById('health-insurance-form');
+            const citySearchInput = document.getElementById('city-search');
+            const citySuggestionsContainer = document.getElementById('city-suggestions');
+            const memberTypeSelect = document.getElementById('member-type');
+            const ageSelect = document.getElementById('member-age');
+            const coverSelect = document.getElementById('cover-amount');
+            const calculateButton = document.getElementById('calculate-premium');
+            const resultsSection = document.getElementById('results-section');
+            const planResultsContainer = document.getElementById('plan-results-container');
+            const resetButton = document.getElementById('reset-calc');
+
+            // --- City Data & Tiering ---
+            const cityData = {
+                "Delhi": 1, "Mumbai": 1, "Bangalore": 1, "Chennai": 1, "Hyderabad": 1, "Kolkata": 1, "Pune": 1, "Ahmedabad": 1, "Gurgaon": 1, "Noida": 1, "Surat": 1, "Jaipur": 1, "Lucknow": 1, "Kanpur": 1, "Nagpur": 1, "Indore": 1, "Thane": 1, "Bhopal": 1, "Visakhapatnam": 1, "Patna": 1, "Vadodara": 1, "Ghaziabad": 1, "Ludhiana": 1, "Agra": 1, "Nashik": 1, "Faridabad": 1, "Meerut": 1, "Rajkot": 1, "Kalyan-Dombivli": 1, "Vasai-Virar": 1, "Varanasi": 1, "Srinagar": 1, "Aurangabad": 1, "Dhanbad": 1, "Amritsar": 1, "Navi Mumbai": 1, "Allahabad (Prayagraj)": 1, "Ranchi": 1, "Howrah": 1, "Coimbatore": 1, "Jabalpur": 1, "Gwalior": 1, "Vijayawada": 1, "Jodhpur": 1, "Madurai": 1, "Raipur": 1, "Kota": 1, "Guwahati": 1, "Chandigarh": 1,
+            };
+            const popularCityNames = Object.keys(cityData).slice(0, 8);
+            const otherCityNames = [
+                'Agra', 'Aligarh', 'Allahabad (Prayagraj)', 'Ambala', 'Amritsar', 'Bareilly', 'Bathinda', 'Bhiwani', 'Bikaner', 'Chandigarh', 'Dehradun', 'Faridabad', 'Firozabad', 'Ghaziabad', 'Gorakhpur', 'Gurgaon (Gurugram)', 'Haldwani', 'Haridwar', 'Hisar', 'Hoshiarpur', 'Jaipur', 'Jalandhar', 'Jammu', 'Jhansi', 'Jodhpur', 'Kanpur', 'Karnal', 'Kota', 'Lucknow', 'Ludhiana', 'Mathura', 'Meerut', 'Moradabad', 'Muzaffarnagar', 'Noida', 'Panipat', 'Pathankot', 'Patiala', 'Rampur', 'Rohtak', 'Saharanpur', 'Shimla', 'Sikar', 'Sonipat', 'Srinagar', 'Udaipur', 'Varanasi', 'Ahmedabad', 'Ahmednagar', 'Ajmer', 'Akola', 'Amravati', 'Anand', 'Aurangabad', 'Bhavnagar', 'Bhilwara', 'Bhiwandi', 'Bhusawal', 'Chandrapur', 'Dhule', 'Gandhidham', 'Gandhinagar', 'Ichalkaranji', 'Jalgaon', 'Jamnagar', 'Junagadh', 'Kalyan-Dombivli', 'Kolhapur', 'Latur', 'Malegaon', 'Mira-Bhayandar', 'Nadiad', 'Nanded', 'Nashik', 'Navi Mumbai', 'Navsari', 'Panvel', 'Parbhani', 'Pimpri-Chinchwad', 'Porbandar', 'Pune', 'Raipur', 'Rajkot', 'Ratnagiri', 'Sangli', 'Satara', 'Solapur', 'Surat', 'Thane', 'Ulhasnagar', 'Vadodara', 'Valsad', 'Vasai-Virar', 'Veraval', 'Asansol', 'Berhampore (West Bengal)', 'Bhadrak', 'Bhubaneswar', 'Bilaspur', 'Bokaro Steel City', 'Burdwan', 'Cuttack', 'Dhanbad', 'Durgapur', 'Guwahati', 'Haldia', 'Howrah', 'Jamshedpur', 'Kharagpur', 'Kolkata (Calcutta)', 'Midnapore', 'Muzaffarpur', 'Patna', 'Puri', 'Ranchi', 'Rourkela', 'Sambalpur', 'Siliguri', 'Tinsukia', 'Adilabad', 'Alappuzha (Alleppey)', 'Anantapur', 'Ballari (Bellary)', 'Bangalore (Bengaluru)', 'Belgaum (Belagavi)', 'Bhimavaram', 'Chennai (Madras)', 'Chittoor', 'Coimbatore', 'Cuddalore', 'Davanagere', 'Dindigul', 'Eluru', 'Erode', 'Guntur', 'Hassan', 'Hosur', 'Hubli-Dharwad', 'Kadapa', 'Kakinada', 'Kalaburagi (Gulbarga)', 'Kannur', 'Karimnagar', 'Karur', 'Khammam', 'Kochi (Cochin)', 'Kolar', 'Kollam (Quilon)', 'Kottayam', 'Kozhikode (Calicut)', 'Kumbakonam', 'Kurnool', 'Madurai', 'Mahbubnagar', 'Malappuram', 'Mangalore (Mangaluru)', 'Mysore (Mysuru)', 'Nagercoil', 'Nalgonda', 'Nellore', 'Nizamabad', 'Ongole', 'Palakkad (Palghat)', 'Pondicherry (Puducherry)', 'Proddatur', 'Rajahmundry', 'Salem', 'Shivamogga (Shimoga)', 'Srikakulam', 'Thanjavur', 'Thiruvananthapuram (Trivandrum)', 'Thrissur (Trichur)', 'Tiruchirappalli (Trichy)', 'Tirunelveli', 'Tirupati', 'Tiruppur', 'Tiruvannamalai', 'Tumkur (Tumakuru)', 'Tuticorin (Thoothukudi)', 'Udupi', 'Vellore', 'Vijayapura (Bijapur)', 'Vijayawada', 'Visakhapatnam (Vizag)', 'Vizianagaram', 'Warangal', 'Bhilai', 'Bhopal', 'Dewas', 'Gwalior', 'Indore', 'Jabalpur', 'Korba', 'Raipur', 'Ratlam', 'Rewa', 'Sagar', 'Satna', 'Ujjain', 'Agartala', 'Aizawl', 'Dibrugarh', 'Dimapur', 'Imphal', 'Itanagar', 'Jorhat', 'Kohima', 'Nagaon', 'Shillong', 'Tezpur'
+            ];
+            const allCities = [...new Set([...Object.keys(cityData), ...otherCityNames])].sort();
+
+            function getCityTier(cityName) { return cityData[cityName] === 1 ? 1 : 2; }
+
+            // --- Member/Plan Data ---
+            const memberOptionsData = [
+                { id: 'me', label: 'Me', factor: 1.0 }, { id: 'me_spouse', label: 'Me + Spouse', factor: 1.9 }, { id: 'me_spouse_1child', label: 'Me + Spouse & 1 Child', factor: 2.3 }, { id: 'me_spouse_2child', label: 'Me + Spouse & 2 Children', factor: 2.7 }, { id: 'parents', label: 'Parents', factor: 2.5 }, { id: 'senior', label: 'Senior Citizens', factor: 2.8 },
+            ];
+            const planBaseData = [
+                { id: 'care', name: 'Care Health', subname: 'Supreme Value', baseMultiplier: 1.05, detailsLink: '#plan-details?id=care-supreme' }, { id: 'niva', name: 'Niva Bupa', subname: 'Aspire Gold+', baseMultiplier: 1.00, detailsLink: '#plan-details?id=niva-aspire' }, { id: 'star', name: 'Star Health', subname: 'Super Star Plus', baseMultiplier: 0.95, detailsLink: '#plan-details?id=star-super' },
+            ];
+
+            // --- Initialization ---
+            function populateMemberDropdown() {
+                memberOptionsData.forEach(opt => {
+                    const option = document.createElement('option'); option.value = opt.id; option.textContent = opt.label; memberTypeSelect.appendChild(option);
+                });
+            }
+
+            // --- City Search & Suggestion Logic ---
+            function showSuggestions(filteredCities) {
+                 if (filteredCities.length > 0) {
+                     citySuggestionsContainer.innerHTML = filteredCities.map(city => `<div class="suggestion-item" data-city="${city}">${city}</div>`).join('');
+                     citySuggestionsContainer.style.display = 'block'; addSuggestionClickListeners();
+                 } else { citySuggestionsContainer.innerHTML = '<div class="suggestion-item none">No cities found</div>'; citySuggestionsContainer.style.display = 'block'; }
+            }
+            function hideSuggestions() { citySuggestionsContainer.style.display = 'none'; citySuggestionsContainer.innerHTML = ''; }
+            function addSuggestionClickListeners() {
+                const suggestionItems = citySuggestionsContainer.querySelectorAll('.suggestion-item');
+                suggestionItems.forEach(item => {
+                    if (!item.classList.contains('none')) {
+                        item.addEventListener('click', () => {
+                            const selectedCity = item.getAttribute('data-city');
+                            citySearchInput.value = selectedCity; selections.city = selectedCity; hideSuggestions(); validateForm();
+                        });
+                    }
+                });
+            }
+            citySearchInput.addEventListener('input', () => {
+                const searchTerm = citySearchInput.value.toLowerCase().trim(); selections.city = null; calculateButton.disabled = true;
+                if (searchTerm.length === 0) { hideSuggestions(); return; }
+                const exactMatch = allCities.find(city => city.toLowerCase() === searchTerm);
+                if (exactMatch) { selections.city = exactMatch; hideSuggestions(); validateForm(); }
+                else { const filtered = allCities.filter(city => city.toLowerCase().includes(searchTerm)); showSuggestions(filtered); }
+            });
+            citySearchInput.addEventListener('focus', () => {
+                if (citySearchInput.value.trim().length > 0) { const searchTerm = citySearchInput.value.toLowerCase().trim(); const filtered = allCities.filter(city => city.toLowerCase().includes(searchTerm)); showSuggestions(filtered); }
+            });
+            document.addEventListener('click', (event) => {
+                if (!citySearchInput.contains(event.target) && !citySuggestionsContainer.contains(event.target)) {
+                    hideSuggestions(); const currentVal = citySearchInput.value; const isValidCity = allCities.includes(currentVal);
+                    if (isValidCity) { selections.city = currentVal; validateForm(); }
+                    else if (selections.city !== currentVal) { selections.city = null; validateForm(); }
+                }
+            });
+
+            // --- Update selections & Validation ---
+            memberTypeSelect.addEventListener('change', () => { selections.members = memberTypeSelect.value; validateForm(); });
+            ageSelect.addEventListener('change', () => { selections.age = ageSelect.value; validateForm(); });
+            coverSelect.addEventListener('change', () => { selections.cover = coverSelect.value; validateForm(); });
+
+            function validateForm() {
+                const isCityValid = selections.city && allCities.includes(selections.city);
+                const isMembersValid = selections.members !== null && selections.members !== "";
+                const isAgeValid = selections.age !== null && selections.age !== "";
+                const isCoverValid = selections.cover !== null && selections.cover !== "";
+                calculateButton.disabled = !(isCityValid && isMembersValid && isAgeValid && isCoverValid);
+            }
+
+            // --- Form Submission ---
+            form.addEventListener('submit', (e) => {
+                e.preventDefault(); if (calculateButton.disabled) return;
+                resultsSection.style.display = 'block'; planResultsContainer.innerHTML = '<p class="loading-text">Calculating premiums...</p>';
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                simulatePremiumCalculation();
+            });
+
+            // --- Reset Button ---
+            resetButton.addEventListener('click', () => {
+                selections = { city: null, members: null, age: null, cover: null }; form.reset();
+                memberTypeSelect.value = ""; ageSelect.value = ""; coverSelect.value = "";
+                hideSuggestions(); resultsSection.style.display = 'none'; planResultsContainer.innerHTML = '';
+                calculateButton.disabled = true; citySearchInput.focus();
+            });
+
+            // --- Refined Premium Simulation ---
+            function simulatePremiumCalculation() {
+                setTimeout(() => {
+                    const calculatedPlans = []; const baseMonthlyPremium = 300;
+                    const ageValue = selections.age === '75+' ? 75 : parseInt(selections.age);
+                    const ageFactor = Math.pow(1.035, Math.max(0, ageValue - 18));
+                    const cityTier = getCityTier(selections.city); const cityMultiplier = cityTier === 1 ? 1.25 : 1.0;
+                    const selectedMemberInfo = memberOptionsData.find(m => m.id === selections.members);
+                    const memberFactor = selectedMemberInfo ? selectedMemberInfo.factor : 1.0;
+                    let coverAmountValue = 0; let actualCoverSelection = selections.cover;
+                    if (selections.cover && selections.cover !== 'recommended') { coverAmountValue = parseInt(selections.cover); }
+                    else { coverAmountValue = (ageValue > 45 || memberFactor > 2.0) ? 1000000 : 500000; actualCoverSelection = `${coverAmountValue}`; }
+                    const coverFactor = 1 + (Math.log(Math.max(1, coverAmountValue / 100000)) * 0.15);
+
+                    planBaseData.forEach(plan => {
+                        let estimatedPremium = baseMonthlyPremium * ageFactor * cityMultiplier * memberFactor * coverFactor * plan.baseMultiplier;
+                        estimatedPremium = Math.max(250, Math.round(estimatedPremium * (1 + (Math.random() - 0.5) * 0.05)));
+                        calculatedPlans.push({ ...plan, premium: estimatedPremium, });
+                    });
+                    displayPlans(calculatedPlans, coverAmountValue, actualCoverSelection);
+                }, 1200);
+            }
+
+            // --- Display Plans with Links ---
+            function displayPlans(plans, coverAmountValue, coverSelection) {
+                const coverFormatted = formatCoverAmount(coverAmountValue);
+                const displayCoverText = (selections.cover === 'recommended') ? `${coverFormatted} (Recommended)` : coverFormatted;
+                if (plans && plans.length > 0) {
+                    planResultsContainer.innerHTML = plans.map(plan => `
+                        <div class="plan-card">
+                            <div class="plan-card-top">
+                                <div class="plan-info">
+                                    <div class="plan-name">${plan.name} (${plan.subname})</div>
+                                    <div class="plan-cover">Cover: <strong>${displayCoverText}</strong></div>
+                                </div>
+                                <div class="plan-premium">
+                                     <div class="plan-premium-label">Starts @</div>
+                                    <div class="plan-premium-value">₹${plan.premium.toLocaleString('en-IN')}/mo</div>
+                                </div>
+                            </div>
+                            <div class="plan-actions">
+                                 <a href="${plan.detailsLink}" target="_blank" class="view-details-button" data-plan-id="${plan.id}">
+                                    View Details <i class="fas fa-external-link-alt"></i>
+                                 </a>
+                            </div>
+                        </div>`).join('');
+                } else { planResultsContainer.innerHTML = '<p class="loading-text">No suitable plans found.</p>'; }
+            }
+
+            function formatCoverAmount(amount) {
+                if (isNaN(amount) || amount <= 0) return 'N/A';
+                if (amount >= 10000000) return `₹ ${amount / 10000000} Cr`;
+                if (amount >= 100000) return `₹ ${amount / 100000} L`;
+                return `₹ ${amount.toLocaleString('en-IN')}`;
+            }
+
+            // --- Initial Setup ---
+            populateMemberDropdown();
+            validateForm();
+
+        }); // End DOMContentLoaded
+        // --- Embedded JavaScript Ends ---
+    </script>
+
+</body>
+</html>
