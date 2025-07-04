@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Quiz Wheel 🎡📚</title>
+    <style>
+        /* CSS remains largely the same as the previous version */
+        :root {
+            --wheel-color1: #ffcc80; /* Orange - Saving */
+            --wheel-color2: #a5d6a7; /* Green - Budgeting */
+            --wheel-color3: #81d4fa; /* Blue - Spending Wisely */
+            --wheel-color4: #ce93d8; /* Purple - Banking */
+            --pointer-color: #e53935; /* Red */
+            --background-color: #f0f4f8;
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --button-bg: #4CAF50;
+            --button-text: white;
+            --correct-bg: #d4edda;
+            --correct-text: #155724;
+            --incorrect-bg: #f8d7da;
+            --incorrect-text: #721c24;
+            --star-color: #ffc107; /* Yellow for stars */
+        }
+
+        body {
+            font-family: 'Verdana', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .game-container {
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            max-width: 550px; /* Slightly wider for longer text */
+            width: 100%;
+        }
+
+        h1 { color: #2a7de1; margin-bottom: 25px; }
+
+        .wheel-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 20px auto 30px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #555;
+            position: relative;
+            overflow: hidden;
+            background: conic-gradient(
+                var(--wheel-color1) 0deg 90deg,  /* Saving */
+                var(--wheel-color2) 90deg 180deg, /* Budgeting */
+                var(--wheel-color3) 180deg 270deg,/* Spending Wisely */
+                var(--wheel-color4) 270deg 360deg /* Banking */
+            );
+            transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        .pointer {
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid var(--pointer-color);
+            position: absolute;
+            top: -15px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .controls button#spin-btn {
+            padding: 12px 25px; font-size: 1.2em; cursor: pointer;
+            background-color: var(--button-bg); color: var(--button-text);
+            border: none; border-radius: 8px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-bottom: 20px;
+        }
+        .controls button#spin-btn:hover { background-color: #45a049; }
+        .controls button#spin-btn:active { transform: scale(0.98); }
+        .controls button#spin-btn:disabled { background-color: #cccccc; cursor: not-allowed; }
+
+        .quiz-area {
+            margin-top: 20px; padding: 20px; background-color: #f9f9f9;
+            border: 1px solid #eee; border-radius: 8px; min-height: 180px; /* Increased height */
+        }
+
+        .topic-display { font-size: 1.3em; font-weight: bold; color: #0056b3; margin-bottom: 10px; }
+        .question-text { font-size: 1.1em; margin-bottom: 15px; line-height: 1.4; } /* Added line-height */
+
+        .options-container button {
+            display: block; width: 100%; padding: 10px; margin: 8px 0;
+            font-size: 1em; cursor: pointer; background-color: #e0e0e0;
+            border: 1px solid #ccc; border-radius: 5px;
+            transition: background-color 0.2s ease; text-align: left;
+            box-sizing: border-box; /* Ensure padding doesn't make it wider */
+        }
+        .options-container button:hover:not(:disabled) { background-color: #d1d1d1; }
+        .options-container button:disabled { cursor: not-allowed; opacity: 0.7; }
+        .options-container button.correct { background-color: var(--correct-bg); border-color: var(--correct-text); color: var(--correct-text); font-weight: bold; }
+        .options-container button.incorrect { background-color: var(--incorrect-bg); border-color: var(--incorrect-text); color: var(--incorrect-text); font-weight: bold; }
+
+        .feedback-area { margin-top: 15px; padding: 12px; border-radius: 5px; font-weight: 500; line-height: 1.5; }
+        .feedback-area.correct { background-color: var(--correct-bg); color: var(--correct-text); border: 1px solid #b8daff; }
+        .feedback-area.incorrect { background-color: var(--incorrect-bg); color: var(--incorrect-text); border: 1px solid #f5c6cb; }
+        .feedback-area strong { display: block; margin-bottom: 5px; } /* Make bold text stand out */
+
+        .score-area { margin-top: 25px; font-size: 1.4em; font-weight: bold; }
+        .score-area #star-count { color: var(--star-color); font-size: 1.6em; vertical-align: middle; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Finance Quiz Wheel 🎡📚</h1>
+
+        <div class="wheel-container">
+            <div id="wheel" class="wheel"></div>
+            <div class="pointer"></div>
+        </div>
+
+        <div class="controls">
+            <button id="spin-btn">Spin the Wheel!</button>
+        </div>
+
+        <div id="quiz-area" class="quiz-area hidden">
+            <div id="topic-display" class="topic-display"></div>
+            <p id="question-text" class="question-text"></p>
+            <div id="options-container" class="options-container"></div>
+            <div id="feedback-area" class="feedback-area hidden"></div>
+        </div>
+
+        <div class="score-area">
+            Score: <span id="star-count">0</span> Stars ⭐
+        </div>
+    </div>
+
+    <script>
+        // --- Expanded Game Data ---
+        const topics = ["Saving", "Budgeting", "Spending Wisely", "Banking"]; // Order matches conic-gradient
+        const questions = {
+            "Saving": [
+                // 10 Saving Questions
+                { question: "What is the main reason people save money?", options: ["To buy snacks right away", "To reach a future goal (like a bike or game)", "To hide it from siblings", "To count it every day"], correctAnswer: "To reach a future goal (like a bike or game)", explanation: "Saving helps you gather enough money over time for bigger things you want or need later!", tip: "While counting is fun, the main point of saving is to use the money for something later!" },
+                { question: "If you get ₹50 allowance and save ₹10 each week, how much will you save in 4 weeks?", options: ["₹10", "₹40", "₹50", "₹60"], correctAnswer: "₹40", explanation: "Saving consistently adds up! ₹10 per week for 4 weeks is ₹10 x 4 = ₹40.", tip: "Think about how many times you save the ₹10. It happens 4 times!" },
+                { question: "What is 'interest' when you save money in a bank?", options: ["How interesting the bank looks", "A fee you pay the bank", "Extra money the bank pays you for keeping money there", "A type of candy"], correctAnswer: "Extra money the bank pays you for keeping money there", explanation: "Interest is like a small 'thank you' from the bank. They pay you a little extra because you let them hold onto your money.", tip: "Good guess! Interest is actually a bonus *for* you when you save at a bank." },
+                { question: "What's a 'savings goal'?", options: ["Trying to save every coin you find", "Something specific you are saving money for", "A type of soccer goal", "Forgetting where you put your money"], correctAnswer: "Something specific you are saving money for", explanation: "Having a goal (like 'saving for a new scooter') makes it easier and more fun to save!", tip: "A goal gives your saving a purpose! What do YOU want to save for?" },
+                { question: "Which of these is generally the SAFEST place to keep a large amount of savings?", options: ["Under your bed", "In your school backpack", "A piggy bank", "A bank account"], correctAnswer: "A bank account", explanation: "Banks have strong security and insurance to protect your money, much safer than keeping lots of cash at home.", tip: "Piggy banks are great for starting, but banks offer more safety for bigger savings." },
+                { question: "What does it mean to 'pay yourself first' when saving?", options: ["Buy yourself a treat first", "Put some money into savings before spending on anything else", "Pay bills first", "Hide money from yourself"], correctAnswer: "Put some money into savings before spending on anything else", explanation: "It means making saving a priority! Decide how much to save and put it aside *before* you spend on wants.", tip: "It sounds like a treat, but 'paying yourself first' is about prioritizing your future savings!" },
+                { question: "If you want to buy a toy that costs ₹100 and you save ₹20 each week, how many weeks will it take?", options: ["2 weeks", "4 weeks", "5 weeks", "10 weeks"], correctAnswer: "5 weeks", explanation: "Divide the total cost by how much you save each week: ₹100 / ₹20 = 5 weeks.", tip: "Count how many times ₹20 fits into ₹100. (20, 40, 60, 80, 100)" },
+                { question: "Why is it sometimes hard to save money?", options: ["Saving is boring", "There are too many fun things to buy right now", "Banks are too far away", "Money disappears magically"], correctAnswer: "There are too many fun things to buy right now", explanation: "It takes discipline! It's tempting to spend on wants immediately instead of saving for a bigger goal.", tip: "It can be tricky! Resisting immediate wants is key to reaching savings goals." },
+                { question: "What's a 'rainy day fund'?", options: ["Money to buy umbrellas", "Savings for unexpected problems or emergencies", "Money saved only when it's raining", "A fund for water parks"], correctAnswer: "Savings for unexpected problems or emergencies", explanation: "It's smart to have some money saved just in case something unexpected happens, like needing to fix a broken bike.", tip: "Think about unexpected needs! A 'rainy day fund' helps when surprise costs pop up." },
+                { question: "True or False: Saving small amounts regularly is better than trying to save a huge amount once in a while.", options: ["True", "False"], correctAnswer: "True", explanation: "Yes! Small, consistent savings add up over time and build a good habit, often better than irregular large savings.", tip: "Think about habits! Doing something small regularly often works better." }
+            ],
+            "Budgeting": [
+                // 10 Budgeting Questions
+                { question: "A budget is mostly about:", options: ["Tracking past spending", "Making a plan for future spending and saving", "Wishing you had more money", "Counting coins"], correctAnswer: "Making a plan for future spending and saving", explanation: "A budget looks forward! It helps you decide how you *will* use your money.", tip: "While tracking is part of it, budgeting's main job is planning for the future." },
+                { question: "What are 'expenses' in a budget?", options: ["Money you receive", "Things you plan to buy or pay for", "Your savings goals", "Money left over"], correctAnswer: "Things you plan to buy or pay for", explanation: "Expenses are all the things you spend money on, like food, bus fare, movie tickets, or saving contributions.", tip: "Expenses are where your money *goes* out." },
+                { question: "What is 'income' in a budget?", options: ["Money you spend", "Money you save", "Money you receive (like allowance or gifts)", "Your budget plan"], correctAnswer: "Money you receive (like allowance or gifts)", explanation: "Income is any money coming *in* that you can use for your budget.", tip: "Income is money that comes *to* you." },
+                { question: "Why should you include 'saving' as part of your budget plan?", options: ["It makes the budget look bigger", "Saving is an important financial goal", "It's required by law", "To trick your parents"], correctAnswer: "Saving is an important financial goal", explanation: "Treat saving like an expense! By planning for it in your budget, you're more likely to actually do it.", tip: "Saving shouldn't be an afterthought; plan for it in your budget!" },
+                { question: "What does it mean if your expenses are higher than your income in your budget?", options: ["You have extra money", "You are spending more than you receive (over budget)", "Your budget is perfect", "You need a new calculator"], correctAnswer: "You are spending more than you receive (over budget)", explanation: "This means you need to adjust! Either reduce spending (cut expenses) or find ways to increase income.", tip: "Uh oh! If expenses > income, you need to make changes to balance your budget." },
+                { question: "Which of these is a 'fixed' expense (usually stays the same)?", options: ["Buying snacks", "Movie tickets", "Saving ₹5 per week", "Video game purchases"], correctAnswer: "Saving ₹5 per week", explanation: "A fixed expense is one you plan to pay regularly and the amount doesn't usually change, like a set savings amount or a monthly subscription.", tip: "Fixed means it doesn't change much. Which option fits that best?" },
+                { question: "Which of these is a 'variable' expense (can change easily)?", options: ["Monthly phone plan cost", "Your weekly savings goal", "Money spent on birthday gifts for friends", "Yearly school fees"], correctAnswer: "Money spent on birthday gifts for friends", explanation: "Variable expenses change depending on your choices or circumstances, like how much you spend on entertainment or gifts.", tip: "Variable means it can vary or change. Buying gifts isn't usually the same amount every time." },
+                { question: "What's the first step in making a simple budget?", options: ["Guess how much you spend", "Figure out your income (how much money you get)", "Ask a friend for money", "Buy a fancy notebook"], correctAnswer: "Figure out your income (how much money you get)", explanation: "You need to know how much money you have *coming in* before you can plan how to use it!", tip: "Start with what you have! Knowing your income is step one." },
+                { question: "If your budget shows you have money left over after expenses and saving, what should you do?", options: ["Spend it all immediately", "Consider saving more or putting it towards a goal", "Lose it", "Complain you don't have enough"], correctAnswer: "Consider saving more or putting it towards a goal", explanation: "Having extra is great! You could boost your savings, save for a different goal, or decide on a smart way to spend it.", tip: "Leftover money is an opportunity! Think about your goals." },
+                { question: "Why is it important to review your budget sometimes?", options: ["To make it look neat", "To see if your plan is working and make changes if needed", "Because your parents said so", "To add more expensive items"], correctAnswer: "To see if your plan is working and make changes if needed", explanation: "Life changes! Reviewing your budget helps you adjust for new goals, income changes, or if you're overspending in certain areas.", tip: "A budget isn't set in stone! Check it regularly to keep it useful." }
+            ],
+            "Spending Wisely": [
+                // 10 Spending Wisely Questions
+                { question: "What's the difference between a 'Need' and a 'Want'?", options: ["Needs cost more", "Needs are essential (like food), Wants are extras (like toys)", "Wants are more fun", "There is no difference"], correctAnswer: "Needs are essential (like food), Wants are extras (like toys)", explanation: "Needs are things you must have to survive and be healthy. Wants are things that are nice but not essential.", tip: "Think: Do I *have* to have this, or do I just *like* to have this?" },
+                { question: "Which of these is most likely a NEED?", options: ["Latest video game", "Water", "Fancy sneakers", "A trip to the movies"], correctAnswer: "Water", explanation: "We need water, food, shelter, and basic clothing to live. Other things are usually wants.", tip: "Which one can you absolutely not live without?" },
+                { question: "Which of these is most likely a WANT?", options: ["School books", "Lunch food", "A new bike helmet (if you ride)", "A popular brand toy"], correctAnswer: "A popular brand toy", explanation: "While toys are fun, they aren't essential for survival like food, water, or safety items.", tip: "Which item is nice to have, but not strictly necessary?" },
+                { question: "What is 'impulse buying'?", options: ["Buying something carefully planned", "Buying something suddenly without thinking", "Buying winter clothes in summer", "Buying gifts"], correctAnswer: "Buying something suddenly without thinking", explanation: "Impulse buys often happen when you see something appealing and buy it on the spot, even if you didn't plan to or don't need it.", tip: "Think 'impulse' = sudden urge! It's unplanned spending." },
+                { question: "Why is comparing prices before buying something important?", options: ["It takes too much time", "It can help you find the best deal and save money", "All stores charge the same", "It's fun to visit many stores"], correctAnswer: "It can help you find the best deal and save money", explanation: "The same item can cost different amounts at different places! Checking first can save you money.", tip: "Don't assume the first price is the best! A little comparing can save cash." },
+                { question: "What does 'value for money' mean?", options: ["Buying the cheapest thing always", "Getting something good quality for a fair price", "Buying the most expensive thing", "Getting lots of free stuff"], correctAnswer: "Getting something good quality for a fair price", explanation: "It's not just about low price, but about getting something worthwhile and useful for the amount you spend.", tip: "Value isn't just cheap; it's getting your money's worth!" },
+                { question: "Before buying a 'want', what's a good question to ask yourself?", options: ["Does my friend have this?", "Will this make me happy forever?", "Do I really need this, or could I save the money instead?", "Is this the newest model?"], correctAnswer: "Do I really need this, or could I save the money instead?", explanation: "Pausing to think about needs vs. wants and your savings goals helps you make smarter spending choices.", tip: "Asking 'why' you want something helps decide if it's wise spending." },
+                { question: "What is opportunity cost?", options: ["The cost of buying something online", "What you give up when you choose one thing over another", "The price tag", "How much an opportunity costs"], correctAnswer: "What you give up when you choose one thing over another", explanation: "If you spend your ₹50 on a game, the opportunity cost is the other things you could have done with that ₹50 (like saving it or buying snacks).", tip: "Every choice has a trade-off! What did you miss out on by making that spending choice?" },
+                { question: "Why should you be careful about ads you see?", options: ["Ads are always true", "Ads are designed to make you want to buy things, needed or not", "Ads are boring", "Ads only show needs"], correctAnswer: "Ads are designed to make you want to buy things, needed or not", explanation: "Ads use tricks to make products look exciting! Think critically about whether you truly need what they're selling.", tip: "Ads want you to spend! Don't let them decide for you." },
+                { question: "If you borrow money from a friend and promise to pay it back, what should you do?", options: ["Forget about it", "Pay it back as soon as you promised", "Borrow more money", "Avoid your friend"], correctAnswer: "Pay it back as soon as you promised", explanation: "Being responsible with borrowed money is important for trust and friendship! Always pay back debts.", tip: "Keeping promises, especially about money, is key to being trustworthy." }
+            ],
+            "Banking": [
+                // 10 Banking Questions
+                { question: "What is the main purpose of a bank?", options: ["To give away free toys", "To keep money safe and help people manage it", "To sell pizza", "To build roads"], correctAnswer: "To keep money safe and help people manage it", explanation: "Banks provide services like savings accounts, checking accounts, loans, and ways to move money safely.", tip: "Think safety and management! Banks are central to handling money." },
+                { question: "What is a 'deposit' at a bank?", options: ["Taking money out", "Putting money into your account", "Ordering food", "A type of chair"], correctAnswer: "Putting money into your account", explanation: "When you deposit money, you are adding it to your bank account for safekeeping or later use.", tip: "Deposit means putting money *in*." },
+                { question: "What is a 'withdrawal' at a bank?", options: ["Putting money in", "Taking money out of your account", "A type of drawing", "Closing the bank"], correctAnswer: "Taking money out of your account", explanation: "A withdrawal is when you remove money from your bank account, like getting cash from an ATM.", tip: "Withdrawal means taking money *out*." },
+                { question: "What does ATM stand for?", options: ["A Tasty Meal", "Automated Teller Machine", "Awesome Toy Machine", "Ask The Manager"], correctAnswer: "Automated Teller Machine", explanation: "It's a machine that lets you do basic banking tasks like withdrawing cash without needing a human teller.", tip: "Think 'automated' - it does the teller's job automatically!" },
+                { question: "What do you usually need to use an ATM?", options: ["A library card", "A bank card (like a debit card) and a PIN", "Your favorite toy", "A secret handshake"], correctAnswer: "A bank card (like a debit card) and a PIN", explanation: "The card identifies your account, and the PIN (Personal Identification Number) is a secret code to prove it's you.", tip: "You need the card + secret code (PIN) for security!" },
+                { question: "What is a 'debit card' usually linked to?", options: ["A credit card account", "Your savings account", "Your checking account", "A store's reward program"], correctAnswer: "Your checking account", explanation: "When you use a debit card, money comes directly out of your checking account almost immediately.", tip: "Debit = Directly from your account." },
+                { question: "What is a 'credit card'?", options: ["A card that gives you free money", "A card allowing you to borrow money that you must pay back later", "A card that only works online", "A card made of credit"], correctAnswer: "A card allowing you to borrow money that you must pay back later", explanation: "Using a credit card is like taking a small loan for each purchase. You get a bill later and must pay it back, often with interest if not paid fully.", tip: "Credit = Borrowing money." },
+                { question: "Why is it important to keep your PIN secret?", options: ["It's fun to have secrets", "To prevent others from taking money from your account", "So your parents can't see it", "PINs are shy"], correctAnswer: "To prevent others from taking money from your account", explanation: "Your PIN is the key to your account at an ATM or for debit purchases. Keep it secret to keep your money safe!", tip: "Your PIN protects your money! Never share it." },
+                { question: "What is online banking?", options: ["A bank located on the internet", "Using a website or app to manage your bank account", "Playing banking video games", "Ordering money online"], correctAnswer: "Using a website or app to manage your bank account", explanation: "Online banking lets you check balances, transfer money, and pay bills using your computer or phone.", tip: "It's doing your banking tasks via the internet!" },
+                { question: "What is 'interest' when you BORROW money (like a loan or credit card)?", options: ["Extra money the bank gives you", "The main amount you borrowed", "An extra fee you pay for borrowing the money", "A sign of interest in borrowing"], correctAnswer: "An extra fee you pay for borrowing the money", explanation: "When you borrow, interest is the extra cost you pay on top of repaying the original amount. It's the price of borrowing.", tip: "Interest on loans/credit cards is an *extra cost* to you." }
+            ]
+        };
+
+        // --- Game State ---
+        let score = 0;
+        let currentRotation = 0;
+        let isSpinning = false;
+        let currentQuestionData = null;
+        // New state to track available questions for each topic
+        let activeQuestions = {};
+
+        // --- DOM Elements ---
+        const wheelEl = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spin-btn');
+        const quizAreaEl = document.getElementById('quiz-area');
+        const topicDisplayEl = document.getElementById('topic-display');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackAreaEl = document.getElementById('feedback-area');
+        const starCountEl = document.getElementById('star-count');
+
+        // --- Helper Functions ---
+
+        function shuffleArray(array) {
+            // Fisher-Yates (Knuth) Shuffle Algorithm
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        function initializeActiveQuestions() {
+            activeQuestions = {}; // Clear previous state
+            for (const topic in questions) {
+                // Create a shuffled *copy* of the original questions for this topic
+                activeQuestions[topic] = shuffleArray([...questions[topic]]);
+            }
+             console.log("Initialized Active Questions:", activeQuestions); // For debugging
+        }
+
+        function updateScoreDisplay() {
+            starCountEl.textContent = score;
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // --- Core Game Functions ---
+
+        function spinWheel() {
+            if (isSpinning) return;
+
+            isSpinning = true;
+            spinBtn.disabled = true;
+            quizAreaEl.classList.add('hidden');
+            feedbackAreaEl.classList.add('hidden');
+
+            const degreesPerTopic = 360 / topics.length;
+            const randomExtraDegrees = getRandomInt(0, 359); // More randomness in stop position
+            const totalRotation = currentRotation + (360 * 5) + randomExtraDegrees;
+            currentRotation = totalRotation;
+
+            wheelEl.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                const actualRotation = currentRotation % 360;
+                // Determine the topic based on pointer position (top = 0 degrees)
+                // Segment boundaries: 0-90 (Saving), 90-180 (Budgeting), 180-270 (Spending), 270-360 (Banking)
+                let topicIndex;
+                if (actualRotation >= 0 && actualRotation < 90) topicIndex = 0;       // Saving
+                else if (actualRotation >= 90 && actualRotation < 180) topicIndex = 1; // Budgeting
+                else if (actualRotation >= 180 && actualRotation < 270) topicIndex = 2;// Spending Wisely
+                else topicIndex = 3;                                                  // Banking
+
+                const selectedTopic = topics[topicIndex];
+                console.log(`Wheel stopped at ${actualRotation.toFixed(1)}deg, Topic: ${selectedTopic}`); // Debugging
+
+                displayQuestion(selectedTopic);
+                isSpinning = false;
+                // Spin button stays disabled until answer
+            }, 4000);
+        }
+
+        function displayQuestion(topic) {
+             console.log(`Trying to display question for: ${topic}`); // Debugging
+            if (!activeQuestions[topic] || activeQuestions[topic].length === 0) {
+                console.log(`No more questions for ${topic}, reshuffling...`); // Debugging
+                // Ran out of questions for this topic, reshuffle the original list
+                activeQuestions[topic] = shuffleArray([...questions[topic]]);
+
+                // Optional: Notify user (or just proceed)
+                 if (activeQuestions[topic].length === 0) { // Should not happen if original has questions
+                     console.error(`CRITICAL: No questions found for ${topic} even after reset!`);
+                     topicDisplayEl.textContent = topic;
+                     questionTextEl.textContent = "Error: Couldn't find questions for this topic.";
+                     optionsContainerEl.innerHTML = '';
+                     quizAreaEl.classList.remove('hidden');
+                     spinBtn.disabled = false; // Allow spinning again
+                     return;
+                 }
+            }
+
+            // Pop a question from the shuffled list for this topic
+            currentQuestionData = activeQuestions[topic].pop();
+            console.log(`Selected question for ${topic}:`, currentQuestionData.question); // Debugging
+             console.log(`Remaining questions for ${topic}: ${activeQuestions[topic].length}`); // Debugging
+
+
+            topicDisplayEl.textContent = `Topic: ${topic}`;
+            questionTextEl.textContent = currentQuestionData.question;
+
+            optionsContainerEl.innerHTML = '';
+            currentQuestionData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option, button);
+                optionsContainerEl.appendChild(button);
+            });
+
+            quizAreaEl.classList.remove('hidden');
+        }
+
+         function checkAnswer(selectedOption, selectedButton) {
+            const optionButtons = optionsContainerEl.querySelectorAll('button');
+            optionButtons.forEach(btn => btn.disabled = true);
+
+            const correct = selectedOption === currentQuestionData.correctAnswer;
+
+            feedbackAreaEl.classList.remove('hidden', 'correct', 'incorrect');
+
+            if (correct) {
+                score++;
+                updateScoreDisplay();
+                feedbackAreaEl.innerHTML = `<strong>Correct! ⭐</strong> ${currentQuestionData.explanation}`;
+                feedbackAreaEl.classList.add('correct');
+                selectedButton.classList.add('correct');
+            } else {
+                feedbackAreaEl.innerHTML = `<strong>Not quite!</strong> ${currentQuestionData.tip} <br><strong>Remember:</strong> ${currentQuestionData.explanation}`;
+                feedbackAreaEl.classList.add('incorrect');
+                selectedButton.classList.add('incorrect');
+
+                 optionButtons.forEach(btn => {
+                    if(btn.textContent === currentQuestionData.correctAnswer) {
+                        btn.classList.add('correct'); // Highlight the correct one too
+                    }
+                 });
+            }
+
+            spinBtn.disabled = false; // Re-enable spin button
+        }
+
+        // --- Initialize Game ---
+        function initializeGame() {
+            score = 0; // Reset score
+            currentRotation = 0; // Reset wheel position
+            isSpinning = false;
+            initializeActiveQuestions(); // Shuffle questions for each topic
+            updateScoreDisplay();
+            quizAreaEl.classList.add('hidden');
+            feedbackAreaEl.classList.add('hidden');
+            spinBtn.disabled = false;
+        }
+
+        // --- Event Listeners ---
+        spinBtn.addEventListener('click', spinWheel);
+
+        // --- Start Game on Load ---
+        document.addEventListener('DOMContentLoaded', initializeGame);
+
+    </script>
+
+</body>
+</html>

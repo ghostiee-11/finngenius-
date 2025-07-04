@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BuzzPay - Teen UPI Simulator</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!-- Google Fonts (Example: Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- BuzzPay (FamPay Inspired Dark Theme) --- */
+        :root {
+            /* Core Colors */
+            --buzz-bg: #1a1a1a; /* Very Dark Gray/Black */
+            --buzz-card-bg: #212121; /* Slightly Lighter Dark for Cards */
+            --buzz-accent: #FFD147; /* Vibrant Yellow/Gold */
+            --buzz-accent-darker: #fcae1e; /* Darker shade for hover/active */
+            --buzz-text-primary: #ffffff; /* White */
+            --buzz-text-secondary: #a0a0a0; /* Medium Gray */
+            --buzz-text-placeholder: #666666; /* Darker Gray for placeholders */
+            --buzz-border-color: #333333; /* Dark Border */
+            --buzz-error-color: #ff4d4d; /* Bright Red for Errors */
+            --buzz-success-color: #34D399; /* Green for Success Icons (optional) */
+            --buzz-sent-color: var(--buzz-error-color);
+            --buzz-received-color: var(--buzz-text-primary); /* White for received amounts */
+
+            /* Layout */
+            --buzz-border-radius: 16px;
+            --buzz-padding: 20px;
+            --buzz-input-padding: 14px 16px;
+            --buzz-button-padding: 14px 24px;
+            --buzz-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); /* Shadow for dark theme */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+            background-color: #000; /* Black backdrop */
+            color: var(--buzz-text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 15px 10px; /* Padding around the app */
+            -webkit-tap-highlight-color: transparent;
+            font-size: 15px; /* Base font size */
+        }
+
+        #app-container {
+            background: var(--buzz-bg);
+            border-radius: var(--buzz-border-radius);
+            /* No box shadow needed if body bg is black */
+            overflow: hidden;
+            width: 100%;
+            max-width: 410px; /* Mobile width */
+            min-height: 700px;
+            max-height: 90vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--buzz-border-color); /* Subtle border */
+        }
+
+        /* --- Screen Transitions --- */
+        .screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            background-color: var(--buzz-bg);
+            opacity: 0;
+            transform: scale(1.05); /* Start slightly bigger */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            z-index: 1;
+            overflow-y: auto; /* Scroll within screen */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+            z-index: 2;
+        }
+
+        /* --- Header Styles --- */
+        header {
+            padding: 15px var(--buzz-padding);
+            background-color: var(--buzz-bg); /* Match screen bg */
+            color: var(--buzz-text-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--buzz-border-color);
+            min-height: 60px; /* Ensure consistent header height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Specific header for setup (no border needed initially) */
+        #setup-screen header {
+             border-bottom: none;
+             position: relative; /* Non-sticky */
+             justify-content: center; /* Center setup title */
+             padding-top: 25px;
+             padding-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 1.2em; /* 18px */
+            font-weight: 600;
+            text-align: center;
+            flex-grow: 1; /* Allow title to take space */
+        }
+        header .buzzpay-title { /* Specific class for BuzzPay title */
+             font-weight: 800;
+             font-size: 1.4em; /* Larger title */
+             color: var(--buzz-accent); /* Accent color title */
+             letter-spacing: -0.5px;
+        }
+         header .subtitle {
+            font-size: 0.8em; /* 12px */
+            color: var(--buzz-text-secondary);
+            margin-top: 4px;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 10px;
+            background: none;
+            border: none;
+            color: var(--buzz-text-secondary); /* Secondary color for less emphasis */
+            font-size: 1.6em;
+            cursor: pointer;
+            padding: 10px;
+            line-height: 1;
+            z-index: 11;
+            transition: color 0.2s ease;
+        }
+        .back-button:hover { color: var(--buzz-text-primary); }
+        header:has(.back-button) h1 {
+            padding-left: 35px; /* Make space for back button */
+            padding-right: 35px;
+        }
+
+
+        /* --- Dashboard Specific --- */
+        .dashboard-content { /* Wrap dashboard main content */
+             padding: var(--buzz-padding);
+             padding-top: 25px; /* More space below header */
+        }
+        .user-greeting {
+            font-size: 1.4em; /* 21px */
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .user-greeting span { /* Style username part */
+            color: var(--buzz-accent);
+        }
+        .user-upi-id {
+            font-size: 0.9em; /* 13.5px */
+            color: var(--buzz-text-secondary);
+            background-color: var(--buzz-card-bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 25px;
+            border: 1px solid var(--buzz-border-color);
+        }
+        .user-upi-id i {
+            margin-left: 8px;
+            color: var(--buzz-accent);
+            cursor: pointer;
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: var(--buzz-card-bg);
+            padding: 25px var(--buzz-padding);
+            border-radius: var(--buzz-border-radius);
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid var(--buzz-border-color);
+        }
+        .balance-card .label {
+            font-size: 0.9em; /* 13.5px */
+            color: var(--buzz-text-secondary);
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .balance-card #current-balance {
+            font-size: 2.8em; /* 42px */
+            font-weight: 700;
+            color: var(--buzz-text-primary);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .action-buttons .btn {
+            padding: 15px 10px;
+            font-size: 0.85em; /* 12.75px */
+            flex-direction: column;
+            gap: 8px;
+            background-color: var(--buzz-card-bg);
+            color: var(--buzz-text-secondary);
+            border-radius: var(--buzz-border-radius);
+            font-weight: 600;
+            height: 95px;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.3;
+            border: 1px solid var(--buzz-border-color);
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+         .action-buttons .btn:hover {
+             background-color: #2f2f2f; /* Slightly lighter hover */
+             color: var(--buzz-text-primary);
+             border-color: #444;
+         }
+        .action-buttons .btn i {
+            font-size: 1.8em; /* 27px */
+            margin-bottom: 5px;
+            color: var(--buzz-accent); /* Accent color icons */
+            height: 30px;
+            line-height: 30px;
+            transition: transform 0.2s ease;
+        }
+         .action-buttons .btn:hover i {
+             transform: scale(1.1);
+         }
+
+
+        /* --- Main Content & Forms --- */
+        main {
+            padding: var(--buzz-padding);
+            padding-top: 25px;
+            flex-grow: 1;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.95em; /* 14.25px */
+            color: var(--buzz-text-secondary);
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: var(--buzz-input-padding);
+            border: 1px solid var(--buzz-border-color);
+            border-radius: 12px; /* Slightly less rounded inputs */
+            font-size: 1em; /* 15px */
+            background-color: var(--buzz-card-bg); /* Dark input */
+            color: var(--buzz-text-primary); /* White text */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            appearance: none;
+        }
+        .form-group input::placeholder {
+            color: var(--buzz-text-placeholder);
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--buzz-accent);
+            box-shadow: 0 0 0 3px rgba(255, 209, 71, 0.2); /* Accent focus glow */
+        }
+         input[type=number]::-webkit-inner-spin-button,
+         input[type=number]::-webkit-outer-spin-button {
+           -webkit-appearance: none; margin: 0;
+         }
+         input[type=number] { -moz-appearance: textfield; }
+
+        .form-group small {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.8em; /* 12px */
+            color: var(--buzz-text-secondary);
+            line-height: 1.4;
+        }
+        .form-group .tooltip-trigger {
+             margin-left: 8px;
+             color: var(--buzz-accent);
+             cursor: pointer;
+             opacity: 0.8;
+             font-size: 1em;
+             vertical-align: middle;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: var(--buzz-button-padding);
+            border: none;
+            border-radius: var(--buzz-border-radius);
+            font-size: 1em; /* 15px */
+            font-weight: 700; /* Bold buttons */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: none; /* No capitalization */
+            user-select: none;
+            line-height: 1.2;
+        }
+        .btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        .btn-primary { /* Accent Button */
+            background-color: var(--buzz-accent);
+            color: #111; /* Dark text on yellow */
+            /* No shadow needed on dark theme usually */
+        }
+        .btn-primary:hover {
+            background-color: var(--buzz-accent-darker);
+        }
+
+        .btn-secondary { /* Less prominent actions */
+            background-color: var(--buzz-card-bg);
+            color: var(--buzz-text-secondary);
+            border: 1px solid var(--buzz-border-color);
+            font-weight: 600;
+        }
+        .btn-secondary:hover {
+            background-color: #2f2f2f;
+            color: var(--buzz-text-primary);
+            border-color: #444;
+        }
+
+        .btn-block {
+            width: 100%;
+            padding: 16px;
+        }
+
+
+        /* --- Transaction History --- */
+        #transaction-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0; /* Vertical padding, horizontal handled by main */
+            border-bottom: 1px solid var(--buzz-border-color);
+            gap: 15px;
+        }
+        .transaction-item:last-child { border-bottom: none; }
+
+        .transaction-icon {
+             width: 42px;
+             height: 42px;
+             border-radius: 50%;
+             display: inline-flex;
+             justify-content: center;
+             align-items: center;
+             flex-shrink: 0;
+             font-size: 1.2em; /* 18px */
+             background-color: var(--buzz-card-bg);
+        }
+        .transaction-icon.sent { color: var(--buzz-sent-color); }
+        .transaction-icon.received { color: var(--buzz-accent); } /* Accent color for received */
+
+        .transaction-details {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .transaction-description {
+            font-weight: 500;
+            font-size: 1em; /* 15px */
+            margin-bottom: 5px;
+            color: var(--buzz-text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .transaction-description .upi-id {
+            font-weight: 400;
+            color: var(--buzz-text-secondary);
+            font-size: 0.9em; /* 13.5px */
+        }
+        .transaction-timestamp {
+            font-size: 0.8em; /* 12px */
+            color: var(--buzz-text-secondary);
+        }
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.05em; /* 15.75px */
+            white-space: nowrap;
+            margin-left: auto;
+            padding-left: 10px;
+            text-align: right;
+        }
+        .transaction-amount.sent { color: var(--buzz-sent-color); }
+        .transaction-amount.received { color: var(--buzz-received-color); } /* White for received */
+
+        .no-history {
+            text-align: center;
+            color: var(--buzz-text-secondary);
+            padding: 60px 20px;
+            font-size: 0.9em;
+        }
+
+
+        /* --- Modals --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75); /* Darker backdrop */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+            animation: fadeInModal 0.3s ease-out forwards;
+        }
+        .modal.active { display: flex; }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background-color: var(--buzz-card-bg); /* Dark modal background */
+            padding: 30px;
+            border-radius: var(--buzz-border-radius);
+            border: 1px solid var(--buzz-border-color);
+            width: 100%;
+            max-width: 370px;
+            text-align: center;
+            position: relative;
+            color: var(--buzz-text-primary);
+            animation: slideInModal 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+        @keyframes slideInModal {
+             from { transform: translateY(20px) scale(0.98); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 1.3em; /* 19.5px */
+        }
+        .modal-content p {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: var(--buzz-text-secondary);
+            font-size: 0.95em; /* 14.25px */
+        }
+        .modal-content p strong {
+             color: var(--buzz-accent); /* Accent for highlighted text */
+             font-weight: 600;
+         }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .modal-actions .btn { flex-grow: 1; font-weight: 600; }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.6em;
+            color: var(--buzz-text-secondary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+            padding: 10px;
+            opacity: 0.7;
+            z-index: 1;
+             transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .close-modal:hover {
+            color: var(--buzz-text-primary);
+             transform: scale(1.1);
+        }
+
+        #pin-error {
+            color: var(--buzz-error-color);
+            font-size: 0.9em;
+            margin-top: 15px; /* Space above actions */
+            margin-bottom: -10px; /* Pull actions closer */
+            font-weight: 500;
+            min-height: 1.2em;
+            transition: opacity 0.2s ease;
+        }
+         #pin-error.hidden {
+             opacity: 0;
+             visibility: hidden;
+         }
+
+        /* Alert/Success Modal Styles */
+        .alert-modal i.alert-icon,
+        .alert-modal i.success-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .alert-modal i.alert-icon { color: var(--buzz-error-color); }
+        .alert-modal i.success-icon { color: var(--buzz-success-color); } /* Use optional success green */
+        .alert-modal .btn { margin-top: 15px; }
+
+
+        /* Tooltip Modal */
+        .tooltip-content { text-align: left; }
+        .tooltip-content h3 { text-align: center; margin-bottom: 15px; color: var(--buzz-accent); }
+        .tooltip-content p { color: var(--buzz-text-secondary); }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.75em; /* 11.25px */
+            color: var(--buzz-text-secondary);
+            border-top: 1px solid var(--buzz-border-color);
+            margin-top: auto;
+            background-color: var(--buzz-bg);
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        /* --- Utility Classes --- */
+        .hidden { display: none !important; }
+        /* No need for .error-message utility if handled within #pin-error */
+
+        /* Shake Animation for PIN Error */
+        @keyframes shake {
+          10%, 90% { transform: translate3d(-1px, 0, 0); }
+          20%, 80% { transform: translate3d(2px, 0, 0); }
+          30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+          40%, 60% { transform: translate3d(3px, 0, 0); }
+        }
+        .shake-animation {
+          animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 360px) {
+            body { font-size: 14px; } /* Slightly smaller base */
+            .balance-card #current-balance { font-size: 2.5em; }
+            header h1 { font-size: 1.1em; }
+            .action-buttons .btn { height: 90px; font-size: 0.8em; }
+            .action-buttons .btn i { font-size: 1.6em; }
+            .modal-content { padding: 25px; }
+            .transaction-icon { width: 38px; height: 38px; font-size: 1.1em;}
+            .transaction-amount { font-size: 1em; }
+            main, .dashboard-content { padding-left: 15px; padding-right: 15px; }
+        }
+        @media (min-height: 800px) {
+             #app-container { max-height: 780px; }
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div id="app-container">
+
+        <!-- ===== Setup Screen ===== -->
+        <div id="setup-screen" class="screen">
+            <header>
+                 <div> <!-- Wrapper for centering -->
+                     <h1 class="buzzpay-title">BuzzPay</h1>
+                     <p class="subtitle">Your First UPI Account</p>
+                 </div>
+            </header>
+            <main>
+                <form id="setup-form">
+                    <div class="form-group">
+                        <label for="username">Choose a Username</label>
+                        <input type="text" id="username" placeholder="e.g., buzz_master" required autocomplete="off" maxlength="15">
+                    </div>
+                    <div class="form-group">
+                        <label for="initial-balance">Starting Balance (Virtual ₹)</label>
+                        <input type="number" id="initial-balance" placeholder="5000" required min="0" step="100" inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label for="pin">Set a 4-Digit BuzzPIN</label>
+                        <input type="password" id="pin" inputmode="numeric" pattern="\d{4}" maxlength="4" placeholder="****" required autocomplete="new-password">
+                        <small>This keeps your BuzzPay account secure. Don't share it!</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Create BuzzPay Account</button>
+                </form>
+            </main>
+             <footer>
+                 <p>© 2024 BuzzPay Simulator</p>
+            </footer>
+        </div>
+
+        <!-- ===== Dashboard Screen ===== -->
+        <div id="dashboard-screen" class="screen">
+            <header>
+                <h1 class="buzzpay-title">BuzzPay</h1>
+                <!-- Maybe add settings icon later? -->
+            </header>
+            <div class="dashboard-content"> <!-- Scrollable content area -->
+                 <p class="user-greeting">Hey, <span id="user-greeting-name">User</span>!</p>
+                 <div class="user-upi-id">
+                     <span id="user-upi-id-text">yourid@buzzpay</span>
+                     <i class="fas fa-info-circle tooltip-trigger" data-tooltip="upi-info"></i>
+                 </div>
+
+                 <div class="balance-card">
+                    <div class="label">Available Balance</div>
+                    <div id="current-balance">₹ 0.00</div>
+                 </div>
+
+                 <div class="action-buttons">
+                    <button id="btn-send" class="btn"><i class="fa-solid fa-paper-plane"></i> Send</button>
+                    <button id="btn-receive-sim" class="btn"><i class="fa-solid fa-download"></i> Receive</button>
+                    <button id="btn-history" class="btn"><i class="fa-solid fa-receipt"></i> History</button>
+                 </div>
+
+                 <!-- Optional: Quick Tips Section -->
+                 <!--
+                 <div class="quick-actions"> ... </div>
+                 -->
+            </div>
+            <footer>
+                 <p>© 2024 BuzzPay Simulator</p>
+            </footer>
+        </div>
+
+        <!-- ===== Send Money Screen ===== -->
+        <div id="send-money-screen" class="screen">
+            <header>
+                <button class="back-button" data-target="dashboard-screen"><i class="fas fa-arrow-left"></i></button>
+                <h1>Send Money</h1>
+            </header>
+            <main>
+                <form id="send-form">
+                    <div class="form-group">
+                        <label for="recipient-upi-id">Recipient's UPI ID (@buzzpay or others)</label>
+                        <input type="text" id="recipient-upi-id" placeholder="friend@buzzpay" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="send-amount">Amount (₹)</label>
+                        <input type="number" id="send-amount" placeholder="Enter amount" required min="1" inputmode="decimal">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Proceed</button>
+                </form>
+            </main>
+             <footer>
+                 <p>© 2024 BuzzPay Simulator</p>
+            </footer>
+        </div>
+
+         <!-- ===== PIN Confirmation Modal ===== -->
+        <div id="pin-modal" class="modal">
+            <div class="modal-content">
+                 <span class="close-modal" data-target="pin-modal">×</span>
+                <h3>Confirm Transaction</h3>
+                <p>Sending <strong id="confirm-amount">₹?</strong> to <strong id="confirm-recipient">?</strong></p>
+                <form id="pin-confirm-form">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="confirm-pin">Enter your 4-Digit BuzzPIN</label>
+                        <input type="password" id="confirm-pin" inputmode="numeric" pattern="\d{4}" maxlength="4" placeholder="****" required autocomplete="off">
+                         <!-- Tooltip maybe not needed here if explained at setup -->
+                    </div>
+                     <p id="pin-error" class="error-message hidden">Invalid PIN</p>
+                    <div class="modal-actions">
+                        <button type="button" id="btn-cancel-pin" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Confirm & Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== Transaction History Screen ===== -->
+        <div id="history-screen" class="screen">
+             <header>
+                 <button class="back-button" data-target="dashboard-screen"><i class="fas fa-arrow-left"></i></button>
+                <h1>Transaction History</h1>
+            </header>
+            <main>
+                 <ul id="transaction-list">
+                     <!-- JS will populate this -->
+                     <!-- Example placeholder removed, JS adds .no-history li if needed -->
+                 </ul>
+            </main>
+             <footer>
+                 <p>© 2024 BuzzPay Simulator</p>
+            </footer>
+        </div>
+
+         <!-- ===== Insufficient Balance Modal ===== -->
+        <div id="insufficient-balance-modal" class="modal">
+            <div class="modal-content alert-modal">
+                <span class="close-modal" data-target="insufficient-balance-modal">×</span>
+                 <i class="fas fa-exclamation-triangle alert-icon" style="color: var(--buzz-error-color);"></i>
+                 <h3>Not Enough Buzz!</h3>
+                <p>You don't have enough virtual funds for this transaction.</p>
+                <button class="btn btn-primary close-modal" data-target="insufficient-balance-modal">Okay</button>
+            </div>
+        </div>
+
+        <!-- ===== Success Message Modal ===== -->
+        <div id="success-modal" class="modal">
+            <div class="modal-content alert-modal">
+                 <span class="close-modal" data-target="success-modal">×</span>
+                 <i class="fas fa-check-circle success-icon"></i>
+                 <h3>Success!</h3>
+                <p id="success-message">Transaction done.</p>
+                <button class="btn btn-primary close-modal" data-target="success-modal">Cool!</button>
+            </div>
+        </div>
+
+         <!-- ===== Tooltip Area ===== -->
+        <div id="tooltip-modal" class="modal">
+            <div class="modal-content tooltip-content">
+                 <span class="close-modal" data-target="tooltip-modal">×</span>
+                <h3 id="tooltip-title">Tooltip Title</h3>
+                <p id="tooltip-text">Tooltip explanation goes here.</p>
+            </div>
+        </div>
+
+    </div> <!-- End #app-container -->
+
+    <script>
+        // --- BuzzPay JavaScript (Adapted from previous logic) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const appContainer = document.getElementById('app-container');
+            const screens = document.querySelectorAll('.screen');
+            const modals = document.querySelectorAll('.modal');
+
+            // State variables
+            let account = null; // { username, upiId, balance, pin, history: [] }
+            let currentTransaction = null; // { recipient, amount }
+            let activeScreenId = null;
+
+            // --- UI Elements ---
+            const setupScreen = document.getElementById('setup-screen');
+            const setupForm = document.getElementById('setup-form');
+            const usernameInput = document.getElementById('username');
+            const initialBalanceInput = document.getElementById('initial-balance');
+            const pinInput = document.getElementById('pin');
+
+            const dashboardScreen = document.getElementById('dashboard-screen');
+            const userGreetingName = document.getElementById('user-greeting-name');
+            const userUpiIdText = document.getElementById('user-upi-id-text');
+            const currentBalance = document.getElementById('current-balance');
+            const btnSend = document.getElementById('btn-send');
+            const btnReceiveSim = document.getElementById('btn-receive-sim');
+            const btnHistory = document.getElementById('btn-history');
+
+            const sendMoneyScreen = document.getElementById('send-money-screen');
+            const sendForm = document.getElementById('send-form');
+            const recipientUpiIdInput = document.getElementById('recipient-upi-id');
+            const sendAmountInput = document.getElementById('send-amount');
+
+            const pinModal = document.getElementById('pin-modal');
+            const pinConfirmForm = document.getElementById('pin-confirm-form');
+            const confirmPinInput = document.getElementById('confirm-pin');
+            const confirmAmount = document.getElementById('confirm-amount');
+            const confirmRecipient = document.getElementById('confirm-recipient');
+            const btnCancelPin = document.getElementById('btn-cancel-pin');
+            const pinError = document.getElementById('pin-error');
+
+            const historyScreen = document.getElementById('history-screen');
+            const transactionList = document.getElementById('transaction-list');
+
+            const insufficientBalanceModal = document.getElementById('insufficient-balance-modal');
+            const successModal = document.getElementById('success-modal');
+            const successMessage = document.getElementById('success-message');
+
+            const tooltipModal = document.getElementById('tooltip-modal');
+            const tooltipTitle = document.getElementById('tooltip-title');
+            const tooltipText = document.getElementById('tooltip-text');
+
+            // Tooltip Content Map
+            const tooltips = {
+                'upi-info': {
+                    title: "Your BuzzPay UPI ID",
+                    text: "This is your unique ID (like an email for money) for BuzzPay! Others can send you virtual money using this. You use others' IDs to send them money."
+                },
+                'pin-security': { // Added just in case needed
+                    title: "BuzzPIN Security",
+                    text: "Your 4-digit BuzzPIN is like a secret code to approve payments. Never, ever share it! Keep it memorable but hard for others to guess."
+                }
+            };
+
+            // --- Functions ---
+
+             const navigateTo = (screenId) => {
+                const targetScreen = document.getElementById(screenId);
+                if (!targetScreen || screenId === activeScreenId) return;
+
+                const currentActiveScreen = activeScreenId ? document.getElementById(activeScreenId) : null;
+
+                if (currentActiveScreen) {
+                    currentActiveScreen.classList.remove('active');
+                }
+
+                targetScreen.classList.remove('hidden'); // Should already be handled by default state
+                void targetScreen.offsetWidth; // Force reflow for transition
+                targetScreen.classList.add('active');
+
+                activeScreenId = screenId;
+
+                targetScreen.scrollTop = 0; // Scroll new screen to top
+            };
+
+
+            const showModal = (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                     modals.forEach(m => { if(m !== modal) m.classList.remove('active'); });
+                    modal.classList.add('active');
+                    if (modalId === 'pin-modal') {
+                         setTimeout(() => confirmPinInput.focus(), 50);
+                    } else {
+                        const primaryButton = modal.querySelector('.btn-primary'); // Focus primary button
+                        if(primaryButton) setTimeout(() => primaryButton.focus(), 50);
+                    }
+                }
+            };
+
+            const hideModal = (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('active');
+                    if(modalId === 'pin-modal') {
+                         pinConfirmForm.reset();
+                         pinError.classList.add('hidden');
+                    }
+                }
+            };
+
+            const formatCurrency = (amount) => {
+                 // Use Intl for better formatting, adapting to locale if needed later
+                 return new Intl.NumberFormat('en-IN', {
+                     style: 'currency',
+                     currency: 'INR',
+                     minimumFractionDigits: 2,
+                     maximumFractionDigits: 2
+                 }).format(amount).replace('₹', '₹ '); // Ensure space after symbol
+            };
+
+             const formatTimestamp = (timestamp) => {
+                const date = new Date(timestamp);
+                 const now = new Date();
+                 const yesterday = new Date(now);
+                 yesterday.setDate(now.getDate() - 1);
+
+                 const optionsTime = { hour: 'numeric', minute: '2-digit', hour12: true };
+                 const optionsDate = { day: 'numeric', month: 'short' };
+
+                 if (date.toDateString() === now.toDateString()) {
+                     return `Today, ${date.toLocaleTimeString('en-IN', optionsTime)}`;
+                 } else if (date.toDateString() === yesterday.toDateString()) {
+                     return `Yesterday, ${date.toLocaleTimeString('en-IN', optionsTime)}`;
+                 } else {
+                     return `${date.toLocaleDateString('en-IN', optionsDate)}, ${date.toLocaleTimeString('en-IN', optionsTime)}`;
+                 }
+            };
+
+            const saveData = () => {
+                try {
+                    if (account) {
+                        localStorage.setItem('buzzPayAccount', JSON.stringify(account));
+                    }
+                } catch (e) {
+                    console.error("Error saving data:", e);
+                    alert("Could not save progress. Storage might be full/disabled.");
+                }
+            };
+
+            const loadData = () => {
+                try {
+                    const savedData = localStorage.getItem('buzzPayAccount');
+                    if (savedData) {
+                        const parsedData = JSON.parse(savedData);
+                        // Basic validation (can be more thorough)
+                        if (parsedData && parsedData.username && parsedData.upiId && typeof parsedData.balance === 'number' && parsedData.pin && Array.isArray(parsedData.history)) {
+                             // Re-validate history items (optional)
+                             parsedData.history = parsedData.history.filter(tx => tx && tx.id && tx.type && tx.amount && tx.description && tx.timestamp);
+                            account = parsedData;
+                            return true;
+                        } else {
+                             localStorage.removeItem('buzzPayAccount'); // Remove invalid data
+                             return false;
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error loading data:", e);
+                    localStorage.removeItem('buzzPayAccount'); // Remove potentially corrupt data
+                }
+                return false;
+            };
+
+
+            const updateDashboard = () => {
+                if (account) {
+                    userGreetingName.textContent = account.username;
+                    userUpiIdText.textContent = account.upiId;
+                    currentBalance.textContent = formatCurrency(account.balance);
+                }
+            };
+
+             const addTransaction = (type, amount, counterpart) => {
+                if (!account) return;
+                const timestamp = Date.now();
+                const safeCounterpart = counterpart.replace(/</g, "<").replace(/>/g, ">");
+                let description = '';
+                if (type === 'sent') {
+                    description = `To <span class="upi-id">${safeCounterpart}</span>`; // "To" instead of "Sent to"
+                } else {
+                    description = `From <span class="upi-id">${safeCounterpart}</span>`; // "From" instead of "Received from"
+                }
+                if (!Array.isArray(account.history)) account.history = [];
+                account.history.unshift({
+                    id: timestamp, type, amount, description, counterpart, timestamp
+                });
+                if (account.history.length > 100) account.history.pop();
+                saveData();
+            };
+
+             const renderHistory = () => {
+                transactionList.innerHTML = ''; // Clear list
+                if (account && account.history && account.history.length > 0) {
+                    account.history.forEach(tx => {
+                        const li = document.createElement('li');
+                        li.classList.add('transaction-item');
+
+                        const iconDiv = document.createElement('div');
+                        iconDiv.classList.add('transaction-icon', tx.type);
+                        const icon = document.createElement('i');
+                        icon.classList.add('fas', tx.type === 'sent' ? 'fa-arrow-up' : 'fa-arrow-down');
+                        iconDiv.appendChild(icon);
+
+                        const detailsDiv = document.createElement('div');
+                        detailsDiv.classList.add('transaction-details');
+                        const descP = document.createElement('p');
+                        descP.classList.add('transaction-description');
+                        descP.innerHTML = tx.description; // Using generated HTML
+                        const timeP = document.createElement('p');
+                        timeP.classList.add('transaction-timestamp');
+                        timeP.textContent = formatTimestamp(tx.timestamp);
+                        detailsDiv.appendChild(descP);
+                        detailsDiv.appendChild(timeP);
+
+                        const amountSpan = document.createElement('span');
+                        amountSpan.classList.add('transaction-amount', tx.type);
+                        amountSpan.textContent = (tx.type === 'sent' ? '- ' : '+ ') + formatCurrency(tx.amount).replace('₹ ',''); // Remove symbol for cleaner list amount
+
+                        li.appendChild(iconDiv);
+                        li.appendChild(detailsDiv);
+                        li.appendChild(amountSpan);
+                        transactionList.appendChild(li);
+                    });
+                } else {
+                     transactionList.innerHTML = '<li class="no-history">No transactions here yet!</li>';
+                }
+            };
+
+            const showTooltip = (tooltipKey) => {
+                const content = tooltips[tooltipKey];
+                if (content) {
+                    tooltipTitle.textContent = content.title;
+                    tooltipText.textContent = content.text;
+                    showModal('tooltip-modal');
+                }
+            };
+
+            // --- Event Listeners ---
+
+            setupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = usernameInput.value.trim();
+                const balance = parseFloat(initialBalanceInput.value);
+                const pin = pinInput.value;
+                const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
+
+                if (!usernameRegex.test(username)) { alert('Username: 3-15 letters, numbers, or underscores.'); usernameInput.focus(); return; }
+                if (isNaN(balance) || balance < 0) { alert('Enter a valid starting balance (0 or more).'); initialBalanceInput.focus(); return; }
+                if (!/^\d{4}$/.test(pin)) { alert('BuzzPIN must be 4 digits.'); pinInput.focus(); return; }
+
+                account = {
+                    username: username,
+                    upiId: `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@buzzpay`,
+                    balance: balance, pin: pin, history: []
+                };
+                saveData();
+                updateDashboard();
+                navigateTo('dashboard-screen');
+                setupForm.reset();
+            });
+
+            btnSend.addEventListener('click', () => {
+                 sendForm.reset();
+                 navigateTo('send-money-screen');
+                 recipientUpiIdInput.focus();
+            });
+            btnHistory.addEventListener('click', () => {
+                renderHistory();
+                navigateTo('history-screen');
+            });
+            btnReceiveSim.addEventListener('click', () => {
+                 if (!account) return;
+                const randomAmount = Math.floor(Math.random() * 451) + 50; // 50-500
+                const randomSenders = ["friend@buzzpay", "mom@buzzpay", "pocketmoney@buzzpay", "bonus@buzzpay", "cashback@buzzpay"];
+                const randomSender = randomSenders[Math.floor(Math.random() * randomSenders.length)];
+                account.balance += randomAmount;
+                addTransaction('received', randomAmount, randomSender);
+                updateDashboard();
+                successMessage.textContent = `Received ${formatCurrency(randomAmount)} from ${randomSender}!`;
+                showModal('success-modal');
+            });
+
+            sendForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!account) return;
+                const recipient = recipientUpiIdInput.value.trim();
+                const amount = parseFloat(sendAmountInput.value);
+                const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+$/; // Allow non-buzzpay domains
+
+                if (!recipient || !upiRegex.test(recipient)) { alert('Please enter a valid recipient UPI ID.'); recipientUpiIdInput.focus(); return; }
+                if (isNaN(amount) || amount <= 0) { alert('Please enter a valid positive amount.'); sendAmountInput.focus(); return; }
+                if (recipient === account.upiId) { alert("Can't send money to yourself!"); recipientUpiIdInput.focus(); return; }
+                if (amount > account.balance) { showModal('insufficient-balance-modal'); return; }
+
+                currentTransaction = { recipient, amount };
+                confirmAmount.textContent = formatCurrency(amount);
+                confirmRecipient.textContent = recipient;
+                pinError.classList.add('hidden');
+                showModal('pin-modal');
+            });
+
+            pinConfirmForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!account || !currentTransaction) return;
+                const enteredPin = confirmPinInput.value;
+
+                if (enteredPin === account.pin) {
+                    pinError.classList.add('hidden');
+                    hideModal('pin-modal');
+                    if (currentTransaction.amount > account.balance) { showModal('insufficient-balance-modal'); currentTransaction = null; return; }
+                    account.balance -= currentTransaction.amount;
+                    addTransaction('sent', currentTransaction.amount, currentTransaction.recipient);
+                    updateDashboard();
+                    successMessage.textContent = `Sent ${formatCurrency(currentTransaction.amount)} to ${currentTransaction.recipient}!`;
+                    showModal('success-modal');
+                    navigateTo('dashboard-screen');
+                    currentTransaction = null;
+                } else {
+                    pinError.classList.remove('hidden');
+                    pinError.textContent = "Incorrect BuzzPIN!";
+                    confirmPinInput.select();
+                    confirmPinInput.focus();
+                    pinModal.querySelector('.modal-content').classList.add('shake-animation');
+                    setTimeout(() => { pinModal.querySelector('.modal-content').classList.remove('shake-animation'); }, 400);
+                }
+            });
+
+            btnCancelPin.addEventListener('click', () => { hideModal('pin-modal'); currentTransaction = null; });
+
+            document.querySelectorAll('.back-button').forEach(button => {
+                button.addEventListener('click', () => { navigateTo(button.getAttribute('data-target')); });
+            });
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', () => {
+                     const targetModalId = button.getAttribute('data-target');
+                     if (targetModalId) { hideModal(targetModalId); if(targetModalId === 'pin-modal') currentTransaction = null; }
+                 });
+            });
+             modals.forEach(modal => {
+                 modal.addEventListener('click', (event) => {
+                     if (event.target === modal) { hideModal(modal.id); if(modal.id === 'pin-modal') currentTransaction = null; }
+                 });
+             });
+            document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => { e.stopPropagation(); showTooltip(trigger.getAttribute('data-tooltip')); });
+            });
+
+            // --- Initialisation ---
+            if (loadData()) {
+                updateDashboard();
+                navigateTo('dashboard-screen');
+            } else {
+                navigateTo('setup-screen');
+            }
+            // Make the initial screen active immediately without transition effect
+            const initialScreen = document.getElementById(activeScreenId);
+            if (initialScreen) {
+                initialScreen.style.transition = 'none'; // Disable transition for initial load
+                void initialScreen.offsetWidth; // Trigger reflow
+                initialScreen.style.transition = ''; // Re-enable transitions
+            }
+
+        });
+    </script>
+
+</body>
+</html>

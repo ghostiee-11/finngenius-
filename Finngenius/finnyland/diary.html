@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Daily Expense Diary 📝</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* --- Global Styles & Variables --- */
+        :root {
+            --primary-color: #a2d2ff; /* Light Blue */
+            --secondary-color: #ffafcc; /* Pink */
+            --accent-color: #fcf3a4; /* Pastel Yellow */
+            --bg-color: #f0f8ff; /* Alice Blue */
+            --text-color: #333;
+            --list-item-bg: #ffffff;
+            --button-bg: var(--secondary-color);
+            --button-hover-bg: #ff8fab; /* Darker Pink */
+            --button-clear-bg: #ffb3c1;
+            --button-clear-hover-bg: #ff8fab;
+            --total-bg: var(--primary-color);
+            --total-text: #003566; /* Dark Blue */
+            --input-border: #bde0fe; /* Lighter Blue */
+            --chart-bg: rgba(255, 255, 255, 0.8);
+            --border-radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; /* Playful fonts */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 1px #ddd;
+        }
+
+        /* --- Entry Form --- */
+        #entry-form-section {
+            background-color: #e0f7fa; /* Light cyan */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            border: 1px solid #b2ebf2;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #00778a;
+            font-size: 1.1em;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(255, 175, 204, 0.3);
+        }
+
+        #add-entry-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+        }
+        #add-entry-btn:hover { background-color: var(--button-hover-bg); }
+
+        /* --- Summary Section --- */
+        #summary-section {
+            background-color: var(--total-bg);
+            color: var(--total-text);
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            justify-content: space-around; /* Space out items */
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping */
+            gap: 10px;
+        }
+        #summary-section div {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #feedback-emoji {
+            font-size: 2.5em; /* Big emoji */
+            line-height: 1;
+        }
+
+        /* --- Expense List --- */
+        #expense-list-section h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.8em;
+        }
+
+        #expense-list {
+            list-style: none;
+            padding: 0;
+            max-height: 300px; /* Limit height */
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        #expense-list li {
+            background-color: var(--list-item-bg);
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Wrap on small screens */
+            gap: 10px;
+            font-size: 1.1em;
+        }
+         #expense-list li:last-child { border-bottom: none; }
+
+        .item-details { flex-grow: 1; } /* Allow item name to take space */
+        .item-details .item-name { font-weight: bold; }
+        .item-details .item-date { font-size: 0.85em; color: #777; display: block; } /* Date below name */
+
+        .item-amount { font-weight: bold; color: #e63946; /* Reddish for cost */ } /* Amount stands out */
+
+        .list-icon { margin-right: 8px; font-size: 1.2em; } /* Make icons slightly bigger */
+
+        /* --- Weekly Review --- */
+        #weekly-review-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff0f5; /* Lavender blush */
+            border-radius: var(--border-radius);
+            border: 1px solid #ffdde1;
+        }
+        #weekly-review-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            font-size: 1.8em;
+        }
+
+        #chart-container {
+             padding: 15px;
+             background-color: var(--chart-bg);
+             border-radius: 8px;
+             margin-bottom: 20px;
+             box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+         }
+        #weekly-chart { max-width: 100%; height: auto; } /* Responsive chart */
+
+        #clear-data-btn {
+            display: block;
+            margin: 15px auto 0; /* Center button */
+            padding: 10px 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: var(--button-clear-bg);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+        }
+        #clear-data-btn:hover { background-color: var(--button-clear-hover-bg); }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 2em; }
+            .container { padding: 15px; }
+            #summary-section div { font-size: 1.1em; }
+            #feedback-emoji { font-size: 2em; }
+             #expense-list li { font-size: 1em; }
+             .item-details { min-width: 150px; } /* Help prevent awkward wrapping */
+             #weekly-review-section h2, #expense-list-section h2 { font-size: 1.5em; }
+             #clear-data-btn, #add-entry-btn { font-size: 1.1em; padding: 10px;}
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>My Daily Expense Diary 📝</h1>
+
+        <!-- Entry Form -->
+        <section id="entry-form-section">
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="item-name">🛒 What did you spend on?</label>
+                    <input type="text" id="item-name" placeholder="e.g., Ice Cream, Bus Ticket" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-amount">💸 How much? (₹)</label>
+                    <input type="number" id="item-amount" placeholder="e.g., 50" min="0.01" step="0.01" required>
+                </div>
+                <button type="submit" id="add-entry-btn">Add Expense</button>
+            </form>
+        </section>
+
+        <!-- Summary -->
+        <section id="summary-section">
+            <div>Today: ₹<span id="daily-total">0.00</span></div>
+            <div id="feedback-emoji">😐</div> <!-- Default Emoji -->
+            <div>This Week: ₹<span id="weekly-total">0.00</span></div>
+        </section>
+
+        <!-- Expense List -->
+        <section id="expense-list-section">
+            <h2>Today's Entries</h2>
+            <ul id="expense-list">
+                <!-- Expenses will be listed here -->
+                <!-- Example:
+                <li>
+                    <span class="list-icon">🛒</span>
+                    <div class="item-details">
+                        <span class="item-name">Comic Book</span>
+                        <span class="item-date">🕓 Oct 26, 3:15 PM</span>
+                    </div>
+                    <span class="item-amount">💸 ₹75.00</span>
+                </li>
+                 -->
+                 <li id="no-expenses-msg" style="text-align: center; color: #888; padding: 20px;">No expenses added yet today!</li>
+            </ul>
+        </section>
+
+        <!-- Weekly Review -->
+        <section id="weekly-review-section">
+            <h2>Weekly Spending Review 📊</h2>
+            <div id="chart-container">
+                <canvas id="weekly-chart"></canvas>
+            </div>
+            <button id="clear-data-btn">Clear All My Data</button>
+        </section>
+
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const expenseForm = document.getElementById('expense-form');
+        const itemNameInput = document.getElementById('item-name');
+        const itemAmountInput = document.getElementById('item-amount');
+        const expenseList = document.getElementById('expense-list');
+        const noExpensesMsg = document.getElementById('no-expenses-msg');
+        const dailyTotalEl = document.getElementById('daily-total');
+        const weeklyTotalEl = document.getElementById('weekly-total');
+        const feedbackEmojiEl = document.getElementById('feedback-emoji');
+        const clearDataBtn = document.getElementById('clear-data-btn');
+        const weeklyChartCanvas = document.getElementById('weekly-chart');
+
+        // --- Global Variables ---
+        let expenses = []; // Array to hold expense objects { item, amount, timestamp }
+        let weeklyChartInstance = null; // To hold the Chart.js instance
+
+        // --- Functions ---
+
+        // Load expenses from localStorage
+        function loadExpenses() {
+            const storedExpenses = localStorage.getItem('kidExpenseDiary');
+            if (storedExpenses) {
+                try {
+                    expenses = JSON.parse(storedExpenses);
+                    // Ensure amounts are numbers (localStorage stores strings)
+                    expenses.forEach(exp => exp.amount = parseFloat(exp.amount));
+                } catch (e) {
+                    console.error("Error parsing stored expenses:", e);
+                    expenses = []; // Reset if data is corrupted
+                }
+            } else {
+                expenses = [];
+            }
+        }
+
+        // Save expenses to localStorage
+        function saveExpenses() {
+            localStorage.setItem('kidExpenseDiary', JSON.stringify(expenses));
+        }
+
+        // Format Date and Time
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            // Example format: Oct 26, 3:15 PM
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' +
+                   date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
+
+        // Render the expense list
+        function renderExpenseList() {
+            expenseList.innerHTML = ''; // Clear the list first
+
+            if (expenses.length === 0) {
+                expenseList.appendChild(noExpensesMsg); // Show the 'no expenses' message
+                noExpensesMsg.style.display = 'block';
+                return;
+            }
+
+            noExpensesMsg.style.display = 'none'; // Hide message if there are expenses
+
+            // Filter for today's expenses for the main list display (optional, could show all)
+             const todayStart = new Date();
+             todayStart.setHours(0, 0, 0, 0);
+             const todayExpenses = expenses.filter(exp => exp.timestamp >= todayStart.getTime());
+
+
+            // Sort by newest first
+             const sortedExpenses = [...todayExpenses].sort((a, b) => b.timestamp - a.timestamp);
+             // const sortedExpenses = [...expenses].sort((a, b) => b.timestamp - a.timestamp); // Use this line to show ALL expenses sorted
+
+            sortedExpenses.forEach(expense => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="list-icon">🛒</span>
+                    <div class="item-details">
+                        <span class="item-name">${escapeHTML(expense.item)}</span>
+                        <span class="item-date">🕓 ${formatTimestamp(expense.timestamp)}</span>
+                    </div>
+                    <span class="item-amount">💸 ₹${expense.amount.toFixed(2)}</span>
+                `;
+                expenseList.appendChild(li);
+            });
+        }
+
+         // Basic HTML escaping function
+        function escapeHTML(str) {
+             const div = document.createElement('div');
+             div.appendChild(document.createTextNode(str));
+             return div.innerHTML;
+         }
+
+
+        // Update totals and feedback emoji
+        function updateSummary() {
+            const now = new Date();
+            const todayStart = new Date(now);
+            todayStart.setHours(0, 0, 0, 0);
+            const todayEnd = new Date(now);
+            todayEnd.setHours(23, 59, 59, 999);
+
+            // Calculate Today's Total
+            const dailyExpenses = expenses.filter(exp =>
+                exp.timestamp >= todayStart.getTime() && exp.timestamp <= todayEnd.getTime()
+            );
+            const dailySum = dailyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+            dailyTotalEl.textContent = dailySum.toFixed(2);
+
+            // Calculate This Week's Total (Sunday to Saturday of the current week)
+             const firstDayOfWeek = new Date(now);
+             firstDayOfWeek.setDate(now.getDate() - now.getDay()); // Get Sunday
+             firstDayOfWeek.setHours(0,0,0,0);
+
+             const lastDayOfWeek = new Date(firstDayOfWeek);
+             lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6); // Get Saturday
+             lastDayOfWeek.setHours(23,59,59,999);
+
+
+            const weeklyExpenses = expenses.filter(exp =>
+                exp.timestamp >= firstDayOfWeek.getTime() && exp.timestamp <= lastDayOfWeek.getTime()
+            );
+            const weeklySum = weeklyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+            weeklyTotalEl.textContent = weeklySum.toFixed(2);
+
+            // Update Feedback Emoji (Example thresholds - adjust as needed)
+            if (dailySum === 0) {
+                feedbackEmojiEl.textContent = '😊'; // Neutral/Happy if zero spent
+            } else if (dailySum <= 100) { // Example threshold for low spending
+                feedbackEmojiEl.textContent = '🎉'; // Celebrate saving!
+            } else if (dailySum <= 500) { // Moderate spending
+                feedbackEmojiEl.textContent = '🤔'; // Thinking face
+            } else { // High spending
+                feedbackEmojiEl.textContent = '🐷'; // Spending piggy
+            }
+        }
+
+        // Prepare data for the weekly chart
+        function getWeekChartData() {
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dailySpending = Array(7).fill(0); // Initialize spending for each day to 0
+
+            const now = new Date();
+            const firstDayOfWeek = new Date(now);
+            firstDayOfWeek.setDate(now.getDate() - now.getDay());
+            firstDayOfWeek.setHours(0, 0, 0, 0);
+            const firstDayTimestamp = firstDayOfWeek.getTime();
+
+            const lastDayOfWeek = new Date(firstDayOfWeek);
+            lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+            lastDayOfWeek.setHours(23, 59, 59, 999);
+            const lastDayTimestamp = lastDayOfWeek.getTime();
+
+            // Filter expenses for the current week and sum by day
+            expenses.forEach(exp => {
+                if (exp.timestamp >= firstDayTimestamp && exp.timestamp <= lastDayTimestamp) {
+                    const expenseDate = new Date(exp.timestamp);
+                    const dayIndex = expenseDate.getDay(); // 0 for Sunday, 1 for Monday, etc.
+                    dailySpending[dayIndex] += exp.amount;
+                }
+            });
+
+            return {
+                labels: daysOfWeek,
+                data: dailySpending
+            };
+        }
+
+        // Render the weekly bar chart using Chart.js
+        function renderWeeklyChart() {
+            const chartData = getWeekChartData();
+            const ctx = weeklyChartCanvas.getContext('2d');
+
+            // Destroy previous chart instance if it exists
+            if (weeklyChartInstance) {
+                weeklyChartInstance.destroy();
+            }
+
+            weeklyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: '₹ Spent This Week',
+                        data: chartData.data,
+                        backgroundColor: [ // Pastel colors for bars
+                            'rgba(255, 175, 204, 0.6)', // Pink
+                            'rgba(162, 210, 255, 0.6)', // Blue
+                            'rgba(252, 243, 164, 0.6)', // Yellow
+                            'rgba(180, 235, 192, 0.6)', // Green
+                            'rgba(255, 218, 181, 0.6)', // Orange
+                            'rgba(211, 180, 235, 0.6)', // Purple
+                            'rgba(179, 235, 235, 0.6)'  // Cyan
+                        ],
+                        borderColor: [ // Slightly darker borders
+                            'rgba(255, 175, 204, 1)',
+                            'rgba(162, 210, 255, 1)',
+                            'rgba(252, 243, 164, 1)',
+                            'rgba(180, 235, 192, 1)',
+                            'rgba(255, 218, 181, 1)',
+                            'rgba(211, 180, 235, 1)',
+                            'rgba(179, 235, 235, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 5, // Rounded bars
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true, // Allow chart to resize height
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount Spent (₹)'
+                            }
+                        },
+                         x: {
+                             title: {
+                                 display: true,
+                                 text: 'Day of the Week'
+                             }
+                         }
+                    },
+                     plugins: {
+                         legend: {
+                             display: false // Hide the dataset label legend
+                         },
+                         tooltip: {
+                              callbacks: {
+                                  label: function(context) {
+                                      let label = context.dataset.label || '';
+                                      if (label) { label += ': '; }
+                                      if (context.parsed.y !== null) {
+                                          label += new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(context.parsed.y);
+                                      }
+                                      return label;
+                                  }
+                              }
+                          }
+                     }
+                }
+            });
+        }
+
+        // Handle form submission
+        function handleAddEntry(event) {
+            event.preventDefault(); // Prevent page reload
+
+            const itemName = itemNameInput.value.trim();
+            const itemAmount = parseFloat(itemAmountInput.value);
+
+            // Basic validation
+            if (!itemName) {
+                alert("Please enter what you spent money on!");
+                itemNameInput.focus();
+                return;
+            }
+            if (isNaN(itemAmount) || itemAmount <= 0) {
+                alert("Please enter a valid amount greater than zero!");
+                itemAmountInput.focus();
+                return;
+            }
+
+            const newExpense = {
+                item: itemName,
+                amount: itemAmount,
+                timestamp: Date.now() // Record time of entry
+            };
+
+            expenses.push(newExpense);
+            saveExpenses();
+
+            // Update UI
+            renderExpenseList();
+            updateSummary();
+            renderWeeklyChart(); // Update chart after adding entry
+
+            // Clear form fields
+            expenseForm.reset();
+            itemNameInput.focus(); // Set focus back to item name
+        }
+
+        // Handle clearing all data
+        function handleClearData() {
+            // Confirmation dialog
+            if (confirm("Are you sure you want to clear ALL your expense data? This cannot be undone!")) {
+                expenses = []; // Clear the array
+                saveExpenses(); // Save the empty array to localStorage
+
+                // Update UI
+                renderExpenseList();
+                updateSummary();
+                renderWeeklyChart(); // Update chart (will be empty)
+
+                alert("All expense data cleared!");
+            }
+        }
+
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadExpenses(); // Load data when page loads
+            renderExpenseList();
+            updateSummary();
+            renderWeeklyChart(); // Render initial chart
+
+            // Add event listeners
+            expenseForm.addEventListener('submit', handleAddEntry);
+            clearDataBtn.addEventListener('click', handleClearData);
+        });
+
+    </script>
+
+</body>
+</html>

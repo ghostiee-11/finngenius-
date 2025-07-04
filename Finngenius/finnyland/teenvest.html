@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teenvest 🚀 Stock Game</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Styles embedded within <style> tags -->
+    <style>
+        :root {
+            --primary-color: #00bfa5; /* Teal */
+            --secondary-color: #ffc107; /* Amber */
+            --background-color: #f0f4f8; /* Light grey-blue */
+            --card-background: #ffffff;
+            --text-color: #333;
+            --positive-color: #4caf50; /* Green */
+            --negative-color: #f44336; /* Red */
+            --neutral-color: #757575; /* Grey */
+            --border-radius: 12px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        *, *::before, *::after {
+             box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1300px; /* Slightly wider max-width for 3 columns */
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        header h1 {
+            font-weight: 700;
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        /* --- Game Area Layout --- */
+        .game-area {
+            display: grid;
+            /* Mobile First: Stack columns by default */
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        /* --- Layout for Wider Screens (Apply 3-column split) --- */
+        @media (min-width: 992px) {
+            .game-area {
+                 /* 1fr (25%) + 2fr (50%) + 1fr (25%) = 4fr total */
+                grid-template-columns: 1fr 2fr 1fr;
+            }
+            .stock-market-section {
+                 /* Add horizontal scroll only if needed on desktop */
+                 overflow-x: auto;
+            }
+        }
+
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            /* Add Emojis/Icons using ::after for spacing */
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Push icon to the right */
+        }
+         /* Add specific icons - adjust content as needed */
+        .portfolio-section h2::after { content: '💼'; margin-left: 10px; }
+        .stock-market-section h2::after { content: '📈📉'; margin-left: 10px; }
+        .leaderboard-section h2::after { content: '🏆'; margin-left: 10px; }
+
+
+        /* Portfolio Styles */
+        .portfolio-section .portfolio-summary {
+            margin-bottom: 20px;
+        }
+        .portfolio-section .portfolio-summary p {
+            margin: 8px 0;
+            font-size: 1.1em;
+        }
+        .portfolio-section .total-value {
+            font-weight: 700;
+            font-size: 1.3em;
+            color: var(--primary-color);
+            margin-top: 15px;
+        }
+        #portfolio-holdings h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            font-size: 1.1em;
+        }
+        #portfolio-holdings > p {
+            color: #666;
+            font-style: italic;
+        }
+        .holding-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.95em;
+        }
+        .holding-item:last-child { border-bottom: none; }
+        .holding-item span:first-child {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .holding-item span:last-child {
+            font-weight: 600;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+
+        /* Stock Market Styles */
+        #stock-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stock-item {
+            display: grid;
+             /* Adjust columns slightly for the 50% width context */
+            grid-template-columns: 2.5fr 1fr 1fr 1fr 1.5fr;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px; /* Slightly less padding */
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            /* Remove min-width, let grid/overflow handle it */
+        }
+        .stock-item.header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 10px 12px;
+            border: none;
+        }
+        .stock-item.header span { text-align: left; }
+        .stock-item.header span:nth-child(2), /* Price header */
+        .stock-item.header span:nth-child(3) { text-align: right; } /* Change header */
+        .stock-item.header span:nth-child(4) { text-align: center; } /* Qty header */
+        .stock-item.header span:nth-child(5) { text-align: right; } /* Actions header */
+
+
+        .stock-name { font-weight: 600; word-break: break-word; }
+        .stock-price { font-weight: 600; text-align: right; }
+        .stock-change { font-weight: 600; text-align: right; padding-right: 5px; }
+        .stock-change.positive { color: var(--positive-color); }
+        .stock-change.negative { color: var(--negative-color); }
+        .stock-change.neutral { color: var(--neutral-color); }
+
+        .quantity-input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 70px; /* Slightly smaller input */
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        .actions { display: flex; gap: 5px; justify-content: flex-end; }
+
+        .btn {
+            padding: 6px 10px; /* Slightly smaller buttons */
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-size: 0.85em; /* Slightly smaller font */
+            white-space: nowrap;
+        }
+        .btn:active { transform: scale(0.95); }
+        .buy-btn { background-color: var(--positive-color); color: white; }
+        .buy-btn:hover { background-color: #388e3c; }
+        .sell-btn { background-color: var(--negative-color); color: white; }
+        .sell-btn:hover { background-color: #d32f2f; }
+
+
+        /* Leaderboard Styles */
+        .leaderboard-section ol { list-style: none; padding: 0; margin: 0; }
+        .leaderboard-section li {
+            padding: 8px 5px;
+            border-bottom: 1px dashed #eee;
+            font-size: 1.0em; /* Slightly smaller leaderboard font */
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Align icon/text vertically */
+        }
+        .leaderboard-section li:last-child { border-bottom: none; }
+        .leaderboard-section li span { /* Value part */
+            font-weight: 600;
+            margin-left: 10px;
+            white-space: nowrap; /* Prevent wrapping */
+        }
+        /* Color is handled by JS adding emojis now */
+
+
+        /* Pop-up Styles */
+        #popup-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+            opacity: 1; transition: opacity 0.3s ease; padding: 20px;
+        }
+        #popup-container.hidden { opacity: 0; pointer-events: none; }
+        .popup {
+            background-color: var(--card-background); padding: 30px 40px;
+            border-radius: var(--border-radius); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            text-align: center; position: relative; max-width: 400px;
+            width: 100%; border-top: 5px solid var(--secondary-color);
+        }
+        .popup p { font-size: 1.2em; margin: 0; color: #555; }
+        #popup-close {
+            position: absolute; top: 10px; right: 10px; background: none;
+            border: none; font-size: 1.8em; cursor: pointer; color: #aaa;
+            line-height: 1;
+        }
+        #popup-close:hover { color: #333; }
+
+        /* Footer */
+        footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #666; }
+
+
+        /* --- Responsive Adjustments for Stacked View --- */
+        @media (max-width: 991px) { /* Target screens smaller than the 3-column layout */
+             header h1 { font-size: 2em; }
+
+             .stock-item {
+                grid-template-columns: 1fr; /* Ensure stacking */
+                text-align: left;
+                gap: 8px;
+                padding: 15px;
+             }
+             .stock-item span,
+             .stock-item input,
+             .stock-item .actions {
+                grid-column: 1;
+                text-align: left;
+                justify-content: flex-start;
+                width: auto;
+            }
+            .stock-item.header { display: none; }
+
+            .stock-item:not(.header) span { display: block; }
+            .stock-item:not(.header) .stock-name::before,
+            .stock-item:not(.header) .stock-price::before,
+            .stock-item:not(.header) .stock-change::before {
+                 content: attr(data-label) ": ";
+                 font-weight: 600;
+                 color: var(--primary-color);
+                 display: inline-block;
+                 min-width: 60px;
+                 margin-right: 5px;
+             }
+             .stock-item:not(.header) .stock-price,
+             .stock-item:not(.header) .stock-change {
+                 text-align: left; padding-right: 0;
+             }
+
+             .stock-item .quantity-input {
+                 margin: 10px 0 5px 0; width: 100px; display: inline-block;
+             }
+              /* Add label for quantity in stacked view */
+             .quantity-label {
+                  display: inline-block;
+                  margin-right: 5px;
+                  color: #666;
+             }
+             .stock-item .actions { margin-top: 10px; justify-content: flex-start; }
+             .btn { padding: 10px 15px; } /* Restore button size */
+        }
+
+         @media (max-width: 480px) {
+              body { padding: 10px; }
+              .container { padding: 15px; }
+              header h1 { font-size: 1.8em; }
+              .card { padding: 15px; }
+              .popup { padding: 20px; }
+              .popup p { font-size: 1.1em; }
+         }
+
+    </style>
+</head>
+<body>
+    <!-- HTML Content -->
+    <div class="container">
+        <header>
+             <h1>🚀 Teenvest Stock Challenge 💰</h1>
+        </header>
+
+        <div class="game-area">
+            <!-- Portfolio Section (25%) -->
+            <section class="card portfolio-section">
+                <h2>My Portfolio</h2>
+                <div class="portfolio-summary">
+                    <p>Cash: <span id="cash">₹50,000.00</span></p>
+                    <p>Stock Value: <span id="stock-value">₹0.00</span></p>
+                    <p class="total-value">Total Value: <span id="total-value">₹50,000.00</span></p>
+                </div>
+                <div id="portfolio-holdings">
+                    <p>You don't own any stocks yet. Buy some!</p>
+                </div>
+            </section>
+
+            <!-- Stock Market Section (50%) -->
+            <section class="card stock-market-section">
+                <h2>Stock Market</h2>
+                <div id="stock-list">
+                     <div class="stock-item header">
+                        <span>Name</span>
+                        <span>Price</span>
+                        <span>Change</span>
+                        <span>Quantity</span>
+                        <span>Actions</span>
+                    </div>
+                    <!-- JS adds rows here -->
+                </div>
+            </section>
+
+            <!-- Leaderboard Section (25%) -->
+            <section class="card leaderboard-section">
+                <h2>Leaderboard</h2>
+                <ol id="leaderboard-list">
+                     <!-- JS generates list items like:
+                     <li>🥇 You <span>₹50000.00</span></li>
+                     <li>🥈 Bot Alpha <span>₹51234.56</span></li>
+                     <li>🥉 Bot Beta <span>₹49876.54</span></li>
+                      -->
+                </ol>
+            </section>
+        </div>
+
+        <!-- Educational Pop-up -->
+        <div id="popup-container" class="hidden">
+            <div class="popup">
+                <button id="popup-close">×</button>
+                <p id="popup-message"></p>
+            </div>
+        </div>
+         <footer>
+            <p>Stock prices update every 10 seconds. Happy Investing on Teenvest!</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript (No changes needed in JS for this layout) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Game State ---
+            let cash = 50000;
+            let portfolio = {}; // { 'STOCK_NAME': { quantity: number, avgBuyPrice: number } }
+            const stocks = [
+                { name: 'PixelFun', price: 100.00, initialPrice: 100.00 },
+                { name: 'RoboPets', price: 55.50, initialPrice: 55.50 },
+                { name: 'CloudCandy', price: 250.75, initialPrice: 250.75 },
+                { name: 'EcoGrow', price: 80.20, initialPrice: 80.20 },
+                { name: 'VR World', price: 180.00, initialPrice: 180.00 },
+                { name: 'AI Chef', price: 320.50, initialPrice: 320.50 },
+                { name: 'SolarSail', price: 115.00, initialPrice: 115.00 },
+                { name: 'BioSynth', price: 45.90, initialPrice: 45.90 },
+                { name: 'QuantumLeap', price: 500.00, initialPrice: 500.00 },
+                { name: 'AquaFarm', price: 70.00, initialPrice: 70.00 }
+            ];
+            const educationalPopups = [
+                "📈 Buying low and selling high is a common strategy!",
+                " diversification (owning different stocks) can reduce risk.",
+                "📉 Stock prices go up and down. Don't panic sell!",
+                "💡 Researching fictional companies (like these!) helps practice.",
+                "💰 Only invest virtual money you're okay with potentially losing value on.",
+                "⏳ Investing is often a long-term game, not get-rich-quick.",
+                "📊 Percentage changes show how much a stock moved relative to its price."
+            ];
+            let popupTimeout;
+            let simulationInterval;
+            let educationInterval;
+
+            // --- DOM Elements ---
+            const cashEl = document.getElementById('cash');
+            const stockValueEl = document.getElementById('stock-value');
+            const totalValueEl = document.getElementById('total-value');
+            const portfolioHoldingsEl = document.getElementById('portfolio-holdings');
+            const stockListEl = document.getElementById('stock-list');
+            const leaderboardListEl = document.getElementById('leaderboard-list');
+            const popupContainerEl = document.getElementById('popup-container');
+            const popupMessageEl = document.getElementById('popup-message');
+            const popupCloseBtn = document.getElementById('popup-close');
+
+            // --- Core Functions ---
+            function formatCurrency(amount) {
+                // Basic formatting, consider Intl.NumberFormat for more complex needs
+                return `₹${amount.toFixed(2)}`;
+            }
+
+            function calculatePortfolioValue() {
+                return Object.entries(portfolio).reduce((total, [stockName, holding]) => {
+                    const currentStock = stocks.find(s => s.name === stockName);
+                    return total + (currentStock ? holding.quantity * currentStock.price : 0);
+                }, 0);
+            }
+
+            function updateTotalValue() {
+                const currentStockValue = calculatePortfolioValue();
+                const currentTotalValue = cash + currentStockValue;
+                cashEl.textContent = formatCurrency(cash);
+                stockValueEl.textContent = formatCurrency(currentStockValue);
+                totalValueEl.textContent = formatCurrency(currentTotalValue);
+                updateLeaderboardDisplay(currentTotalValue);
+            }
+
+            function updateLeaderboardDisplay(playerValue) {
+                let botAlphaValue = 51234.56 + (playerValue - 50000) * 0.1 * Math.random();
+                let botBetaValue = 49876.54 + (playerValue - 50000) * 0.05 * (Math.random() - 0.5);
+                botAlphaValue = Math.max(1000, botAlphaValue);
+                botBetaValue = Math.max(1000, botBetaValue);
+
+                const leaderboardData = [
+                    { name: "You", value: playerValue },
+                    { name: "Bot Alpha", value: botAlphaValue },
+                    { name: "Bot Beta", value: botBetaValue },
+                ];
+                leaderboardData.sort((a, b) => b.value - a.value);
+
+                leaderboardListEl.innerHTML = ''; // Clear previous entries
+                const rankEmojis = ['🥇', '🥈', '🥉'];
+                leaderboardData.forEach((player, index) => {
+                    const li = document.createElement('li');
+                    const rank = rankEmojis[index] || ` ${index + 1}.`; // Use number for lower ranks
+                    li.innerHTML = `${rank} ${player.name} <span>${formatCurrency(player.value)}</span>`;
+                    leaderboardListEl.appendChild(li);
+                });
+            }
+
+            function renderPortfolioHoldings() {
+                portfolioHoldingsEl.innerHTML = ''; // Clear
+                if (Object.keys(portfolio).length === 0) {
+                    portfolioHoldingsEl.innerHTML = '<p>You don\'t own any stocks yet. Buy some!</p>';
+                    return;
+                }
+                const holdingsTitle = document.createElement('h3');
+                holdingsTitle.textContent = 'Your Stocks:';
+                portfolioHoldingsEl.appendChild(holdingsTitle);
+
+                Object.entries(portfolio).forEach(([stockName, holding]) => {
+                    const currentStock = stocks.find(s => s.name === stockName);
+                    const currentValue = currentStock ? holding.quantity * currentStock.price : 0;
+                    const avgPriceText = holding.avgBuyPrice > 0 ? `(Avg: ${formatCurrency(holding.avgBuyPrice)})` : '';
+                    const item = document.createElement('div');
+                    item.classList.add('holding-item');
+                    item.innerHTML = `
+                        <span>${holding.quantity} x ${stockName} ${avgPriceText}</span>
+                        <span>${formatCurrency(currentValue)}</span>`;
+                    portfolioHoldingsEl.appendChild(item);
+                });
+            }
+
+            function renderStockList() {
+                const existingItems = stockListEl.querySelectorAll('.stock-item:not(.header)');
+                stocks.forEach((stock, index) => {
+                    let item = existingItems[index];
+                    const change = stock.price - stock.initialPrice;
+                    const changePercent = stock.initialPrice === 0 ? 0 : (change / stock.initialPrice) * 100;
+                    let changeClass = changePercent > 0.05 ? 'positive' : changePercent < -0.05 ? 'negative' : 'neutral';
+
+                    if (!item) {
+                        item = document.createElement('div');
+                        item.classList.add('stock-item');
+                        item.dataset.name = stock.name;
+                        item.innerHTML = `
+                            <span class="stock-name" data-label="Name">${stock.name}</span>
+                            <span class="stock-price" data-label="Price">${formatCurrency(stock.price)}</span>
+                            <span class="stock-change ${changeClass}" data-label="Change">${changePercent.toFixed(2)}%</span>
+                            <span class="quantity-label" style="display: none;">Quantity:</span> <!-- Hidden by default, shown in CSS media query -->
+                            <input type="number" min="1" placeholder="Qty" class="quantity-input" aria-label="Quantity for ${stock.name}">
+                            <div class="actions">
+                                <button class="btn buy-btn">Buy</button>
+                                <button class="btn sell-btn">Sell</button>
+                            </div>`;
+                        stockListEl.appendChild(item);
+                    } else {
+                        item.dataset.name = stock.name;
+                        item.querySelector('.stock-name').textContent = stock.name;
+                        item.querySelector('.stock-price').textContent = formatCurrency(stock.price);
+                        const changeEl = item.querySelector('.stock-change');
+                        changeEl.textContent = `${changePercent.toFixed(2)}%`;
+                        changeEl.className = `stock-change ${changeClass}`;
+                    }
+                });
+
+                if (!stockListEl.dataset.listenersAttached) {
+                    addStockActionListeners();
+                    stockListEl.dataset.listenersAttached = 'true';
+                }
+            }
+
+            function simulatePriceChanges() {
+                stocks.forEach(stock => {
+                    const maxChange = 0.05;
+                    const changePercent = (Math.random() * 2 * maxChange) - maxChange;
+                    let newPrice = stock.price * (1 + changePercent);
+                    newPrice = Math.max(newPrice, stock.initialPrice * 0.01, 1.00); // Floor price
+                    stock.price = newPrice;
+                });
+                renderStockList();
+                renderPortfolioHoldings();
+                updateTotalValue();
+            }
+
+            function buyStock(stockName, quantity) {
+                const stock = stocks.find(s => s.name === stockName);
+                if (!stock || quantity <= 0) return;
+                const cost = stock.price * quantity;
+                if (cash >= cost) {
+                    cash -= cost;
+                    const holding = portfolio[stockName];
+                    if (holding) {
+                        const oldTotalCost = holding.avgBuyPrice * holding.quantity;
+                        const newTotalQuantity = holding.quantity + quantity;
+                        holding.avgBuyPrice = (oldTotalCost + cost) / newTotalQuantity;
+                        holding.quantity = newTotalQuantity;
+                    } else {
+                        portfolio[stockName] = { quantity: quantity, avgBuyPrice: stock.price };
+                    }
+                    showPopup(`🛒 Bought ${quantity} ${stockName}!`);
+                    renderPortfolioHoldings();
+                    updateTotalValue();
+                } else {
+                    showPopup(` Mmm... Not enough cash (${formatCurrency(cash)}) for ${quantity} ${stockName} (${formatCurrency(cost)}).`);
+                }
+            }
+
+            function sellStock(stockName, quantity) {
+                const stock = stocks.find(s => s.name === stockName);
+                const holding = portfolio[stockName];
+                if (!stock || !holding || quantity <= 0) {
+                    if (!holding) showPopup(` Oops! You don't own any ${stockName}.`);
+                    return;
+                }
+                if (holding.quantity >= quantity) {
+                    const earnings = stock.price * quantity;
+                    cash += earnings;
+                    holding.quantity -= quantity;
+                    if (holding.quantity === 0) delete portfolio[stockName];
+                    showPopup(`💰 Sold ${quantity} ${stockName} for ${formatCurrency(earnings)}!`);
+                    renderPortfolioHoldings();
+                    updateTotalValue();
+                } else {
+                    showPopup(` Oops! You only have ${holding.quantity} ${stockName} to sell.`);
+                }
+            }
+
+            function showPopup(message) {
+                if (popupTimeout) clearTimeout(popupTimeout);
+                popupMessageEl.textContent = message;
+                popupContainerEl.classList.remove('hidden');
+                popupTimeout = setTimeout(() => popupContainerEl.classList.add('hidden'), 4000);
+            }
+
+            function showRandomEducationalPopup() {
+                showPopup(educationalPopups[Math.floor(Math.random() * educationalPopups.length)]);
+            }
+
+            function addStockActionListeners() {
+                stockListEl.addEventListener('click', (e) => {
+                    const target = e.target;
+                    const stockItem = target.closest('.stock-item:not(.header)');
+                    if (!stockItem) return;
+
+                    const stockName = stockItem.dataset.name;
+                    const quantityInput = stockItem.querySelector('.quantity-input');
+                    const quantity = parseInt(quantityInput.value, 10);
+                    const action = target.classList.contains('buy-btn') ? 'buy' : target.classList.contains('sell-btn') ? 'sell' : null;
+
+                    if (!action) return; // Exit if not a buy/sell button click
+
+                    if (isNaN(quantity) || quantity <= 0) {
+                        showPopup(`🔢 Please enter a valid positive quantity to ${action}!`);
+                        quantityInput.focus(); return;
+                    }
+
+                    if (action === 'buy') buyStock(stockName, quantity);
+                    if (action === 'sell') sellStock(stockName, quantity);
+
+                    quantityInput.value = ''; // Clear input
+                });
+            }
+
+            function stopGame() {
+                 clearInterval(simulationInterval);
+                 clearInterval(educationInterval);
+                 console.log("Game intervals stopped.");
+            }
+
+            function initializeGame() {
+                console.log("Initializing Teenvest Game...");
+                renderStockList();
+                renderPortfolioHoldings();
+                updateTotalValue(); // Initial calculation and leaderboard
+
+                // Clear existing intervals before starting new ones (important for hot-reloading/debugging)
+                if(simulationInterval) clearInterval(simulationInterval);
+                if(educationInterval) clearInterval(educationInterval);
+
+                simulationInterval = setInterval(simulatePriceChanges, 10000);
+                educationInterval = setInterval(showRandomEducationalPopup, 45000);
+
+                 // Add listener for closing popup
+                 popupCloseBtn.addEventListener('click', () => {
+                    if (popupTimeout) clearTimeout(popupTimeout);
+                    popupContainerEl.classList.add('hidden');
+                 });
+
+                // Initial welcome message
+                setTimeout(() => showPopup("👋 Welcome to Teenvest! Buy and sell stocks to grow your virtual ₹50,000!"), 1500);
+
+                 // Optional: Add a cleanup function if the game needs to be stopped/reset
+                 // window.addEventListener('beforeunload', stopGame);
+            }
+
+            initializeGame();
+        });
+    </script>
+
+</body>
+</html>

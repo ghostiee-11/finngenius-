@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiny Savers - Finnyland Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Add this style to prevent default link styling on the cards */
+    .module-link {
+      text-decoration: none;
+      color: inherit;
+      display: block; /* Ensures the link takes up the card space */
+    }
+    .module-link:hover .comic-panel,
+    .module-link:focus .comic-panel {
+        /* Optional: Add a subtle hover/focus effect */
+        transform: scale(1.02);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+    .comic-panel {
+        /* Add transition for smooth hover effect */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+  </style>
+</head>
+<body class="tiny-savers-page">
+  <div class="dashboard-container">
+    <div class="dashboard-content">
+      <div class="header with-back-button">
+        <a href="index.html" class="back-button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </a>
+        <h1 class="page-title">🌈 Tiny Savers Village</h1>
+      </div>
+
+      <div class="speech-bubble centered">
+        <p class="font-comic">Let's Start Your Money Adventure!</p>
+        <div class="speech-bubble-tail"></div>
+      </div>
+
+      <div class="modules-grid two-columns">
+        <!-- Finance Story Teller -->
+        <div class="module-card" data-id="story-teller">
+          <!-- Make the entire card clickable -->
+          <a href="storytl.html" class="module-link">
+            <div class="comic-panel">
+              <div class="panel-content">
+                <div class="icon-container bg-pink-400">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                </div>
+
+                <h2 class="module-title">Finance Story Teller</h2>
+                <p class="module-description">Once upon a time, there was a coin...</p>
+
+                <div class="comic-button">Play Now!</div>
+
+                <!-- Speech bubble that appears on hover -->
+                <div class="thought-bubble hidden">
+                  <p class="font-comic">Let me tell you a story!</p>
+                  <div class="thought-bubble-tail"></div>
+                </div>
+
+                <!-- Comic-style decorative elements -->
+                <div class="comic-exclamation bottom-left pink">READ!</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Good Deed Reward Checker -->
+        <div class="module-card" data-id="reward-checker">
+          <!-- Make the entire card clickable -->
+          <a href="gooddeed.html" class="module-link">
+            <div class="comic-panel">
+              <div class="panel-content">
+                <div class="icon-container bg-yellow-400">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                </div>
+
+                <h2 class="module-title">Good Deed Reward Checker</h2>
+                <p class="module-description">Earn stars for helping at home!</p>
+
+                <div class="comic-button">Play Now!</div>
+
+                <!-- Speech bubble that appears on hover -->
+                <div class="thought-bubble hidden">
+                  <p class="font-comic">You earned 3 stars!</p>
+                  <div class="thought-bubble-tail"></div>
+                </div>
+
+                <!-- Comic-style decorative elements -->
+                <div class="comic-exclamation bottom-left yellow">EARN!</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Shopkeeper Roleplay -->
+        <div class="module-card" data-id="shopkeeper">
+          <!-- Make the entire card clickable -->
+          <a href="shopnew.html" class="module-link">
+            <div class="comic-panel">
+              <div class="panel-content">
+                <div class="icon-container bg-green-400">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                </div>
+
+                <h2 class="module-title">Shopkeeper Roleplay</h2>
+                <p class="module-description">Buy and sell with play money!</p>
+
+                <div class="comic-button">Play Now!</div>
+
+                <!-- Speech bubble that appears on hover -->
+                <div class="thought-bubble hidden">
+                  <p class="font-comic">How much for this banana?</p>
+                  <div class="thought-bubble-tail"></div>
+                </div>
+
+                <!-- Comic-style decorative elements -->
+                <div class="comic-exclamation bottom-left green">SHOP!</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Piggy Bank Simulator -->
+        <div class="module-card" data-id="piggy-bank">
+           <!-- Make the entire card clickable -->
+           <a href="piggy.html" class="module-link">
+            <div class="comic-panel">
+              <div class="panel-content">
+                <div class="icon-container bg-purple-400">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"></path>
+                    <path d="M2 9v1c0 1.1.9 2 2 2h1"></path>
+                    <path d="M16 11h0"></path>
+                  </svg>
+                </div>
+
+                <h2 class="module-title">Piggy Bank Simulator</h2>
+                <p class="module-description">Save coins and watch your piggy grow!</p>
+
+                <div class="comic-button">Play Now!</div>
+
+                <!-- Speech bubble that appears on hover -->
+                <div class="thought-bubble hidden">
+                  <p class="font-comic">Cha-Ching!</p>
+                  <div class="thought-bubble-tail"></div>
+                </div>
+
+                <!-- Comic-style decorative elements -->
+                <div class="comic-exclamation bottom-left purple">SAVE!</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-text">
+        <p>Click on any activity to start learning about money!</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <!-- Note: The script.js might need adjustments if it previously relied
+       on clicking the *button* specifically, now the whole card is the trigger.
+       Hover effects should still work as they target the card/panel. -->
+</body>
+</html>

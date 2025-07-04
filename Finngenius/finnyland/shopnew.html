@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Toy Shop! (Calculate Change)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS Styles (Mostly the same as before) --- */
+        body {
+            font-family: 'Fredoka One', cursive; background-color: #fef3c7; color: #b45309;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; user-select: none;
+        }
+        h1 { color: #d97706; margin-bottom: 20px; text-shadow: 1px 1px #fff; }
+        .shop-area {
+            background-color: #fff; border-radius: 20px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 100%; max-width: 650px; display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+        .customer-interaction {
+            border: 3px dashed #f59e0b; border-radius: 15px; padding: 15px; width: 95%;
+            text-align: center; background-color: #fefce8;
+        }
+        .customer-interaction p { margin: 8px 0; font-size: 1.1em; }
+        .item-display { font-weight: bold; color: #92400e; font-size: 1.2em; }
+        .amount { font-weight: bold; color: #16a34a; font-size: 1.2em; }
+        /* REMOVED display style for change-due */
+        #toy-placeholder { font-size: 4em; margin: 10px auto; line-height: 1; }
+        .till-area {
+            margin-top: 15px; padding: 15px; background-color: #f1f5f9; border-radius: 10px;
+            width: 95%; text-align: center;
+        }
+        .till-area h3 { color: #475569; margin-bottom: 10px; font-size: 1.1em; }
+        #change-options { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
+        .change-coin {
+            width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.1em; font-weight: bold; color: #333; cursor: pointer; border: 2px solid #666;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.2); transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        .change-coin:hover { transform: scale(1.05); }
+        .change-coin:active { transform: scale(0.95); }
+        .coin-1 { background-color: #silver; border-color: #a1a1a1; }
+        .coin-2 { background-color: #silver; border: 3px solid #b08d57; }
+        #given-change-display { margin-top: 10px; font-size: 1.1em; color: #1d4ed8; min-height: 1.2em; }
+        .action-buttons { margin-top: 20px; display: flex; justify-content: center; gap: 20px; }
+        .action-btn {
+            padding: 10px 25px; font-family: 'Fredoka One', cursive; font-size: 1.2em; border: none;
+            border-radius: 25px; cursor: pointer; color: white; transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        }
+        .action-btn:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        #accept-btn { background-color: #22c55e; } #accept-btn:hover { background-color: #16a34a; }
+        #give-change-btn { background-color: #f97316; } #give-change-btn:hover { background-color: #ea580c; }
+        #next-customer-btn { background-color: #3b82f6; } #next-customer-btn:hover { background-color: #2563eb; }
+        .narration-area {
+            margin-top: 25px; background-color: #ecfdf5; border: 3px dashed #10b981; border-radius: 10px;
+            padding: 15px; width: 90%; max-width: 600px; text-align: center; font-size: 1.1em;
+            color: #047857; min-height: 3em;
+        }
+        #animation-area { margin-top: 10px; font-size: 3em; height: 50px; transition: transform 0.3s ease-out; line-height: 1; }
+        #animation-area.happy { transform: scale(1.5) rotate(10deg); }
+        .hidden { display: none !important; } /* Use important to ensure it stays hidden */
+
+        /* Style for the hidden change due text - purely structural now */
+        #change-due-text { /* No specific styles needed if hidden */ }
+        .change-due { /* No specific styles needed if hidden */ }
+
+
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to the Toy Shop! 🧸</h1>
+
+    <div class="shop-area">
+        <!-- Customer Interaction Area -->
+        <div class="customer-interaction">
+            <h2>Customer wants:</h2>
+            <div id="toy-placeholder">🧸</div>
+            <p>The <span id="toy-name" class="item-display">Toy</span> costs <span id="toy-price" class="amount">₹0</span>.</p>
+            <p>Customer pays with: <span id="amount-paid" class="amount">₹0</span>.</p>
+            <!-- This paragraph is now permanently hidden via CSS -->
+            <p id="change-due-text" class="hidden">Change due: <span id="change-needed" class="change-due">₹0</span>.</p>
+        </div>
+
+        <!-- Till / Change Area -->
+        <div id="change-section" class="till-area hidden">
+             <h3>Your Till (Click to give change):</h3>
+             <div id="change-options">
+                <div class="change-coin coin-1" data-value="1">₹1</div>
+                <div class="change-coin coin-1" data-value="1">₹1</div>
+                <div class="change-coin coin-1" data-value="1">₹1</div>
+                <div class="change-coin coin-2" data-value="2">₹2</div>
+                <div class="change-coin coin-2" data-value="2">₹2</div>
+                <div class="change-coin coin-2" data-value="2">₹2</div>
+             </div>
+             <p id="given-change-display">Giving: ₹<span id="change-given-amount">0</span></p>
+             <button id="give-change-btn" class="action-btn">Give Change</button>
+        </div>
+
+        <!-- Accept Payment Button -->
+        <div id="accept-payment-section" class="action-buttons">
+            <button id="accept-btn" class="action-btn">Accept Payment</button>
+        </div>
+
+         <!-- Next Customer Button -->
+        <div id="next-customer-section" class="action-buttons hidden">
+            <button id="next-customer-btn" class="action-btn">Next Customer!</button>
+        </div>
+
+         <!-- Animation Area -->
+        <div id="animation-area"></div>
+
+    </div>
+
+    <!-- Narration / Instructions -->
+    <div class="narration-area">
+        <p id="narration-text">A customer is here! See what they want.</p>
+    </div>
+
+
+    <!-- Audio Elements -->
+    <audio id="sale-sound" src="sounds/cash-register.mp3" preload="auto"></audio>
+    <audio id="correct-sound" src="sounds/correct-chime.mp3" preload="auto"></audio>
+    <audio id="error-sound" src="sounds/boop.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Toy Shop Game Initializing (No Change Hint)...");
+
+            // --- Get DOM Elements (Same as before) ---
+            const toyPlaceholder = document.getElementById('toy-placeholder');
+            const toyNameEl = document.getElementById('toy-name');
+            const toyPriceEl = document.getElementById('toy-price');
+            const amountPaidEl = document.getElementById('amount-paid');
+            // const changeDueTextEl = document.getElementById('change-due-text'); // No longer needed visually
+            // const changeNeededEl = document.getElementById('change-needed'); // No longer needed visually
+            const changeSection = document.getElementById('change-section');
+            const changeOptions = document.getElementById('change-options');
+            const changeGivenAmountEl = document.getElementById('change-given-amount');
+            const acceptPaymentSection = document.getElementById('accept-payment-section');
+            const acceptBtn = document.getElementById('accept-btn');
+            const giveChangeBtn = document.getElementById('give-change-btn');
+            const nextCustomerSection = document.getElementById('next-customer-section');
+            const nextCustomerBtn = document.getElementById('next-customer-btn');
+            const narrationTextEl = document.getElementById('narration-text');
+            const animationArea = document.getElementById('animation-area');
+            const saleSound = document.getElementById('sale-sound');
+            const correctSound = document.getElementById('correct-sound');
+            const errorSound = document.getElementById('error-sound');
+
+            // --- Game Scenarios (Same as before) ---
+            const scenarios = [
+                { toy: 'Ball', price: 5, paid: 5, placeholder: '⚽' },
+                { toy: 'Car', price: 10, paid: 10, placeholder: '🚗' },
+                { toy: 'Bear', price: 7, paid: 10, placeholder: '🧸' }, // Needs 3 change
+                { toy: 'Blocks', price: 8, paid: 10, placeholder: '🧱' }, // Needs 2 change
+                { toy: 'Doll', price: 12, paid: 15, placeholder: '🧍‍♀️' }, // Needs 3 change
+                { toy: 'Robot', price: 15, paid: 20, placeholder: '🤖' } // Needs 5 change
+            ];
+            let currentScenarioIndex = 0;
+            // let currentRequiredChange = 0; // We calculate this later now
+            let currentChangeGiven = 0;
+            let totalEarned = 0;
+
+             // --- Helper Functions (Same as before) ---
+            function playSound(soundElement) { if (soundElement) { soundElement.currentTime = 0; soundElement.play().catch(e => console.error("Sound Error:", e)); } else { console.warn("Sound element missing"); } }
+            function updateNarration(text) { narrationTextEl.textContent = text; }
+            function showAnimation(type) { animationArea.textContent = ''; animationArea.classList.remove('happy'); if (type === 'happy') { animationArea.textContent = '😊'; animationArea.classList.add('happy'); setTimeout(() => animationArea.classList.remove('happy'), 500); } else if (type === 'correct') { animationArea.textContent = '👍'; } else if (type === 'oops') { animationArea.textContent = '🤔'; } setTimeout(() => animationArea.textContent = '', 1500); }
+
+            // --- Load Scenario (Modified) ---
+            function loadScenario(index) {
+                if (index >= scenarios.length) {
+                    updateNarration(`Shop closed! You earned a total of ₹${totalEarned}. Saving is important!`);
+                    acceptPaymentSection.classList.add('hidden'); changeSection.classList.add('hidden'); nextCustomerSection.classList.add('hidden');
+                    animationArea.textContent = '🎉'; return;
+                }
+                const scenario = scenarios[index];
+                console.log("Loading Scenario:", scenario);
+
+                // Reset state
+                currentChangeGiven = 0;
+                changeGivenAmountEl.textContent = '0';
+                // changeDueTextEl.classList.add('hidden'); // Keep hidden
+                changeSection.classList.add('hidden');
+                acceptPaymentSection.classList.add('hidden');
+                nextCustomerSection.classList.add('hidden');
+                animationArea.textContent = '';
+
+                // Update UI
+                toyPlaceholder.textContent = scenario.placeholder;
+                toyNameEl.textContent = scenario.toy;
+                toyPriceEl.textContent = `₹${scenario.price}`;
+                amountPaidEl.textContent = `₹${scenario.paid}`;
+
+                // Determine game flow
+                if (scenario.paid > scenario.price) {
+                    // Don't calculate or show change due here
+                    changeSection.classList.remove('hidden'); // Show till area
+                    // Modify narration to prompt calculation
+                    updateNarration(`Customer pays ₹${scenario.paid} for the ₹${scenario.price} ${scenario.toy}. How much change should you give back? Click coins in the till, then 'Give Change'.`);
+                } else if (scenario.paid === scenario.price) {
+                    acceptPaymentSection.classList.remove('hidden'); // Show accept button
+                    updateNarration(`Customer pays the exact amount: ₹${scenario.price}. Click 'Accept Payment' to make the sale! Selling helps earn money.`);
+                } else {
+                    updateNarration(`Oh! The customer only paid ₹${scenario.paid}, but the ${scenario.toy} costs ₹${scenario.price}. We can't sell it yet.`);
+                    nextCustomerSection.classList.remove('hidden'); // Allow skipping
+                }
+            }
+
+            // --- Event Listeners (Accept, Click Coin - Same as before) ---
+            acceptBtn.addEventListener('click', () => {
+                const scenario = scenarios[currentScenarioIndex]; console.log("Payment Accepted"); totalEarned += scenario.price;
+                playSound(saleSound); showAnimation('happy');
+                updateNarration(`Sale complete! You sold the ${scenario.toy} and earned ₹${scenario.price}. Total earned: ₹${totalEarned}. Saving some is a good idea!`);
+                acceptPaymentSection.classList.add('hidden'); nextCustomerSection.classList.remove('hidden');
+            });
+
+            changeOptions.addEventListener('click', (e) => {
+                if (e.target.classList.contains('change-coin')) {
+                    const value = parseInt(e.target.dataset.value, 10); currentChangeGiven += value;
+                    changeGivenAmountEl.textContent = currentChangeGiven; console.log("Clicked change:", value, "Total given:", currentChangeGiven);
+                    e.target.style.transform = 'scale(0.9)'; setTimeout(() => e.target.style.transform = 'scale(1)', 100);
+                }
+            });
+
+            // --- Give Change Button (Modified) ---
+            giveChangeBtn.addEventListener('click', () => {
+                const scenario = scenarios[currentScenarioIndex];
+                // Calculate required change HERE instead of storing it earlier
+                const requiredChange = scenario.paid - scenario.price;
+
+                console.log("Checking Change: Given", currentChangeGiven, "Needed", requiredChange);
+
+                if (currentChangeGiven === requiredChange) {
+                    totalEarned += scenario.price; // Earn money from the sale
+                    playSound(correctSound); showAnimation('happy');
+                    // Update narration confirming correct change amount
+                    updateNarration(`Perfect change (₹${requiredChange}) given! You sold the ${scenario.toy}. Total earned: ₹${totalEarned}. Smart counting!`);
+                    changeSection.classList.add('hidden'); nextCustomerSection.classList.remove('hidden');
+                } else {
+                    playSound(errorSound); showAnimation('oops');
+                    // Update narration explaining the mistake based on calculated required change
+                    updateNarration(`Oops! That's not right. The correct change was ₹${requiredChange}, but you clicked ₹${currentChangeGiven}. Let's reset the change and try counting again!`);
+                    currentChangeGiven = 0; changeGivenAmountEl.textContent = '0'; // Reset
+                }
+            });
+
+            // --- Next Customer Button (Same as before) ---
+            nextCustomerBtn.addEventListener('click', () => {
+                console.log("Next Customer"); currentScenarioIndex++; loadScenario(currentScenarioIndex);
+            });
+
+            // --- Initial Load ---
+            loadScenario(currentScenarioIndex);
+            console.log("Game ready!");
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>

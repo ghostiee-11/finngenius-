@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Awesome Dream Board ✨</title>
+    <style>
+        /* --- SINGLE MODERN THEME VARIABLES --- */
+        :root {
+            /* Core Palette */
+            --primary-color: #0077b6; /* Deep Cerulean Blue */
+            --secondary-color: #00b4d8; /* Bright Cerulean */
+            --accent-color-1: #ffb703; /* Selective Yellow/Orange */
+            --accent-color-2: #fb8500; /* Orange Peel */
+            --neutral-light: #f8f9fa; /* Very Light Gray */
+            --neutral-medium: #e9ecef; /* Light Gray */
+            --neutral-dark: #495057; /* Dark Gray */
+            --text-color: #343a40; /* Almost Black */
+            --item-bg: #ffffff;
+
+            /* Gradients */
+            --bg-gradient: linear-gradient(135deg, #caf0f8 0%, #edf6f9 100%); /* Light Blue to White */
+            --board-gradient: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%); /* White to Light Gray */
+            --button-gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            --button-alt-gradient: linear-gradient(45deg, var(--accent-color-2), var(--accent-color-1));
+            --message-gradient: linear-gradient(45deg, var(--secondary-color), #90e0ef); /* Lighter blue */
+
+            /* UI Elements */
+            --input-border: #ced4da;
+            --input-focus-border: var(--primary-color);
+            --input-focus-shadow: rgba(0, 119, 182, 0.15);
+            --total-bg: var(--accent-color-1);
+            --total-text: #333;
+            --goals-list-bg: #f1fcfd; /* Very light cyan */
+            --goals-list-border: #ade8f4;
+
+            /* Styling */
+            --border-radius-main: 12px; /* Slightly less rounded */
+            --border-radius-small: 6px;
+            --box-shadow-light: 0 3px 8px rgba(0, 0, 0, 0.07);
+            --box-shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- General Styles --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            line-height: 1.6; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; padding: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color); margin-bottom: 25px;
+            font-size: 2.5em; font-weight: 600; text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .container { display: flex; flex-wrap: wrap; gap: 30px; width: 100%; max-width: 1150px; flex-grow: 1; }
+        .left-column { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 25px; }
+
+        /* Custom Goal Section */
+        #custom-goal-creator {
+            background-color: var(--item-bg); padding: 25px;
+            border-radius: var(--border-radius-main); box-shadow: var(--box-shadow-medium);
+            border: 1px solid var(--neutral-medium);
+        }
+        #custom-goal-creator h3 { text-align: center; color: var(--primary-color); margin-bottom: 20px; font-size: 1.5em; font-weight: 600; }
+        .custom-goal-form label { display: block; margin-bottom: 6px; font-size: 0.95em; font-weight: 500; color: var(--neutral-dark); }
+        .custom-goal-form input[type="text"],
+        .custom-goal-form input[type="number"] {
+            width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--input-border);
+            border-radius: var(--border-radius-small); font-size: 1em; font-family: inherit; background-color: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .custom-goal-form input:focus { border-color: var(--input-focus-border); outline: none; box-shadow: 0 0 0 3px var(--input-focus-shadow); }
+        .custom-goal-form input[type="number"]::-webkit-inner-spin-button,
+        .custom-goal-form input[type="number"]::-webkit-outer-spin-button { appearance: none; margin: 0; }
+        .custom-goal-form input[type="number"] { appearance: textfield; }
+        .custom-goal-form button {
+            width: 100%; padding: 12px; font-size: 1.1em; font-weight: 600; cursor: pointer;
+            background: var(--button-gradient);
+            color: white; border: none; border-radius: var(--border-radius-small);
+            transition: all 0.2s ease; margin-top: 10px; box-shadow: 0 2px 5px rgba(0, 119, 182, 0.3);
+        }
+        .custom-goal-form button:hover { filter: brightness(1.1); box-shadow: 0 4px 8px rgba(0, 119, 182, 0.4); }
+        .custom-goal-form button:active { transform: scale(0.98); }
+
+        /* My Goals List (Drag Source) */
+         #my-goals-section {
+            background-color: var(--goals-list-bg); padding: 20px;
+            border-radius: var(--border-radius-main); box-shadow: var(--box-shadow-light);
+            border: 1px solid var(--goals-list-border); flex-grow: 1;
+            min-height: 150px; max-height: 45vh; overflow-y: auto;
+         }
+          #my-goals-section h3 { text-align: center; color: var(--primary-color); margin-bottom: 15px; font-size: 1.5em; font-weight: 600; }
+          .my-goals-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 18px; }
+
+        /* Item Styling (Shared) */
+        .dream-item {
+            background-color: var(--item-bg); padding: 12px; border-radius: var(--border-radius-small);
+            text-align: center; cursor: grab; transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--neutral-medium); box-shadow: 0 2px 4px rgba(0,0,0,0.06); overflow: hidden;
+        }
+        .dream-item:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .dream-item:active { cursor: grabbing; }
+        .item-icon { width: 50px; height: 50px; margin: 0 auto 10px; display: flex; justify-content: center; align-items: center; font-size: 42px; pointer-events: none; }
+        .item-name { font-size: 0.9em; font-weight: 600; margin-bottom: 4px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-cost { font-size: 0.85em; color: var(--accent-color-2); font-weight: bold; }
+
+
+        /* Dream Board Area */
+        #dream-board-area { flex: 2.5; min-width: 380px; display: flex; flex-direction: column; }
+        #dream-board {
+            background: var(--board-gradient);
+            border: 2px dashed var(--secondary-color); /* Dashed border for drop zone */
+            border-radius: var(--border-radius-main);
+            padding: 30px; min-height: 500px; height: calc(85vh - 90px); max-height: 700px;
+            overflow-y: auto; position: relative; display: flex; flex-wrap: wrap;
+            align-content: flex-start; gap: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.06);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        #dream-board.drag-over { border-style: solid; border-color: var(--primary-color); background: linear-gradient(135deg, #e0fcff, #f8f9fa); }
+
+        /* Dropped items */
+        .dropped-item {
+            background-color: rgba(255, 255, 255, 0.9); padding: 12px;
+            border-radius: var(--border-radius-small); text-align: center; border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: var(--box-shadow-medium); width: 120px; height: fit-content; cursor: default;
+            transition: transform 0.3s ease; animation: dropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden; backdrop-filter: blur(3px);
+        }
+        .dropped-item .item-icon { width: 55px; height: 55px; margin: 0 auto 10px; font-size: 40px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .dropped-item .item-name { font-size: 0.9em; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333;}
+        .dropped-item .item-cost { font-size: 0.85em; color: var(--accent-color-2); font-weight: bold; }
+
+        @keyframes dropIn { from { transform: scale(0.3) rotate(-10deg) translateY(-10px); opacity: 0; } to { transform: scale(1) rotate(0deg) translateY(0); opacity: 1; } }
+
+        /* Controls Area */
+        .controls {
+            background-color: rgba(255,255,255, 0.85); backdrop-filter: blur(4px); padding: 20px 30px;
+            border-radius: var(--border-radius-main); box-shadow: var(--box-shadow-medium);
+            margin-top: 25px; width: 100%; text-align: center; flex-shrink: 0; border: 1px solid var(--neutral-medium);
+        }
+        #total-cost-area {
+            background-color: var(--total-bg); color: var(--total-text); padding: 12px 25px;
+            border-radius: 30px; font-size: 1.5em; font-weight: bold; display: inline-block; margin-bottom: 20px;
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.08);
+        }
+        .control-buttons { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; }
+        .control-buttons button {
+            padding: 12px 30px; font-size: 1.15em; font-weight: 600; cursor: pointer;
+            color: white; border: none; border-radius: var(--border-radius-small);
+            transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        #plan-btn { background: var(--button-gradient); }
+        #plan-btn:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0, 119, 182, 0.3); }
+        #clear-btn { background: var(--button-alt-gradient); }
+        #clear-btn:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(251, 133, 0, 0.3); }
+        .control-buttons button:active { transform: translateY(0px) scale(0.98); box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+
+        /* Motivational Message Area */
+        #message-area {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--message-gradient);
+            color: #fff; text-shadow: 1px 1px 1px rgba(0,0,0,0.15); padding: 18px 35px;
+            border-radius: 35px; font-size: 1.2em; font-weight: 500;
+            box-shadow: 0 6px 18px rgba(0, 180, 216, 0.3);
+            z-index: 100; opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease, background 0.3s ease; pointer-events: none;
+        }
+        #message-area.show { opacity: 1; transform: translateX(-50%) translateY(-10px); pointer-events: auto; }
+
+        /* Drag Feedback Class */
+        .dream-item.dragging { opacity: 0.7; transform: scale(0.98) rotate(2deg); cursor: grabbing; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+
+        /* --- Responsiveness --- */
+         @media (max-width: 768px) {
+            h1 { font-size: 2em; margin-bottom: 20px; }
+            .container { flex-direction: column; gap: 20px; }
+            .left-column { width: 100%; min-width: unset; gap: 20px; }
+             #custom-goal-creator { padding: 20px; }
+             #custom-goal-creator h3 { font-size: 1.3em; }
+             .custom-goal-form input { padding: 10px; font-size: 1em; }
+             .custom-goal-form button { padding: 11px; font-size: 1.05em; }
+             #my-goals-section { padding: 15px; max-height: 35vh; min-height: 120px; }
+             #my-goals-section h3 { font-size: 1.3em; margin-bottom: 12px;}
+             .my-goals-list { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; }
+             .item-icon { width: 45px; height: 45px; font-size: 35px; }
+
+            #dream-board-area { width: 100%; }
+            #dream-board { min-height: 350px; height: 48vh; padding: 20px; gap: 15px;}
+            .dropped-item { width: 105px; padding: 10px; }
+             .dropped-item .item-icon { width: 45px; height: 45px; font-size: 32px; }
+             .dropped-item .item-name { font-size: 0.85em;}
+
+            .controls { padding: 15px 20px; margin-top: 20px; }
+            #total-cost-area { font-size: 1.3em; padding: 10px 20px; margin-bottom: 18px; }
+            .control-buttons { gap: 18px; }
+            .control-buttons button { font-size: 1.05em; padding: 11px 22px; }
+            #message-area { font-size: 1.05em; padding: 15px 25px; width: 90%; bottom: 20px; }
+        }
+
+    </style>
+</head>
+<body> <!-- No theme class needed now -->
+
+    <h1>My Awesome Dream Board ✨</h1>
+
+    <!-- Theme Switch Removed -->
+
+    <div class="container">
+        <!-- Left Column -->
+        <div class="left-column">
+            <!-- Custom Goal Creator -->
+            <div id="custom-goal-creator">
+                 <h3>Add Your Dream Goal!</h3>
+                 <form class="custom-goal-form" id="custom-goal-form">
+                     <label for="custom-goal-name">Goal Name:</label>
+                     <input type="text" id="custom-goal-name" placeholder="e.g., Cool Skateboard" required>
+                     <label for="custom-goal-cost">Cost (₹):</label>
+                     <input type="number" id="custom-goal-cost" placeholder="e.g., 2500" min="1" required>
+                     <label for="custom-goal-emoji">Emoji:</label>
+                     <input type="text" id="custom-goal-emoji" placeholder="Paste one emoji! e.g., 🛹" maxlength="2" required>
+                     <button type="submit">Add to My Goals</button>
+                 </form>
+            </div>
+
+            <!-- My Goals List (Source for Dragging) -->
+            <div id="my-goals-section">
+                 <h3>My Goals List <small>(Drag these!)</small></h3>
+                 <div class="my-goals-list">
+                     <!-- Custom goals will appear here -->
+                 </div>
+            </div>
+        </div>
+
+
+        <!-- Dream Board Area (Drop Target) -->
+        <div id="dream-board-area">
+            <div id="dream-board">
+                <!-- Dropped items will appear here -->
+            </div>
+            <!-- Controls -->
+            <div class="controls">
+                 <div id="total-cost-area">
+                     Total Dream Cost: ₹<span id="total-cost-value">0</span>
+                 </div>
+                 <div class="control-buttons">
+                     <button id="plan-btn">Plan to Save!</button>
+                     <button id="clear-btn">Clear Board</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Area -->
+    <div id="message-area">Let's make those dreams real!</div>
+
+    <script>
+        const motivationalMessages = [
+            "Awesome addition! ✨", "Great goal! Keep dreaming! 👍", "Your board is looking fantastic! 🤩",
+            "You're building your future! 🚀", "Dream big, save smart! 💰", "Yes! You can achieve this! 💪",
+            "What a cool goal! ⭐", "Adding dreams = adding happiness! 😊",
+        ];
+
+        // --- Global Variables ---
+        let totalCost = 0;
+        let boardItems = [];
+        let messageTimeout;
+        let customItemIdCounter = 0;
+
+        // --- DOM Elements ---
+        const myGoalsListContainer = document.getElementById('my-goals-section').querySelector('.my-goals-list');
+        const dreamBoard = document.getElementById('dream-board');
+        const totalCostValueEl = document.getElementById('total-cost-value');
+        const planBtn = document.getElementById('plan-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const messageArea = document.getElementById('message-area');
+        const customGoalForm = document.getElementById('custom-goal-form');
+        const customGoalNameInput = document.getElementById('custom-goal-name');
+        const customGoalCostInput = document.getElementById('custom-goal-cost');
+        const customGoalEmojiInput = document.getElementById('custom-goal-emoji');
+        // No theme elements needed
+
+        // --- Functions ---
+
+        /**
+         * Shows a message in the message area.
+         * @param {string} text - The message text (can include HTML like <br>).
+         * @param {number | null} duration - Time in ms to display. If null or 0, message stays until cleared.
+         */
+         function showMessage(text, duration = 3000) {
+             clearTimeout(messageTimeout);
+             messageArea.textContent = '';
+             messageArea.innerHTML = text;
+             messageArea.classList.add('show');
+             if (duration && duration > 0) {
+                 messageTimeout = setTimeout(() => {
+                     messageArea.classList.remove('show');
+                 }, duration);
+             }
+         }
+
+         function hideMessage() {
+             clearTimeout(messageTimeout);
+             messageArea.classList.remove('show');
+         }
+
+        function updateTotalCost() {
+            totalCost = boardItems.reduce((sum, itemId) => {
+                const goalItemEl = myGoalsListContainer.querySelector(`.dream-item[data-id='${itemId}']`);
+                return sum + (goalItemEl ? parseInt(goalItemEl.dataset.cost) : 0);
+            }, 0);
+            totalCostValueEl.textContent = totalCost;
+        }
+
+        function createDraggableItemElement(itemData) {
+            const div = document.createElement('div');
+            div.classList.add('dream-item');
+            div.setAttribute('draggable', true);
+            div.dataset.id = itemData.id;
+            div.dataset.cost = itemData.cost;
+            div.dataset.name = itemData.name;
+            div.dataset.icon = itemData.icon;
+            div.dataset.type = 'emoji'; // Only emoji type now
+            div.innerHTML = `
+                <div class="item-icon">${itemData.icon}</div>
+                <span class="item-name">${itemData.name}</span>
+                <span class="item-cost">₹${itemData.cost}</span>
+            `;
+            div.addEventListener('dragstart', handleDragStart);
+            div.addEventListener('dragend', handleDragEnd);
+            return div;
+        }
+
+        function handleDragStart(e) { e.dataTransfer.setData('text/plain', e.target.dataset.id); setTimeout(() => e.target.classList.add('dragging'), 0); }
+        function handleDragEnd(e) { e.target.classList.remove('dragging'); }
+        function handleDragOver(e) { e.preventDefault(); dreamBoard.classList.add('drag-over'); }
+        function handleDragLeave(e) { dreamBoard.classList.remove('drag-over'); }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dreamBoard.classList.remove('drag-over');
+            const itemId = e.dataTransfer.getData('text/plain');
+
+            if (boardItems.includes(itemId)) {
+                showMessage("That dream is already on your board! 😉", 2500); return;
+            }
+            const originalItemElement = myGoalsListContainer.querySelector(`.dream-item[data-id='${itemId}']`);
+            if (originalItemElement) {
+                const itemData = { id: itemId, name: originalItemElement.dataset.name, cost: parseInt(originalItemElement.dataset.cost), icon: originalItemElement.dataset.icon, type: 'emoji' };
+                boardItems.push(itemId);
+                const droppedDiv = document.createElement('div');
+                droppedDiv.classList.add('dropped-item'); droppedDiv.dataset.id = itemData.id;
+                droppedDiv.innerHTML = `<div class="item-icon">${itemData.icon}</div> <span class="item-name">${itemData.name}</span> <span class="item-cost">₹${itemData.cost}</span>`;
+                dreamBoard.appendChild(droppedDiv);
+                updateTotalCost();
+                const randomMsg = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                showMessage(randomMsg, 3000); // Temporary message
+            } else { console.error("Original dragged item element not found for ID:", itemId); showMessage("Oops! Something went wrong.", 3000); }
+        }
+
+        function handlePlanSave() {
+            if (totalCost <= 0) { showMessage("Add some dreams to your board first! ✨", 2500); return; }
+            const weeklyPlan10 = Math.ceil(totalCost / 10); const weeklyPlan20 = Math.ceil(totalCost / 20); const weeklyPlan52 = Math.ceil(totalCost / 52);
+            let planText = `<strong>Plan to reach ₹${totalCost}:</strong><br>`;
+            if (totalCost > 100) planText += `🚀 Save ₹${weeklyPlan10}/wk for 10 weeks! OR <br>`;
+            planText += `⭐ Save ₹${weeklyPlan20}/wk for 20 weeks! OR <br>`;
+            planText += `🐢 Save ₹${weeklyPlan52}/wk for 1 year!`;
+            showMessage(planText, null); // Persistent message
+        }
+
+        function handleClearBoard() {
+             boardItems = []; dreamBoard.innerHTML = ''; totalCost = 0; updateTotalCost();
+             hideMessage(); // Hide any persistent plan
+             showMessage(`Board cleared! Ready for new dreams! 🧹✨`, 2500); // Temporary message
+         }
+
+        function handleAddCustomGoal(e) {
+            e.preventDefault();
+            const name = customGoalNameInput.value.trim(); const cost = parseInt(customGoalCostInput.value); const emoji = customGoalEmojiInput.value.trim();
+            if (!name || !cost || cost <= 0 || !emoji || emoji.length === 0 || emoji.length > 2) { showMessage("Please fill in all fields correctly! (Need name, positive cost, 1-2 emoji)", 3500); return; }
+            const customId = `custom-${Date.now()}-${customItemIdCounter++}`; const customItemData = { id: customId, name, cost, icon: emoji, type: 'emoji' };
+            const customItemElement = createDraggableItemElement(customItemData);
+            myGoalsListContainer.appendChild(customItemElement);
+            customGoalForm.reset();
+            showMessage(`"${name}" added to your Goals List! 🎉 Now drag it!`, 3500); // Temporary message
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // No theme setup needed
+
+            // Add listeners
+            dreamBoard.addEventListener('dragover', handleDragOver);
+            dreamBoard.addEventListener('dragleave', handleDragLeave);
+            dreamBoard.addEventListener('drop', handleDrop);
+            planBtn.addEventListener('click', handlePlanSave);
+            clearBtn.addEventListener('click', handleClearBoard);
+            customGoalForm.addEventListener('submit', handleAddCustomGoal);
+
+            showMessage("Add your goals, then drag them to the board! ✨", 4500); // Initial temporary message
+        });
+
+    </script>
+
+</body>
+</html>
